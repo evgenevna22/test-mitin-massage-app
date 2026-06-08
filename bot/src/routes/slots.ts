@@ -7,16 +7,25 @@ import { sendError } from '../helpers'
 const router = Router()
 
 router.get('/', async (req: Request, res: Response) => {
-  const { date } = req.query
+  const { month } = req.query
 
-  if (!date) {
-    sendError(res, 400, 'Param `date` is required')
+  if (!month) {
+    sendError(res, 400, 'Param `month` is required')
 
     return
   }
 
+  const from = `2026-${month}-01`
+  const to = `2026-${month}-31`
+
   try {
-    const result = await db.collection('slots').where('date', '==', date).get()
+    const result = await db
+      .collection('slots')
+      .where('date', '>=', from)
+      .where('date', '<=', to)
+      .get()
+
+      console.log('result', result.docs)
 
     const slots: Slot[] = result.docs
       .map((doc) => {
@@ -26,7 +35,9 @@ router.get('/', async (req: Request, res: Response) => {
         }
         return SlotSchema.parse(data)
       })
-      .sort((prev, curr) => prev.time.localeCompare(curr.time))
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+      )
 
     res.json(slots)
   } catch (error) {
