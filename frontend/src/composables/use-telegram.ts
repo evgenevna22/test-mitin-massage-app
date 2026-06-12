@@ -1,4 +1,7 @@
-export const useTelegram = () => {
+/**
+ * Composable инкапуслирует логику и состояние телеграм приложения
+ */
+export const useTelegramMiniApp = () => {
   // Объект Telegram Web App — доступен глобально после подключения SDK
   const tg = window.Telegram.WebApp
 

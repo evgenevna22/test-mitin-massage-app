@@ -3,11 +3,21 @@ import { createHmac } from 'node:crypto'
 import { sendError } from '../helpers'
 import { config } from '../config'
 
-export function verifyTelegram(
+export const verifyTelegram = (
   req: Request,
   res: Response,
   next: NextFunction
-) {
+) => {
+  if (process.env.NODE_ENV === 'development') {
+    req.telegramUser = {
+      id: 123456,
+      first_name: 'Dev',
+      username: 'dev_user',
+    }
+    next()
+    return
+  }
+
   // Фронт будет присылать initData в заголовке запроса
   const initData = req.headers['x-telegram-init-data'] as string
 
@@ -34,7 +44,7 @@ export function verifyTelegram(
   }
 
   // Проверяем что данные не старше 1 часа (3600 секунд)
-  const ONE_HOUR_IN_SECONDS = 3600;
+  const ONE_HOUR_IN_SECONDS = 3600
   const now = Math.floor(Date.now() / 1000) // текущее время в секундах
   const diff = now - parseInt(authDate)
 

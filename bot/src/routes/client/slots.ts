@@ -1,22 +1,35 @@
 import { Request, Response, Router } from 'express'
-import { db } from '../firebase'
-import { SlotSchema, type Slot } from '../types'
-import { verifyTelegram } from '../middleware/verify-telegram'
-import { sendError } from '../helpers'
+import { db } from '../../firebase'
+import { SlotSchema, type Slot } from '../../types'
+import { verifyTelegram } from '../../middleware/verify-telegram'
+import { sendError } from '../../helpers'
 
 const router = Router()
 
-router.get('/', async (req: Request, res: Response) => {
-  const { date } = req.query
+router.use(verifyTelegram)
 
-  if (!date) {
-    sendError(res, 400, 'Param `date` is required')
+router.get('/', async (req: Request, res: Response) => {
+  const { month } = req.query
+
+  if (!month) {
+    sendError(res, 400, 'Param `month` is required')
 
     return
   }
 
+  const now = new Date()
+
+  const from = `${now.getFullYear()}-${month}-01`
+  const to = `${now.getFullYear()}-${month}-31`
+
   try {
-    const result = await db.collection('slots').where('date', '==', date).get()
+    const result = await db
+      .collection('slots')
+      .where('date', '>=', from)
+      .where('date', '<=', to)
+      .get()
+
+    console.log('result', result.docs)
 
     const slots: Slot[] = result.docs
       .map((doc) => {
@@ -26,7 +39,9 @@ router.get('/', async (req: Request, res: Response) => {
         }
         return SlotSchema.parse(data)
       })
-      .sort((prev, curr) => prev.time.localeCompare(curr.time))
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+      )
 
     res.json(slots)
   } catch (error) {
@@ -40,11 +55,11 @@ router.post('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
-    if (typeof id !== 'string') {
-      sendError(res, 400, 'Param `id` must be a string type')
+    // if (typeof id !== 'string') {
+    //   sendError(res, 400, 'Param `id` must be a string type')
 
-      return
-    }
+    //   return
+    // }
     const slotReference = db.collection('slots').doc(id)
     const slotDocument = await slotReference.get()
 
@@ -127,7 +142,5 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'The booking was not cancelled' })
   }
 })
-
-router.use(verifyTelegram)
 
 export default router

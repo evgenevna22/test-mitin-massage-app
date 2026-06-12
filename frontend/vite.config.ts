@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue()],
-  server: {
-    // Разрешаем ngrok-хост чтобы Vite отвечал на запросы через туннель
-    allowedHosts: ['ruby-daughter-antirust.ngrok-free.dev'],
-    headers: {
-      'ngrok-skip-browser-warning': 'true',
-      'user-agent': 'cussstom'
-    }
-  },
+  plugins: [vue(),
+    Components({
+      resolvers: [PrimeVueResolver()]
+    })
+  ],
+  
 })

@@ -1,13 +1,21 @@
 import 'dotenv/config'
 import express from 'express'
+import cors from 'cors'
 
-import slotsRender from './routes/slots'
 import './bot'
+import slotsRender from './routes/client/slots'
+import adminRender from './routes/admin/admin'
 
 const app = express()
 
 app.use(express.json())
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  })
+)
 app.use('/slots', slotsRender)
+app.use('/admin', adminRender)
 
 app.get('/', (req, res) => {
   res.send('Server is working')

@@ -13,7 +13,7 @@ bot.onText(/\/start/, (message) => {
         [
           {
             text: 'Book',
-            web_app: { url: 'https://ruby-daughter-antirust.ngrok-free.dev' },
+            web_app: { url: 'https://test-mitin-massage-app.vercel.app' },
           },
         ],
       ],
