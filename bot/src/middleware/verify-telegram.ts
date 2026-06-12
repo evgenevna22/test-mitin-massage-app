@@ -3,11 +3,11 @@ import { createHmac } from 'node:crypto'
 import { sendError } from '../helpers'
 import { config } from '../config'
 
-export function verifyTelegram(
+export const verifyTelegram = (
   req: Request,
   res: Response,
   next: NextFunction
-) {
+) => {
   if (process.env.NODE_ENV === 'development') {
     req.telegramUser = {
       id: 123456,

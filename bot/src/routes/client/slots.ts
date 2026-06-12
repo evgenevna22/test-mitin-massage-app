@@ -1,10 +1,12 @@
 import { Request, Response, Router } from 'express'
-import { db } from '../firebase'
-import { SlotSchema, type Slot } from '../types'
-import { verifyTelegram } from '../middleware/verify-telegram'
-import { sendError } from '../helpers'
+import { db } from '../../firebase'
+import { SlotSchema, type Slot } from '../../types'
+import { verifyTelegram } from '../../middleware/verify-telegram'
+import { sendError } from '../../helpers'
 
 const router = Router()
+
+router.use(verifyTelegram)
 
 router.get('/', async (req: Request, res: Response) => {
   const { month } = req.query
@@ -15,8 +17,10 @@ router.get('/', async (req: Request, res: Response) => {
     return
   }
 
-  const from = `2026-${month}-01`
-  const to = `2026-${month}-31`
+  const now = new Date()
+
+  const from = `${now.getFullYear()}-${month}-01`
+  const to = `${now.getFullYear()}-${month}-31`
 
   try {
     const result = await db
@@ -25,7 +29,7 @@ router.get('/', async (req: Request, res: Response) => {
       .where('date', '<=', to)
       .get()
 
-      console.log('result', result.docs)
+    console.log('result', result.docs)
 
     const slots: Slot[] = result.docs
       .map((doc) => {
@@ -51,11 +55,11 @@ router.post('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
-    if (typeof id !== 'string') {
-      sendError(res, 400, 'Param `id` must be a string type')
+    // if (typeof id !== 'string') {
+    //   sendError(res, 400, 'Param `id` must be a string type')
 
-      return
-    }
+    //   return
+    // }
     const slotReference = db.collection('slots').doc(id)
     const slotDocument = await slotReference.get()
 
@@ -138,7 +142,5 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'The booking was not cancelled' })
   }
 })
-
-router.use(verifyTelegram)
 
 export default router

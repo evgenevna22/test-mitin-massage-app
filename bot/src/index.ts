@@ -3,7 +3,8 @@ import express from 'express'
 import cors from 'cors'
 
 import './bot'
-import slotsRender from './routes/slots'
+import slotsRender from './routes/client/slots'
+import adminRender from './routes/admin/admin'
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(
   })
 )
 app.use('/slots', slotsRender)
+app.use('/admin', adminRender)
 
 app.get('/', (req, res) => {
   res.send('Server is working')
