@@ -1,6 +1,6 @@
-import api from '../../api'
+// import api from '../../api'
 
-export const useSlot = (day: number) => {
+// export const useSlot = (day: number) => {
   
 
-}
+// }
