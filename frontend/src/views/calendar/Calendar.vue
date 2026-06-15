@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import type { DatePickerDateSlotOptions } from 'primevue'
 import { ref } from 'vue'
-import { useCalendar } from './calendar/use-calendar'
+import { useCalendar } from './use-calendar'
 
 const now = new Date()
 const { slots } = useCalendar()

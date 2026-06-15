@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
-import Calendar from '../views/Calendar.vue'
+import Calendar from '../views/calendar/Calendar.vue'
 
 import Slot from '../views/slot/Slot.vue'
 

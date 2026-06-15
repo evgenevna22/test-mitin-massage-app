@@ -36,8 +36,8 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     const timeSlots: TimeSlot[] = [time.start]
 
-    const durInMs = durHour ? getHourInMs(durHour) : getMinInMs(durMin)
-    const gapInMs = gapHour ? getHourInMs(gapHour) : getMinInMs(gapMin)
+    const durInMs = getHourInMs(durHour) + getMinInMs(durMin)
+    const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin)
 
     for (
       let i = { hour: startHour, min: startMin };
