@@ -1,44 +1,41 @@
 import { defineStore } from 'pinia'
-import type { Slot } from '../types/slot'
-import { SlotsApi } from '../api/slots'
+import type { SlotDTO } from '../types/slot'
 
 type State = {
-  slots: Array<Slot>
-  loading: boolean
+  appointments: Array<SlotDTO>
+  areAppointmentsLoading: boolean
+  currentDate: string
+  currentSlots: Array<SlotDTO>
+  areCurrentSlotsLoading: boolean
 }
 
 export const useSlotsStore = defineStore('slots', {
   state: (): State => ({
-    slots: [],
-    loading: false,
+    appointments: [],
+    areAppointmentsLoading: false,
+    currentDate: '',
+    currentSlots: [],
+    areCurrentSlotsLoading: false,
   }),
-  getters: {
-    // getActiveSlot
-  },
   actions: {
-    async loadSlots(month: string) {
-      try {
-        const slots = await SlotsApi.getSlots(month)
+    selectDate(date: string) {
+      this.currentDate = date
+    },
 
-        console.log('slots', slots)
+    setAppointments(appointments: SlotDTO[]) {
+      this.appointments = appointments
+    },
 
-        if (!slots?.length) {
-          return;
-        }
+    setAppointmentsLoading(loading: boolean) {
+      this.areAppointmentsLoading = loading
+    },
 
-        this.slots = slots.map((slot) => {
-          const [year, month, day] = slot.date.split('-')
+    setCurrentSlots(slots: SlotDTO[]) {
+      this.currentSlots = slots
+    },
 
-          return {
-            ...slot,
-            date: {
-              day: Number(day),
-              month: Number(month),
-              year: Number(year),
-            },
-          }
-        })
-      } catch (error) {}
+    setCurrentSlotsLoading(loading: boolean) {
+      this.areCurrentSlotsLoading = loading
     },
   },
 })

@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { SlotsApi } from '../api/slots'
 import { useToast } from 'primevue/usetoast'
 import type { TimeSlot } from '../types'
+import { transformDate } from '../shared/utils'
 
 export const useSlots = () => {
   const toast = useToast()
@@ -15,13 +16,10 @@ export const useSlots = () => {
     isLoading.value = true
 
     try {
-      const transformedDates = dates.map((date) =>
-        date.toISOString().slice(0, 10)
-      )
+      const transformedDates = dates.map(transformDate)
       await SlotsApi.createSlots({ dates: transformedDates, time })
       toast.add({ severity: 'success', summary: "slots're saved" })
     } catch (error) {
-      console.error(error)
       toast.add({ severity: 'error', summary: "slots haven't been saved" })
     } finally {
       isLoading.value = false

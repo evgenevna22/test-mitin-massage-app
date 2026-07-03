@@ -1,8 +1,13 @@
+import type { AxiosResponse } from 'axios'
 import api from '.'
-import type { CreateSlot } from '../types'
+import type { CreateSlot, SlotDTO } from '../types'
 
 export class SlotsApi {
   public static createSlots = async (payload: CreateSlot): Promise<any> => {
-    await api.post('admin/slots', payload)
+    return await api.post('admin/slots', payload)
+  }
+
+  public static loadUpcomingSlots = async (): Promise<AxiosResponse<SlotDTO[]>> => {
+    return await api.get('admin/upcoming')
   }
 }

@@ -1,4 +1,6 @@
 <template>
+  <Breadcrumbs />
+
   <Card>
     <template #title>
       <Button
@@ -25,7 +27,7 @@
         <div v-if="step === Step.Second" class="time-block">
           Dates:
           <ul>
-            <li v-for="date in dates">{{ date.toISOString().slice(0, 10) }}</li>
+            <li v-for="date in dates">{{ date }}</li>
           </ul>
           <label>Start time</label>
           <input type="time" v-model="timeSlot.start" />
@@ -57,8 +59,9 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { useSlots } from './use-slots'
 import type { TimeSlot } from '../types'
+import { useSlots } from './use-slots'
+import { Breadcrumbs } from '../shared/components'
 
 const Step = {
   First: 0,
@@ -94,7 +97,7 @@ const isSaveButtonDisabled = computed(() =>
     : !isTimeSlotsFilled.value
 )
 
-const handleClickButton = () => {
+const handleClickButton = async () => {
   if (step.value === Step.First) {
     step.value = Step.Second
 
@@ -102,7 +105,9 @@ const handleClickButton = () => {
   }
 
   if (dates.value.length && isTimeSlotsFilled.value) {
-    createSlots(dates.value, timeSlot)
+    await createSlots(dates.value, timeSlot)
+    resetTimeSlots()
+    step.value = Step.First
   }
 }
 
@@ -111,11 +116,15 @@ const handleClickResetButton = () => {
     dates.value = []
     return
   }
-  Object.assign(timeSlot, getInitialTimeSlotState())
+  resetTimeSlots()
 }
 
 const handleClickBackButton = () => {
   step.value = Step.First
+}
+
+const resetTimeSlots = () => {
+  Object.assign(timeSlot, getInitialTimeSlotState())
 }
 </script>
 
@@ -131,5 +140,10 @@ const handleClickBackButton = () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+ul,
+li {
+  list-style: none;
 }
 </style>

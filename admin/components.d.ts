@@ -11,12 +11,21 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Breadcrumb: typeof import('primevue/breadcrumb')['default']
     Button: typeof import('primevue/button')['default']
+    Calendar: typeof import('./src/components/Calendar.vue')['default']
     Card: typeof import('primevue/card')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
+    Main: typeof import('./src/components/Main.vue')['default']
     MainPage: typeof import('./src/components/MainPage.vue')['default']
+    Menu: typeof import('primevue/menu')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Toast: typeof import('primevue/toast')['default']
+    Upcoming: typeof import('./src/components/upcoming-slots/Upcoming.vue')['default']
+    UpcomingSlots: typeof import('./src/components/upcoming-slots/UpcomingSlots.vue')['default']
+  }
+  export interface GlobalDirectives {
+    Ripple: typeof import('primevue/ripple')['default']
   }
 }

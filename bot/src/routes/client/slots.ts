@@ -8,8 +8,8 @@ const router = Router()
 
 router.use(verifyTelegram)
 
-router.get('/', async (req: Request, res: Response) => {
-  const { month } = req.query
+router.get('/month/:month', async (req: Request, res: Response) => {
+  const { month } = req.params
 
   if (!month) {
     sendError(res, 400, 'Param `month` is required')
@@ -29,7 +29,37 @@ router.get('/', async (req: Request, res: Response) => {
       .where('date', '<=', to)
       .get()
 
-    console.log('result', result.docs)
+    const slots: Slot[] = result.docs
+      .map((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        }
+        return SlotSchema.parse(data)
+      })
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+      )
+
+    res.json(slots)
+  } catch (error) {
+    console.error('Ошибка при получении слотов:', error)
+
+    sendError(res, 500, 'Не удалось получить слоты')
+  }
+})
+
+router.get('/date/:date', async (req: Request, res: Response) => {
+  const { date } = req.params
+
+  if (!date) {
+    sendError(res, 400, 'Param `date` is required')
+
+    return
+  }
+
+  try {
+    const result = await db.collection('slots').where('date', '==', date).get()
 
     const slots: Slot[] = result.docs
       .map((doc) => {
@@ -55,11 +85,11 @@ router.post('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
-    // if (typeof id !== 'string') {
-    //   sendError(res, 400, 'Param `id` must be a string type')
+    if (typeof id !== 'string') {
+      sendError(res, 400, 'Param `id` must be a string type')
 
-    //   return
-    // }
+      return
+    }
     const slotReference = db.collection('slots').doc(id)
     const slotDocument = await slotReference.get()
 
