@@ -1,7 +1,13 @@
 import { Request, Response, Router } from 'express'
 import { db } from '../../firebase'
 import { getHourInMs, getMinInMs, sendError } from '../../helpers'
-import { CreateSlotSchema, type DateSlot, type TimeSlot } from '../../types'
+import {
+  CreateSlotSchema,
+  Slot,
+  SlotSchema,
+  type DateSlot,
+  type TimeSlot,
+} from '../../types'
 import { verifyAdmin } from '../../middleware/verify-admin'
 import { verifyTelegram } from '../../middleware/verify-telegram'
 
@@ -36,8 +42,8 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     const timeSlots: TimeSlot[] = [time.start]
 
-    const durInMs = durHour ? getHourInMs(durHour) : getMinInMs(durMin)
-    const gapInMs = gapHour ? getHourInMs(gapHour) : getMinInMs(gapMin)
+    const durInMs = getHourInMs(durHour) + getMinInMs(durMin)
+    const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin)
 
     for (
       let i = { hour: startHour, min: startMin };
@@ -80,6 +86,48 @@ router.post('/slots', async (req: Request, res: Response) => {
     console.error('Ошибка сохранении слотов:', error)
 
     sendError(res, 500, 'Не удалось сохранить слоты')
+  }
+})
+
+router.get('/upcoming', async (req: Request, res: Response) => {
+  //where('status','==','booked').where('date','>=', today).orderBy('date').orderBy('time').limit(10)
+
+  const today = new Date()
+  const transformDate = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  try {
+    const result = await db
+      .collection('slots')
+      .where('status', '==', 'booked')
+      .where('date', '>=', transformDate(today))
+      .orderBy('date')
+      .orderBy('time')
+      .limit(10)
+      .get()
+
+    console.log('result', result.docs)
+
+    const slots: Slot[] = result.docs.map((doc) => {
+      const data = {
+        id: doc.id,
+        ...doc.data(),
+      }
+      return SlotSchema.parse(data)
+    })
+    // .sort(
+    //   (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+    // )
+
+    res.json(slots)
+  } catch (error) {
+    console.error('Ошибка при получении слотов:', error)
+
+    sendError(res, 500, 'Не удалось получить слоты')
   }
 })
 
