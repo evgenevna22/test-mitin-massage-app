@@ -5,27 +5,19 @@ export class SlotsApi {
   public static getAppointments = async (
     month: string
   ): Promise<SlotDTO[] | undefined> => {
-    try {
-      return (await api.get(`slots/month/${month}`)).data
-    } catch (error) {
-      console.error(error)
-    }
+    return (await api.get(`slots/month/${month}`)).data
   }
 
   public static getSlots = async (
     date: string
   ): Promise<SlotDTO[] | undefined> => {
-    try {
-      return (await api.get(`slots/date/${date}`)).data
-    } catch (error) {
-      console.error(error)
-    }
+    return (await api.get(`slots/date/${date}`)).data
   }
 
   public static createSlot = async (
     payload: SlotPayload
   ): Promise<undefined> => {
-    return await api.post('admin/slots', payload)
+    return (await api.post('admin/slots', payload)).data
   }
 
   public static loadUpcomingSlots = async (): Promise<SlotDTO[]> => {

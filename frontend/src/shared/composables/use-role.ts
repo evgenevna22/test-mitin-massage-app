@@ -1,6 +1,7 @@
 import { RoleApi } from '@/api/role'
 import { useRoleStore } from '@/stores/role'
 import { useToast } from 'primevue'
+import { handleError } from '@utils'
 
 /**
  * Composable for getting and saving the role of the application
@@ -17,8 +18,7 @@ export const useRole = () => {
       }
       roleStore.setRole(role)
     } catch (error) {
-      console.error(error)
-      toast.add({ severity: 'error', summary: 'no role' })
+      handleError({ error }, toast)
     }
   }
 
