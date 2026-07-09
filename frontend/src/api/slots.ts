@@ -6,9 +6,7 @@ export class SlotsApi {
     month: string
   ): Promise<SlotDTO[] | undefined> => {
     try {
-      const reponse = await api.get(`slots/month/${month}`)
-
-      return reponse.data
+      return (await api.get(`slots/month/${month}`)).data
     } catch (e) {
       console.error(e)
     }
@@ -18,11 +16,7 @@ export class SlotsApi {
     date: string
   ): Promise<SlotDTO[] | undefined> => {
     try {
-      const reponse = await api.get(`slots/date/${date}`)
-
-      console.log('getSlots: ', reponse)
-
-      return reponse.data
+      return (await api.get(`slots/date/${date}`)).data
     } catch (e) {
       console.error(e)
     }
@@ -33,6 +27,6 @@ export class SlotsApi {
   }
 
   public static loadUpcomingSlots = async (): Promise<SlotDTO[]> => {
-    return await api.get('admin/upcoming')
+    return (await api.get('admin/upcoming')).data
   }
 }

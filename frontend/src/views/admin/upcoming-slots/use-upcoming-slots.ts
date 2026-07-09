@@ -16,7 +16,7 @@ export const useUpcomingSlots = () => {
 
     try {
       isLoading.value = true
-      upcomingSlots.value = (await SlotsApi.loadUpcomingSlots()).data
+      upcomingSlots.value = await SlotsApi.loadUpcomingSlots()
     } catch (error) {
       toast.add({ severity: 'error', summary: "upcoming slots wasn't loaded" })
     } finally {
