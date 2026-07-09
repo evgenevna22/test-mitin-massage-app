@@ -31,7 +31,7 @@ export const CreateTimeSlotSchema = z.object({
   gap: TimeScheme,
 })
 
-export const CreateSlotSchema = z.object({
+export const SlotPayloadSchema = z.object({
   dates: CreateDateSlotSchema,
   time: CreateTimeSlotSchema,
 })
@@ -39,7 +39,7 @@ export const CreateSlotSchema = z.object({
 export type Slot = z.infer<typeof SlotSchema>
 export type BookSlot = z.infer<typeof BookStolSchema>
 
-export type CreateSlot = z.infer<typeof CreateSlotSchema>
+export type SlotPayload = z.infer<typeof SlotPayloadSchema>
 export type CreateDateSlot = z.infer<typeof CreateDateSlotSchema>
 export type CreateTimeSlot = z.infer<typeof CreateTimeSlotSchema>
 export type TimeSlot = z.infer<typeof TimeScheme>

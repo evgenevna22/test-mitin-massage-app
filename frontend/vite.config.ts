@@ -2,13 +2,26 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
+import { fileURLToPath } from 'url'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(),
+  plugins: [
+    vue(),
     Components({
-      resolvers: [PrimeVueResolver()]
-    })
+      resolvers: [PrimeVueResolver()],
+    }),
   ],
-  
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@components': fileURLToPath(
+        new URL('./src/shared/components', import.meta.url)
+      ),
+      '@composables': fileURLToPath(
+        new URL('./src/shared/composables', import.meta.url)
+      ),
+      '@utils': fileURLToPath(new URL('./src/shared/utils', import.meta.url)),
+      '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
+    },
+  },
 })

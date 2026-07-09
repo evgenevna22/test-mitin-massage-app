@@ -59,9 +59,9 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import type { TimeSlot } from '../types'
+import type { TimeSlot } from '@/types'
 import { useSlots } from './use-slots'
-import { Breadcrumbs } from '../shared/components'
+import { Breadcrumbs } from '@components'
 
 const Step = {
   First: 0,
@@ -75,7 +75,7 @@ const getInitialTimeSlotState = (): TimeSlot => ({
   gap: '',
 })
 
-const { createSlots, isLoading } = useSlots()
+const { createSlot, isLoading } = useSlots()
 
 const step = ref(Step.First)
 
@@ -105,7 +105,7 @@ const handleClickButton = async () => {
   }
 
   if (dates.value.length && isTimeSlotsFilled.value) {
-    await createSlots(dates.value, timeSlot)
+    await createSlot(dates.value, timeSlot)
     resetTimeSlots()
     step.value = Step.First
   }

@@ -1,6 +1,6 @@
 import { onMounted, ref } from 'vue'
-import { SlotsApi } from '../../api/slots'
-import type { SlotDTO } from '../../types'
+import { SlotsApi } from '@/api/slots'
+import type { SlotDTO } from '@/types'
 import { useToast } from 'primevue/usetoast'
 
 export const useUpcomingSlots = () => {

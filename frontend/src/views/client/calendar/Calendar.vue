@@ -1,5 +1,5 @@
 <template>
-  <img width="60" height="60" src="../../assets/max.png" alt="" />
+  <img width="60" height="60" src="./../../../assets/max.png" alt="" />
 
   <DatePicker
     v-if="appointments.length"
@@ -16,9 +16,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { transformDate } from '@shared/utils'
+import { transformDate } from '@utils'
 import { useCalendar } from './use-calendar'
-import { useGetAppointments } from '@shared/composables'
+import { useGetAppointments } from '@composables'
 
 const today = new Date()
 

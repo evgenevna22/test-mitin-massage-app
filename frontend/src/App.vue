@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <Toast />
+    
     <RouterView />
   </div>
 </template>

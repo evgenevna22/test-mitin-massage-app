@@ -1,7 +1,7 @@
 import { computed, onMounted, ref } from 'vue'
-import { SlotsApi } from '../../api/slots'
+import { SlotsApi } from '@/api/slots'
 import { useSlots } from '.'
-import { useSlotsStore } from '../../stores/slots'
+import { useSlotsStore } from '@stores/slots'
 
 /**
  * Composable is responsible for:

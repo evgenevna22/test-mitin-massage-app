@@ -1,3 +1,15 @@
+export type TimeSlot = {
+  start: ''
+  end: ''
+  duration: ''
+  gap: ''
+}
+
+export type SlotPayload = {
+  dates: Array<string>
+  time: TimeSlot
+}
+
 export type Slot = {
   id: string
   date: {

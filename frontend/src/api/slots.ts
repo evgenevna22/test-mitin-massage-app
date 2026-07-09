@@ -1,5 +1,5 @@
 import api from '.'
-import type { SlotDTO } from '../types/slot'
+import type { SlotDTO, SlotPayload } from '../types/slot'
 
 export class SlotsApi {
   public static getAppointments = async (
@@ -26,5 +26,13 @@ export class SlotsApi {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  public static createSlot = async (payload: SlotPayload): Promise<any> => {
+    return await api.post('admin/slots', payload)
+  }
+
+  public static loadUpcomingSlots = async (): Promise<SlotDTO[]> => {
+    return await api.get('admin/upcoming')
   }
 }

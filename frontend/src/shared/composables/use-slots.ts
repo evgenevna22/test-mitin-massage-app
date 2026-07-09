@@ -1,6 +1,6 @@
-import { SlotsApi } from '../../api/slots'
+import { SlotsApi } from '@/api/slots'
 import { useToast } from 'primevue/usetoast'
-import { useSlotsStore } from '../../stores/slots'
+import { useSlotsStore } from '@stores/slots'
 
 export const useSlots = () => {
   const toast = useToast()

@@ -18,13 +18,18 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
 
-
     /* type checking */
     "strict": true,
 
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["./src/shared/*"]
+      "@components": ["./src/shared/components"],
+      "@components/*": ["./src/shared/components/*"],
+      "@composables": ["./src/shared/composables"],
+      "@composables/*": ["./src/shared/composables/*"],
+      "@utils": ["./src/shared/utils"],
+      "@utils/*": ["./src/shared/utils/*"],
+      "@stores/*": ["./src/stores/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]

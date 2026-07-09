@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express'
 import { db } from '../../firebase'
 import { getHourInMs, getMinInMs, sendError } from '../../helpers'
 import {
-  CreateSlotSchema,
+  SlotPayloadSchema,
   Slot,
   SlotSchema,
   type DateSlot,
@@ -17,7 +17,7 @@ router.use(verifyTelegram)
 router.use(verifyAdmin)
 
 router.post('/slots', async (req: Request, res: Response) => {
-  const slots = CreateSlotSchema.parse(req.body)
+  const slots = SlotPayloadSchema.parse(req.body)
 
   // date format: 'YYYY-MM-DD'
   // time format: 'HH:MM'

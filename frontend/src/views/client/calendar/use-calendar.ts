@@ -1,7 +1,7 @@
 import type { DatePickerMonthChangeEvent } from 'primevue/datepicker'
 import { computed, ref } from 'vue'
-import { transformDate } from '../../shared/utils'
-import { useSlotsStore } from '../../stores/slots'
+import { transformDate } from '@utils'
+import { useSlotsStore } from '@stores/slots'
 
 /**
  * Composable is responsible for:

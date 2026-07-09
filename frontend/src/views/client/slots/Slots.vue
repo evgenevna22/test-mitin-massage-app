@@ -30,8 +30,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSlotsStore } from '../../stores/slots'
-import { Spinner } from '@shared/components'
+import { useSlotsStore } from '@stores/slots'
+import { Spinner } from '@components'
 
 const slotsStore = useSlotsStore()
 const isLoading = computed(() => slotsStore.areCurrentSlotsLoading)

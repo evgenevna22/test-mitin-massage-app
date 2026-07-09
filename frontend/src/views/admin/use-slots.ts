@@ -1,15 +1,15 @@
 import { ref } from 'vue'
-import { SlotsApi } from '../api/slots'
+import { SlotsApi } from '@/api/slots'
 import { useToast } from 'primevue/usetoast'
-import type { TimeSlot } from '../types'
-import { transformDate } from '../shared/utils'
+import type { TimeSlot } from '@/types'
+import { transformDate } from '@utils'
 
 export const useSlots = () => {
   const toast = useToast()
 
   const isLoading = ref(false)
 
-  const createSlots = async (dates: Date[], time: TimeSlot) => {
+  const createSlot = async (dates: Date[], time: TimeSlot) => {
     if (isLoading.value) {
       return
     }
@@ -17,7 +17,7 @@ export const useSlots = () => {
 
     try {
       const transformedDates = dates.map(transformDate)
-      await SlotsApi.createSlots({ dates: transformedDates, time })
+      await SlotsApi.createSlot({ dates: transformedDates, time })
       toast.add({ severity: 'success', summary: "slots're saved" })
     } catch (error) {
       toast.add({ severity: 'error', summary: "slots haven't been saved" })
@@ -28,6 +28,6 @@ export const useSlots = () => {
 
   return {
     isLoading,
-    createSlots,
+    createSlot,
   }
 }
