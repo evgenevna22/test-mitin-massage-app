@@ -1,14 +1,21 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  useRouter,
+  type RouteRecordRaw,
+} from 'vue-router'
 
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import ClientLayout from '@/layouts/ClientLayout.vue'
 import { useSlots } from '@composables'
 import { useSlotsStore } from '@stores/slots'
+import { useRoleStore } from '@/stores/role.ts'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: ClientLayout,
+    name: 'Client',
     children: [
       {
         path: '',
@@ -16,7 +23,7 @@ const routes: RouteRecordRaw[] = [
         name: 'Home',
       },
       {
-        path: '/slots/:day',
+        path: 'slots/:day',
         component: () => import('../views/client/slots/Slots.vue'),
         beforeEnter: (current, _, next) => {
           const slotsStore = useSlotsStore()
@@ -39,6 +46,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/admin',
     component: AdminLayout,
+    name: 'Admin',
     meta: { requiresAuth: true },
     children: [
       {
@@ -51,7 +59,7 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: '/calendar',
+        path: 'calendar',
         name: 'Calendar',
         component: () => import('../views/admin/Calendar.vue'),
         meta: {
@@ -66,4 +74,19 @@ const routes: RouteRecordRaw[] = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to, _, next) => {
+  const roleStore = useRoleStore()
+
+  if (!to.meta.requiresAuth) {
+    next()
+    return
+  }
+
+  if (to.meta.requiresAuth && roleStore.role === 'admin') {
+    next()
+  } else {
+    next({ path: '/' })
+  }
 })

@@ -9,7 +9,7 @@ type State = {
   areCurrentSlotsLoading: boolean
 }
 
-export const useSlotsStore = defineStore('slots', {
+export const useSlotsStore = defineStore('slots-store', {
   state: (): State => ({
     appointments: [],
     areAppointmentsLoading: false,

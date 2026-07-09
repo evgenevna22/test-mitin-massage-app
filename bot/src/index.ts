@@ -5,6 +5,7 @@ import cors from 'cors'
 import './bot'
 import slotsRender from './routes/client/slots'
 import adminRender from './routes/admin/admin'
+import roleRender from './routes/role'
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use(
 )
 app.use('/slots', slotsRender)
 app.use('/admin', adminRender)
+app.use('/role', roleRender)
 
 app.get('/', (req, res) => {
   res.send('Server is working')
