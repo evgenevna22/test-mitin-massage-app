@@ -2,9 +2,9 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import ClientLayout from '@/layouts/ClientLayout.vue'
-import { useSlots } from '@composables'
-import { useSlotsStore } from '@stores/slots'
 import { useRoleStore } from '@/stores/role.ts'
+import { useRole, useSlots } from '@composables'
+import { useSlotsStore } from '@stores/slots'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -71,17 +71,25 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, from, next) => {
   const roleStore = useRoleStore()
+  const { getAppRole } = useRole()
 
-  if (!to.meta.requiresAuth) {
-    next()
+  await getAppRole()
+
+  const isAdminRoute = Boolean(to.meta.requiresAuth)
+  const isAdminRole = roleStore.role === 'admin'
+  const isFirstNavigation = from.matched.length === 0
+
+  if (isAdminRoute && !isAdminRole) {
+    next({ name: 'Client' })
     return
   }
 
-  if (to.meta.requiresAuth && roleStore.role === 'admin') {
-    next()
-  } else {
-    next({ path: '/' })
+  if (isFirstNavigation && isAdminRole && !isAdminRoute) {
+    next({ name: 'Admin' })
+    return
   }
+
+  next()
 })

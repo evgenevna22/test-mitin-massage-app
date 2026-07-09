@@ -11,6 +11,10 @@ export const useRole = () => {
   const roleStore = useRoleStore()
 
   const getAppRole = async () => {
+    if (roleStore.role) {
+      return Promise.resolve()
+    }
+
     try {
       const role = await RoleApi.getRole()
       if (!role) {
