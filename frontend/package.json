@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "npx eslint --fix",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
@@ -19,12 +20,18 @@
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.6.0",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.7.0",
+    "jiti": "^2.7.0",
     "prettier": "^3.8.3",
     "sass-embedded": "^1.100.0",
     "typescript": "~6.0.2",
+    "typescript-eslint": "^8.63.0",
     "unplugin-vue-components": "^32.1.0",
     "vite": "^8.0.12",
     "vue-tsc": "^3.2.8"
