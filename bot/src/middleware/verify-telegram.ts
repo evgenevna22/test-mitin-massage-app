@@ -8,16 +8,15 @@ export const verifyTelegram = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-  // if (process.env.NODE_ENV === 'development') {
-  //   req.telegramUser = {
-  //     id: 123456,
-  //     first_name: 'Dev',
-  //     username: 'dev_user',
-  //   }
-  //   next()
-  //   return
-  // }
+  if (process.env.NODE_ENV === 'development') {
+    req.telegramUser = {
+      id: 1,
+      first_name: 'Dev',
+      username: 'dev_user',
+    }
+    next()
+    return
+  }
 
   // Фронт будет присылать initData в заголовке запроса
   const initData = req.headers['x-telegram-init-data'] as string
@@ -65,7 +64,7 @@ export const verifyTelegram = (
   // Создаём секретный ключ из BOT_TOKEN
   const secretKey = createHmac('sha256', 'WebAppData')
     .update(config.BOT_TOKEN)
-    .digest('hex')
+    .digest()
 
   // Подписываем данные секретным ключом
   const expectedHash = createHmac('sha256', secretKey)
