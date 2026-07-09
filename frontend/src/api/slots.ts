@@ -7,8 +7,8 @@ export class SlotsApi {
   ): Promise<SlotDTO[] | undefined> => {
     try {
       return (await api.get(`slots/month/${month}`)).data
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -17,12 +17,14 @@ export class SlotsApi {
   ): Promise<SlotDTO[] | undefined> => {
     try {
       return (await api.get(`slots/date/${date}`)).data
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
     }
   }
 
-  public static createSlot = async (payload: SlotPayload): Promise<any> => {
+  public static createSlot = async (
+    payload: SlotPayload
+  ): Promise<undefined> => {
     return await api.post('admin/slots', payload)
   }
 

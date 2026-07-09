@@ -18,6 +18,7 @@
       <div v-else class="time-slots">
         <Button
           v-for="timeSlot of timeSlots"
+          :key="timeSlot"
           size="small"
           @click="handleButtonClick"
         >

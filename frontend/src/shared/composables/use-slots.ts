@@ -21,6 +21,7 @@ export const useSlots = () => {
 
       slotsStore.setCurrentSlots(slots)
     } catch (error) {
+      console.error(error)
       toast.add({
         severity: 'error',
         summary: 'Данные по дню не были загружены',

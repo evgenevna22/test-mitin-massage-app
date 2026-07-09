@@ -16,7 +16,8 @@ export const useRole = () => {
         throw Error
       }
       roleStore.setRole(role)
-    } catch (e) {
+    } catch (error) {
+      console.error(error)
       toast.add({ severity: 'error', summary: 'no role' })
     }
   }

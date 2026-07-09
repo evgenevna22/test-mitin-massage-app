@@ -27,7 +27,7 @@
         <div v-if="step === Step.Second" class="time-block">
           Dates:
           <ul>
-            <li v-for="date in dates">{{ date }}</li>
+            <li v-for="date in dates" :key="date.getTime()">{{ date }}</li>
           </ul>
           <label>Start time</label>
           <input type="time" v-model="timeSlot.start" />
@@ -92,9 +92,7 @@ const saveButtonLabel = computed(() =>
 const isBackButtonVisible = computed(() => step.value === Step.Second)
 
 const isSaveButtonDisabled = computed(() =>
-  step.value === Step.First
-    ? !Boolean(dates.value.length)
-    : !isTimeSlotsFilled.value
+  step.value === Step.First ? !dates.value.length : !isTimeSlotsFilled.value
 )
 
 const handleClickButton = async () => {

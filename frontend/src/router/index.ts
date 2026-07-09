@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  useRouter,
-  type RouteRecordRaw,
-} from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import ClientLayout from '@/layouts/ClientLayout.vue'

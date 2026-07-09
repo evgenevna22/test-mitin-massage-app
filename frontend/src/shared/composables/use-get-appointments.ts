@@ -32,7 +32,6 @@ export const useGetAppointments = () => {
       }
 
       slotsStore.setAppointments(appointments)
-    } catch (error) {
     } finally {
       slotsStore.setAppointmentsLoading(false)
     }

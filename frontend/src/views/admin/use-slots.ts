@@ -20,6 +20,7 @@ export const useSlots = () => {
       await SlotsApi.createSlot({ dates: transformedDates, time })
       toast.add({ severity: 'success', summary: "slots're saved" })
     } catch (error) {
+      console.error(error)
       toast.add({ severity: 'error', summary: "slots haven't been saved" })
     } finally {
       isLoading.value = false

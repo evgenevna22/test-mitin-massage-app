@@ -8,15 +8,16 @@ export const verifyTelegram = (
   res: Response,
   next: NextFunction
 ) => {
-  if (process.env.NODE_ENV === 'development') {
-    req.telegramUser = {
-      id: 123456,
-      first_name: 'Dev',
-      username: 'dev_user',
-    }
-    next()
-    return
-  }
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV)
+  // if (process.env.NODE_ENV === 'development') {
+  //   req.telegramUser = {
+  //     id: 123456,
+  //     first_name: 'Dev',
+  //     username: 'dev_user',
+  //   }
+  //   next()
+  //   return
+  // }
 
   // Фронт будет присылать initData в заголовке запроса
   const initData = req.headers['x-telegram-init-data'] as string
