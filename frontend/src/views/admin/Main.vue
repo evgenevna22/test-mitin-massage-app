@@ -30,11 +30,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
+// import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
 
 // const today = new Date()
 
-const { upcomingSlots } = useUpcomingSlots()
+// const { upcomingSlots } = useUpcomingSlots()
 
 // const firingSlots = computed(() => upcomingSlots.value.filter(slot => slot.date))
 
