@@ -46,6 +46,12 @@ export const useGetAppointments = () => {
     await getSlots()
   }
 
+  const selectMonth = async (month: number) => {
+    currentMonth.value = String(month).padStart(2, '0')
+
+    await getAppointments()
+  }
+
   onMounted(getAppointments)
 
   return {
@@ -53,5 +59,6 @@ export const useGetAppointments = () => {
     currentDate,
     selectDate,
     getAppointments,
+    selectMonth,
   }
 }

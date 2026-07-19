@@ -5,29 +5,54 @@
       what's bring you here today?
     </h3>
 
-    <UpcomingSlots />
+    <!-- {{ upcomingSlots }}  todo: display only today's slots -->
 
-    <Menu :model="navigationItems" class="menu">
-      <template #item="{ item, props }">
-        <router-link v-slot="{ href, navigate }" :to="item.route" custom>
-          <a v-ripple :href="href" v-bind="props.action" @click="navigate">
-            <span :class="item.icon" />
-            <span class="ml-2">{{ item.label }}</span>
+    <Timeline :value="navigationItems">
+      <template #content="slotProps">
+        <router-link
+          v-slot="{ href, navigate }"
+          :to="slotProps.item.route"
+          custom
+        >
+          <a
+            v-ripple
+            :href="href"
+            @click="navigate"
+            class="menu-item text-sm leading-4"
+          >
+            <span :class="slotProps.item.icon" />
+            <span class="ml-2">{{ slotProps.item.label }}</span>
           </a>
         </router-link>
       </template>
-    </Menu>
+    </Timeline>
   </div>
 </template>
 
 <script lang="ts" setup>
-import UpcomingSlots from './upcoming-slots/UpcomingSlots.vue'
+import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
+
+// const today = new Date()
+
+const { upcomingSlots } = useUpcomingSlots()
+
+// const firingSlots = computed(() => upcomingSlots.value.filter(slot => slot.date))
 
 const navigationItems = [
   {
-    route: '/calendar',
+    route: 'upcoming',
+    icon: 'pi pi-check',
+    label: 'upcoming slots',
+  },
+  {
+    route: 'calendar',
     icon: 'pi pi-calendar',
-    label: 'Calendar',
+    label: 'create slots',
+  },
+  {
+    route: '',
+    icon: 'pi',
+    label: '404',
   },
 ]
 </script>
@@ -39,7 +64,15 @@ const navigationItems = [
   margin: 16px auto;
 }
 
-.menu {
-  width: 100%;
+.menu-item {
+  color: inherit;
+  text-decoration: inherit;
+  gap: 4px;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    color: gray;
+  }
 }
 </style>

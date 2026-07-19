@@ -69,6 +69,7 @@ router.get('/date/:date', async (req: Request, res: Response) => {
         }
         return SlotSchema.parse(data)
       })
+      .filter((data) => data.status === 'free')
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
       )
@@ -81,7 +82,7 @@ router.get('/date/:date', async (req: Request, res: Response) => {
   }
 })
 
-router.post('/:id/book', async (req: Request, res: Response) => {
+router.put('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 

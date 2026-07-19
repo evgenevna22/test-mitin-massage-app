@@ -46,7 +46,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'Main',
+        name: 'Admin-main',
         component: () => import('../views/admin/Main.vue'),
         meta: {
           label: 'Main',
@@ -62,6 +62,16 @@ const routes: RouteRecordRaw[] = [
           icon: 'pi pi-calendar',
         },
       },
+      {
+        path: 'upcoming',
+        name: 'Upcoming',
+        component: () =>
+          import('../views/admin/upcoming-slots/UpcomingSlots.vue'),
+        meta: {
+          label: 'Calendar',
+          icon: 'pi pi-check',
+        },
+      },
     ],
   },
 ]
@@ -71,25 +81,23 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const roleStore = useRoleStore()
   const { getAppRole } = useRole()
 
-  await getAppRole()
+  if (!roleStore.role) {
+    await getAppRole()
+  }
 
   const isAdminRoute = Boolean(to.meta.requiresAuth)
   const isAdminRole = roleStore.role === 'admin'
   const isFirstNavigation = from.matched.length === 0
 
   if (isAdminRoute && !isAdminRole) {
-    next({ name: 'Client' })
-    return
+    return { path: '/' }
   }
 
   if (isFirstNavigation && isAdminRole && !isAdminRoute) {
-    next({ name: 'Admin' })
-    return
+    return { path: '/admin' }
   }
-
-  next()
 })

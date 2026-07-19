@@ -3,7 +3,7 @@
 
   <DatePicker
     v-if="appointments.length"
-    class="w-full sm:w-[30rem]"
+    class="calendar w-full sm:w-[30rem]"
     v-model="selectedDate"
     :minDate="today"
     :disabled-dates="disabledDates"
@@ -19,13 +19,14 @@ import { useRouter } from 'vue-router'
 import { transformDate } from '@utils'
 import { useCalendar } from './use-calendar'
 import { useGetAppointments } from '@composables'
+import type { DatePickerMonthChangeEvent } from 'primevue'
 
 const today = new Date()
 
 const router = useRouter()
 
-const { disabledDates, handleMonthChange } = useCalendar()
-const { appointments, selectDate } = useGetAppointments()
+const { disabledDates, selectCurrentMonth } = useCalendar()
+const { appointments, selectDate, selectMonth } = useGetAppointments()
 
 const selectedDate = ref(today)
 
@@ -35,6 +36,11 @@ const handleDateSelect = async () => {
   await selectDate(transformedDate)
 
   router.push(`/slots/${transformedDate}`)
+}
+
+const handleMonthChange = ({ month }: DatePickerMonthChangeEvent) => {
+  selectCurrentMonth(month)
+  selectMonth(month)
 }
 </script>
 
@@ -62,7 +68,8 @@ const handleDateSelect = async () => {
   }
 }
 
-.selected {
-  color: green;
+.calendar {
+  max-width: 400px;
+  margin: 0 auto;
 }
 </style>

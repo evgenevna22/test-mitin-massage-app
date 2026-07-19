@@ -27,7 +27,9 @@
         <div v-if="step === Step.Second" class="time-block">
           Dates:
           <ul>
-            <li v-for="date in dates" :key="date.getTime()">{{ date }}</li>
+            <li v-for="date in dates" :key="date.getTime()">
+              <Badge :value="transformDate(date)" severity="secondary" />
+            </li>
           </ul>
           <label>Start time</label>
           <input type="time" v-model="timeSlot.start" />
@@ -62,6 +64,7 @@ import { computed, reactive, ref } from 'vue'
 import type { TimeSlot } from '@/types'
 import { useSlots } from './use-slots'
 import { Breadcrumbs } from '@components'
+import { transformDate } from '@utils'
 
 const Step = {
   First: 0,
@@ -75,7 +78,7 @@ const getInitialTimeSlotState = (): TimeSlot => ({
   gap: '',
 })
 
-const { createSlot, isLoading } = useSlots()
+const { createSlots, isLoading } = useSlots()
 
 const step = ref(Step.First)
 
@@ -103,7 +106,7 @@ const handleClickButton = async () => {
   }
 
   if (dates.value.length && isTimeSlotsFilled.value) {
-    await createSlot(dates.value, timeSlot)
+    await createSlots(dates.value, timeSlot)
     resetTimeSlots()
     step.value = Step.First
   }
@@ -137,6 +140,12 @@ const resetTimeSlots = () => {
   width: 300px;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

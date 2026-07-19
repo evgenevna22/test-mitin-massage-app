@@ -1,4 +1,3 @@
-import type { DatePickerMonthChangeEvent } from 'primevue/datepicker'
 import { computed, ref } from 'vue'
 import { transformDate } from '@utils'
 import { useSlotsStore } from '@stores/slots'
@@ -58,13 +57,13 @@ export const useCalendar = () => {
       )
   )
 
-  const handleMonthChange = ({ month }: DatePickerMonthChangeEvent) => {
+  const selectCurrentMonth = (month: number) => {
     currentMonth.value = String(month).padStart(2, '0')
   }
 
   return {
     currentDate,
     disabledDates,
-    handleMonthChange,
+    selectCurrentMonth,
   }
 }

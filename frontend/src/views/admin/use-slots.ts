@@ -9,7 +9,7 @@ export const useSlots = () => {
 
   const isLoading = ref(false)
 
-  const createSlot = async (dates: Date[], time: TimeSlot) => {
+  const createSlots = async (dates: Date[], time: TimeSlot) => {
     if (isLoading.value) {
       return
     }
@@ -17,7 +17,7 @@ export const useSlots = () => {
 
     try {
       const transformedDates = dates.map(transformDate)
-      await SlotsApi.createSlot({ dates: transformedDates, time })
+      await SlotsApi.createSlots({ dates: transformedDates, time })
       toast.add({ severity: 'success', summary: "slots're saved" })
     } catch (error) {
       console.error(error)
@@ -29,6 +29,6 @@ export const useSlots = () => {
 
   return {
     isLoading,
-    createSlot,
+    createSlots,
   }
 }

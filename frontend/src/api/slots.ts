@@ -14,7 +14,7 @@ export class SlotsApi {
     return (await api.get(`slots/date/${date}`)).data
   }
 
-  public static createSlot = async (
+  public static createSlots = async (
     payload: SlotPayload
   ): Promise<undefined> => {
     return (await api.post('admin/slots', payload)).data
@@ -22,5 +22,9 @@ export class SlotsApi {
 
   public static loadUpcomingSlots = async (): Promise<SlotDTO[]> => {
     return (await api.get('admin/upcoming')).data
+  }
+
+  public static bookSlot = async (id: string): Promise<undefined> => {
+    return (await api.put(`slots/${id}/book`)).data
   }
 }
