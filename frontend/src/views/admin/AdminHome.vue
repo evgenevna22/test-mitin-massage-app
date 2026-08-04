@@ -40,12 +40,12 @@
 
 const navigationItems = [
   {
-    route: 'upcoming',
+    route: 'admin/upcoming-slots',
     icon: 'pi pi-check',
     label: 'upcoming slots',
   },
   {
-    route: 'calendar',
+    route: 'admin/slot-builder',
     icon: 'pi pi-calendar',
     label: 'create slots',
   },

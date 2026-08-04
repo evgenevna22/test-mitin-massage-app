@@ -1,22 +1,33 @@
+import type { Breadcrumb } from '@/types'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
+/**
+ * Composable for breadcrumbs
+ */
 export const useBreadcrumbs = () => {
   const route = useRoute()
-  const router = useRouter()
 
   const generateBreadcrumbs = (): MenuItem[] => {
-    const paths = ['/', ...route.fullPath.split('/').filter(Boolean)]
+    const breadcrumbs = []
 
-    const matchedRoutes = paths.map((path) => router.resolve(path))
+    for (const matchedRoute of route.matched) {
+      if (!matchedRoute?.meta?.breadcrumb) {
+        continue
+      }
 
-    return matchedRoutes.map((matchedRoute) => ({
-      url: matchedRoute.path ?? '',
-      label: (matchedRoute.meta?.title as string) ?? '',
-      icon: (matchedRoute.meta?.icon as string) ?? '',
-      isCurrent: matchedRoute.name === route.name,
-    }))
+      const { title, icon } = matchedRoute.meta.breadcrumb as Breadcrumb
+
+      breadcrumbs.push({
+        url: matchedRoute?.path ?? '',
+        label: title ?? '',
+        icon: icon ?? '',
+        isCurrent: matchedRoute?.name === route.name,
+      })
+    }
+
+    return breadcrumbs
   }
 
   const breadcrumbs = computed<MenuItem[]>(generateBreadcrumbs)

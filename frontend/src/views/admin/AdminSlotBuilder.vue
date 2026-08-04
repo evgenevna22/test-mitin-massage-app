@@ -1,6 +1,4 @@
 <template>
-  <Breadcrumbs />
-
   <Card>
     <template #title>
       <Button
@@ -63,7 +61,6 @@
 import { computed, reactive, ref } from 'vue'
 import type { TimeSlot } from '@/types'
 import { useSlots } from './use-slots'
-import { Breadcrumbs } from '@components'
 import { transformDate } from '@utils'
 
 const Step = {

@@ -42,34 +42,40 @@ const routes: RouteRecordRaw[] = [
     path: '/admin',
     component: AdminLayout,
     name: 'Admin',
-    meta: { requiresAuth: true },
+    meta: {
+      requiresAuth: true,
+      breadcrumb: {
+        label: 'AdminHome',
+        icon: 'pi pi-home',
+      },
+    },
     children: [
       {
         path: '',
-        name: 'Admin-main',
-        component: () => import('../views/admin/Main.vue'),
+        name: 'AdminHome',
+        component: () => import('../views/admin/AdminHome.vue'),
+      },
+      {
+        path: 'slot-builder',
+        name: 'AdminSlotBuilder',
+        component: () => import('../views/admin/AdminSlotBuilder.vue'),
         meta: {
-          label: 'Main',
-          icon: 'pi pi-home',
+          breadcrumb: {
+            label: 'Calendar',
+            icon: 'pi pi-calendar',
+          },
         },
       },
       {
-        path: 'calendar',
-        name: 'Calendar',
-        component: () => import('../views/admin/Calendar.vue'),
-        meta: {
-          label: 'Calendar',
-          icon: 'pi pi-calendar',
-        },
-      },
-      {
-        path: 'upcoming',
-        name: 'Upcoming',
+        path: 'upcoming-slots',
+        name: 'AdminUpcomingSlots',
         component: () =>
-          import('../views/admin/upcoming-slots/UpcomingSlots.vue'),
+          import('../views/admin/upcoming-slots/AdminUpcomingSlots.vue'),
         meta: {
-          label: 'Calendar',
-          icon: 'pi pi-check',
+          breadcrumb: {
+            label: 'Calendar',
+            icon: 'pi pi-check',
+          },
         },
       },
     ],
