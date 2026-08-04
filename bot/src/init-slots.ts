@@ -14,10 +14,8 @@ async function initSlots() {
         userName: null,
         userNickname: null
       });
-      console.log(`Создан слот: ${date} ${time}`);
     }
   }
-  console.log('Готово!');
   process.exit(0);
 }
 

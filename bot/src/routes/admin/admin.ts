@@ -110,8 +110,6 @@ router.get('/upcoming', async (req: Request, res: Response) => {
       .limit(10)
       .get()
 
-    console.log('result', result.docs)
-
     const slots: Slot[] = result.docs.map((doc) => {
       const data = {
         id: doc.id,
@@ -119,9 +117,6 @@ router.get('/upcoming', async (req: Request, res: Response) => {
       }
       return SlotSchema.parse(data)
     })
-    // .sort(
-    //   (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
-    // )
 
     res.json(slots)
   } catch (error) {
