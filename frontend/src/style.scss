@@ -296,3 +296,9 @@ code {
     border-right-color: var(--border);
   }
 }
+
+@media (max-width: 640px) {
+  .p-toast {
+    width: calc(100vw - 2rem) !important;
+  }
+}

@@ -5,38 +5,41 @@
       what's bring you here today?
     </h3>
 
-    <!-- {{ upcomingSlots }}  todo: display only today's slots -->
+    Your the most firing slots:
+    <ul>
+      <li v-for="slot in firingSlots" :key="slot.id">
+        - date: {{ slot.date }}<br />
+        - time: {{ slot.time }}<br />
+        - username: {{ slot.userNickname }}
+      </li>
+    </ul>
 
-    <Timeline :value="navigationItems">
-      <template #content="slotProps">
-        <router-link
-          v-slot="{ href, navigate }"
-          :to="slotProps.item.route"
-          custom
-        >
+    Menu:
+    <ul>
+      <li v-for="navItem in navigationItems" :key="navItem.label">
+        <router-link v-slot="{ href, navigate }" :to="navItem.route" custom>
           <a
             v-ripple
             :href="href"
             @click="navigate"
             class="menu-item text-sm leading-4"
           >
-            <span :class="slotProps.item.icon" />
-            <span class="ml-2">{{ slotProps.item.label }}</span>
+            <span :class="navItem.icon" />
+            <span class="ml-2">{{ navItem.label }}</span>
           </a>
         </router-link>
-      </template>
-    </Timeline>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts" setup>
-// import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
+import { computed } from 'vue'
+import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
 
-// const today = new Date()
+const { upcomingSlots } = useUpcomingSlots()
 
-// const { upcomingSlots } = useUpcomingSlots()
-
-// const firingSlots = computed(() => upcomingSlots.value.filter(slot => slot.date))
+const firingSlots = computed(() => upcomingSlots.value.slice(0, 4))
 
 const navigationItems = [
   {
