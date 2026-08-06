@@ -22,8 +22,14 @@ app.use('/slots', slotsRender)
 app.use('/admin', adminRender)
 app.use('/role', roleRender)
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send('Server is working')
+})
+
+app.get('/health', (_, res) => {
+  res.json({
+    status: 'ok',
+  })
 })
 
 // app.post('/webhook', (req, res) => {
