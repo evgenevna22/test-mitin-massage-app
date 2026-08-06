@@ -2,10 +2,12 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 
-import './bot'
 import slotsRender from './routes/client/slots'
 import adminRender from './routes/admin/admin'
 import roleRender from './routes/role'
+import { registerBotHandlers } from './telegram/handlers'
+
+registerBotHandlers()
 
 const app = express()
 

@@ -3,6 +3,7 @@ import { db } from '../../firebase'
 import { SlotSchema, type Slot } from '../../types'
 import { verifyTelegram } from '../../middleware/verify-telegram'
 import { sendError } from '../../helpers'
+import { TelegramService } from '../../telegram'
 
 const router = Router()
 
@@ -100,7 +101,7 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       return
     }
 
-    const slot = slotDocument.data()
+    const slot = slotDocument.data() as Slot
 
     if (slot?.status === 'booked') {
       sendError(res, 409, 'Slot is already booked')
@@ -114,6 +115,10 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       userName: req.telegramUser.first_name,
       userNickname: req.telegramUser.username ?? null,
     })
+
+    TelegramService.sendAdminNotification(
+      `The slot on ${slot.date} was booked by '@${req.telegramUser.username}'`
+    )
 
     res.json({ success: true })
   } catch (error) {
