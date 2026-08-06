@@ -120,6 +120,11 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       `The slot on ${slot.date} was booked by '@${req.telegramUser.username}'`
     )
 
+    TelegramService.sendClientNotification(
+      req.telegramUser.id,
+      `You succesefully booked the slot on ${slot.date} at ${slot.time}'`
+    )
+
     res.json({ success: true })
   } catch (error) {
     console.error('Error while booking', error)
