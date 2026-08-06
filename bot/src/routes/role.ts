@@ -9,7 +9,7 @@ router.use(verifyTelegram)
 router.get('/', async (req: Request, res: Response) => {
   const { id } = req.telegramUser
 
-  if (config.MASTER_TELEGRAM_ID === id.toString()) {
+  if (config.MASTER_TELEGRAM_ID === id) {
     res.json('admin')
     return
   }
