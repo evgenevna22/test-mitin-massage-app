@@ -10,7 +10,7 @@ export const verifyAdmin = (
   if (config.NODE_ENV === 'development') {
     // это не нужно, когда буду именно октрывать в мини апке
     req.telegramUser = {
-      id: 123456,
+      id: config.MASTER_TELEGRAM_ID,
       first_name: 'Dev',
       username: 'dev_user',
     }
@@ -28,7 +28,7 @@ export const verifyAdmin = (
 
   const { id } = req.telegramUser
 
-  if (config.MASTER_TELEGRAM_ID !== id.toString()) {
+  if (config.MASTER_TELEGRAM_ID !== id) {
     sendError(res, 403, "You don't have permissions to go there.")
     return
   }

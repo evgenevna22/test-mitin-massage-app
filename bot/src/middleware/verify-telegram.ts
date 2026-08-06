@@ -10,7 +10,7 @@ export const verifyTelegram = (
 ) => {
   if (process.env.NODE_ENV === 'development') {
     req.telegramUser = {
-      id: 1,
+      id: config.MASTER_TELEGRAM_ID,
       first_name: 'Dev',
       username: 'dev_user',
     }

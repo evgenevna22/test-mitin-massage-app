@@ -15,7 +15,6 @@ app.use(
     origin: [
       'http://localhost:5173',
       'https://test-mitin-massage-app.vercel.app',
-      'https://yesterday-boundary-addressed-owner.trycloudflare.com',
     ],
   })
 )
