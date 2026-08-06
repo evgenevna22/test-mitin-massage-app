@@ -1,29 +1,26 @@
 <template>
   <div class="main">
-    <h3>
-      welcome to the mitin massage, mitya <br /><br />
+    <p>
+      welcome to the mitin massage, mitya <br />
       what's bring you here today?
-    </h3>
+    </p>
 
-    Your the most firing slots:
-    <ul>
-      <li v-for="slot in firingSlots" :key="slot.id">
-        - date: {{ slot.date }}<br />
-        - time: {{ slot.time }}<br />
-        - username: {{ slot.userNickname }}
-      </li>
-    </ul>
+    <Divider />
 
-    Menu:
-    <ul>
-      <li v-for="navItem in navigationItems" :key="navItem.label">
+    <p><b>the most firing slots:</b></p>
+    <AdminUpcomingSlots :is-preview="true" />
+
+    <Divider />
+
+    <b>go to:</b>
+    <ul class="menu-items">
+      <li
+        v-for="navItem in navigationItems"
+        :key="navItem.label"
+        class="menu-item"
+      >
         <router-link v-slot="{ href, navigate }" :to="navItem.route" custom>
-          <a
-            v-ripple
-            :href="href"
-            @click="navigate"
-            class="menu-item text-sm leading-4"
-          >
+          <a v-ripple :href="href" @click="navigate" class="text-sm leading-4">
             <span :class="navItem.icon" />
             <span class="ml-2">{{ navItem.label }}</span>
           </a>
@@ -34,12 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { useUpcomingSlots } from './upcoming-slots/use-upcoming-slots.ts'
-
-const { upcomingSlots } = useUpcomingSlots()
-
-const firingSlots = computed(() => upcomingSlots.value.slice(0, 4))
+import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue'
 
 const navigationItems = [
   {
@@ -52,11 +44,6 @@ const navigationItems = [
     icon: 'pi pi-calendar',
     label: 'create slots',
   },
-  {
-    route: '',
-    icon: 'pi',
-    label: '404',
-  },
 ]
 </script>
 
@@ -67,12 +54,20 @@ const navigationItems = [
   margin: 16px auto;
 }
 
-.menu-item {
-  color: inherit;
-  text-decoration: inherit;
-  gap: 4px;
-  display: inline-flex;
+.menu-items {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+}
+
+.menu-item {
+  a {
+    color: inherit;
+    text-decoration: inherit;
+    gap: 4px;
+    display: inline-flex;
+    align-items: center;
+  }
 
   &:hover {
     color: gray;
