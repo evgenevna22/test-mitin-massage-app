@@ -10,7 +10,7 @@
         @click="handleClickBackButton"
       />
 
-      Select {{ stepTitle }}
+      <h3 class="title">Select {{ stepTitle }}</h3>
     </template>
     <template #content>
       <div class="card">
@@ -131,10 +131,16 @@ const resetTimeSlots = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
+
+.title {
+  text-align: center;
+}
+
 .buttons {
-  width: 300px;
+  width: 100%;
+  max-width: 230px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -144,10 +150,5 @@ ul {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-ul,
-li {
-  list-style: none;
 }
 </style>

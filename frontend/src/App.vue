@@ -1,10 +1,7 @@
 <template>
-  <div id="app">
-    <Toast />
+  <Toast />
 
-    <RouterView />
-  </div>
+  <RouterView />
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
