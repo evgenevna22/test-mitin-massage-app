@@ -11,11 +11,28 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: ClientLayout,
     name: 'Client',
+    meta: {
+      breadcrumb: {
+        label: 'ClientHome',
+        icon: 'pi pi-home',
+      },
+    },
     children: [
       {
         path: '',
-        component: () => import('../views/client/calendar/Calendar.vue'), // there should be a MainPage not Calendar
-        name: 'Home',
+        name: 'ClientHome',
+        component: () => import('../views/client/ClientHome.vue'),
+      },
+      {
+        path: 'calendar',
+        component: () => import('../views/client/calendar/Calendar.vue'),
+        name: 'Calendar',
+        meta: {
+          breadcrumb: {
+            label: 'Calendar',
+            icon: 'pi pi-calendar',
+          },
+        },
       },
       {
         path: 'slots/:day',
