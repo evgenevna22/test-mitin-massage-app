@@ -28,7 +28,7 @@ export const verifyAdmin = (
 
   const { id } = req.telegramUser
 
-  if (config.MASTER_TELEGRAM_ID !== id || config.ADMIN_TELEGRAM_ID !== id) {
+  if (config.MASTER_TELEGRAM_ID !== id && config.ADMIN_TELEGRAM_ID !== id) {
     sendError(res, 403, "You don't have permissions to go there.")
     return
   }
