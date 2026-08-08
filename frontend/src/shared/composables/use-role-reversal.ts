@@ -1,20 +1,17 @@
 import type { Role } from '@/types'
+import { ROLE_MODE_COOKIE_NAME } from '../consts'
 
 /**
  * Composable is responsible for set cookie to recongnise temporal role*.
  * Temporal role means the situation when the admin/master'd like to see the app through client's eyes.
  */
 export const useRoleReversal = () => {
-  const setCookie = async (viewAs: Role['role']) => {
-    await cookieStore.set('role-mode', viewAs)
+  const setCookie = (viewAs: Role['role']) => {
+    document.cookie = `${ROLE_MODE_COOKIE_NAME}=${viewAs}; path=/`
   }
 
-  const deleteCookie = async () => {
-    const isCookieExist = await cookieStore.get('role-mode')
-
-    if (isCookieExist) {
-      await cookieStore.delete('role-mode')
-    }
+  const deleteCookie = () => {
+    document.cookie = `${ROLE_MODE_COOKIE_NAME}=; Max-Age=0; path=/`
   }
 
   return {

@@ -22,6 +22,7 @@ export default defineConfig({
       ),
       '@utils': fileURLToPath(new URL('./src/shared/utils', import.meta.url)),
       '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
+      '@consts': fileURLToPath(new URL('./src/shared/consts', import.meta.url)),
     },
   },
 })

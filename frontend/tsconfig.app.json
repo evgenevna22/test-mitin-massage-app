@@ -29,7 +29,8 @@
       "@composables/*": ["./src/shared/composables/*"],
       "@utils": ["./src/shared/utils"],
       "@utils/*": ["./src/shared/utils/*"],
-      "@stores/*": ["./src/stores/*"]
+      "@stores/*": ["./src/stores/*"],
+      "@consts/*": ["./src/consts/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]

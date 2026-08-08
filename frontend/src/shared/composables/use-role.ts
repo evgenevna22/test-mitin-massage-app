@@ -2,6 +2,7 @@ import { RoleApi } from '@/api/role'
 import { useRoleStore } from '@/stores/role'
 import { useToast } from 'primevue'
 import { handleError } from '@utils'
+import { useRoleReversal } from './use-role-reversal'
 
 /**
  * Composable for getting and saving the role of the application
@@ -9,6 +10,7 @@ import { handleError } from '@utils'
 export const useRole = () => {
   const toast = useToast()
   const roleStore = useRoleStore()
+  const { deleteCookie } = useRoleReversal()
 
   const getAppRole = async (forcedUpdate = false) => {
     if (roleStore.role && !forcedUpdate) {
@@ -23,6 +25,8 @@ export const useRole = () => {
       roleStore.setRole(role)
     } catch (error) {
       handleError({ error }, toast)
+    } finally {
+      deleteCookie()
     }
   }
 
