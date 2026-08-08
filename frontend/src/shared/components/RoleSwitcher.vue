@@ -6,22 +6,27 @@
 
 <script lang="ts" setup>
 import type { Role } from '@/types'
-import { useRoleReversal } from '../composables'
+import { useRole, useRoleReversal } from '../composables'
 import { useRoleStore } from '@/stores/role'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   viewAs: Role['role']
 }>()
 
+const router = useRouter()
+
 const roleStore = useRoleStore()
+const { getAppRole } = useRole()
 const { setCookie } = useRoleReversal()
 
 const isVisible = computed(() => roleStore.canSwitchRole)
 
 const handleClickButton = async () => {
-  await setCookie(props.viewAs)
-  location.reload()
+  setCookie(props.viewAs)
+  await getAppRole(true)
+  router.push('/')
 }
 </script>
 

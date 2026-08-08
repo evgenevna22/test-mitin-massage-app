@@ -1,5 +1,5 @@
 <template>
-  <div class="slots">
+  <div v-if="slots?.length" class="slots">
     <Card v-for="slot in slots" :key="slot.id">
       <template #content>
         <h4>{{ slot.date }} {{ slot.time }}</h4>
@@ -10,6 +10,7 @@
       </template>
     </Card>
   </div>
+  <div v-else>There is no slots for you, hon</div>
 </template>
 
 <script setup lang="ts">

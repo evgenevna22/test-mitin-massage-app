@@ -29,7 +29,7 @@ import { RoleSwitcher } from '@components'
 
 const navigationItems = [
   {
-    route: 'calendar',
+    route: '/client/calendar',
     icon: 'pi pi-calendar',
     label: 'calendar',
   },

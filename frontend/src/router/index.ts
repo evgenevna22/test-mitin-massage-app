@@ -5,10 +5,17 @@ import ClientLayout from '@/layouts/ClientLayout.vue'
 import { useRoleStore } from '@/stores/role.ts'
 import { useRole, useSlots } from '@composables'
 import { useSlotsStore } from '@stores/slots'
+import EmptyLayout from '@/layouts/EmptyLayout.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    component: EmptyLayout,
+    name: 'Home',
+  },
+
+  {
+    path: '/client',
     component: ClientLayout,
     name: 'Client',
     meta: {
@@ -116,8 +123,12 @@ router.beforeEach(async (to, from) => {
   const isAdminRole = roleStore.role === 'admin'
   const isFirstNavigation = from.matched.length === 0
 
+  if (to.path === '/') {
+    return { path: `/${roleStore.role}` }
+  }
+
   if (isAdminRoute && !isAdminRole) {
-    return { path: '/' }
+    return { path: '/client' }
   }
 
   if (isFirstNavigation && isAdminRole && !isAdminRoute) {
