@@ -35,7 +35,7 @@ const handleDateSelect = async () => {
 
   await selectDate(transformedDate)
 
-  router.push(`/slots/${transformedDate}`)
+  router.push(`/client/slots/${transformedDate}`)
 }
 
 const handleMonthChange = ({ month }: DatePickerMonthChangeEvent) => {
