@@ -9,7 +9,7 @@ router.use(verifyTelegram)
 
 /**
  * This route is responsible for reterning the role. Additionally:
- * - if the user is admin, they can change the role to see the app throw client's app and return back.
+ * - if the user is admin, they can change the role to see the app through client's app and return back.
  * So there is the condition: if initially the role was admin, the flag `canSwitchRole` is true.
  */
 router.get('/', async (req: Request, res: Response) => {
