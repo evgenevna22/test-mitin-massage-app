@@ -1,4 +1,6 @@
 <template>
+  <RoleSwitcher view-as="client" />
+
   <div class="main">
     <p>
       welcome to the mitin massage, mitya <br />
@@ -32,6 +34,7 @@
 
 <script lang="ts" setup>
 import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue'
+import { RoleSwitcher } from '@components'
 
 const navigationItems = [
   {

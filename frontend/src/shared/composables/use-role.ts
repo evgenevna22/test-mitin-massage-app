@@ -10,8 +10,8 @@ export const useRole = () => {
   const toast = useToast()
   const roleStore = useRoleStore()
 
-  const getAppRole = async () => {
-    if (roleStore.role) {
+  const getAppRole = async (forcedUpdate = false) => {
+    if (roleStore.role && !forcedUpdate) {
       return Promise.resolve()
     }
 

@@ -1,1 +1,4 @@
-export type Role = 'admin' | 'client'
+export type Role = {
+  role: 'admin' | 'client'
+  canSwitchRole: boolean
+}

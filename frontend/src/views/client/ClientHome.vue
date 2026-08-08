@@ -1,4 +1,6 @@
 <template>
+  <RoleSwitcher view-as="admin" />
+
   <div class="main">
     <p>welcome to the mitin massage, friend</p>
 
@@ -23,6 +25,8 @@
 </template>
 
 <script lang="ts" setup>
+import { RoleSwitcher } from '@components'
+
 const navigationItems = [
   {
     route: 'calendar',
