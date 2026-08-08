@@ -34,12 +34,14 @@ import { computed } from 'vue'
 import { useSlotsStore } from '@stores/slots'
 import { Spinner } from '@components'
 import { useSlot } from './use-slot'
+import { useSlots } from '@composables'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 const slotsStore = useSlotsStore()
 const { selectSlot } = useSlot()
+const { getSlots } = useSlots()
 
 const isLoading = computed(() => slotsStore.areCurrentSlotsLoading)
 
@@ -47,7 +49,8 @@ const timeSlots = computed(() => slotsStore.currentSlots)
 
 const handleButtonClick = async (id: string) => {
   await selectSlot(id)
-  router.push({ path: '/client' })
+  await getSlots()
+  router.push({ path: 'client' })
 }
 </script>
 
