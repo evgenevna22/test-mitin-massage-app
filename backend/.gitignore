@@ -1,0 +1,9 @@
+node_modules
+
+.env
+firebase-account.json
+dist
+
+.DS_Store
+!.vscode/extensions.json
+.idea
