@@ -7,7 +7,8 @@
     "dev": "vite",
     "typecheck": "npx eslint --fix",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prettify": "npx prettier . --write"
   },
   "dependencies": {
     "@primeuix/themes": "^2.0.3",

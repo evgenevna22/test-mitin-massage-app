@@ -1,11 +1,11 @@
-import { Request, Response, Router } from 'express'
-import { config } from '../types/config'
-import { verifyTelegram } from '../middleware/verify-telegram'
-import { sendError } from '../helpers'
+import { Request, Response, Router } from 'express';
+import { config } from '../types/config';
+import { verifyTelegram } from '../middleware/verify-telegram';
+import { sendError } from '../helpers';
 
-const router = Router()
+const router = Router();
 
-router.use(verifyTelegram)
+router.use(verifyTelegram);
 
 /**
  * This route is responsible for reterning the role. Additionally:
@@ -13,29 +13,29 @@ router.use(verifyTelegram)
  * So there is the condition: if initially the role was admin, the flag `canSwitchRole` is true.
  */
 router.get('/', async (req: Request, res: Response) => {
-  const { id } = req.telegramUser
+  const { id } = req.telegramUser;
 
-  const roleMode = req.headers['role-mode']
+  const roleMode = req.headers['role-mode'];
 
   const isAdmin =
-    config.MASTER_TELEGRAM_ID === id || config.ADMIN_TELEGRAM_ID === id
+    config.MASTER_TELEGRAM_ID === id || config.ADMIN_TELEGRAM_ID === id;
 
   if (isAdmin && roleMode) {
-    res.json({ role: roleMode, canSwitchRole: isAdmin })
-    return
+    res.json({ role: roleMode, canSwitchRole: isAdmin });
+    return;
   }
 
   if (isAdmin) {
-    res.json({ role: 'admin', canSwitchRole: isAdmin })
-    return
+    res.json({ role: 'admin', canSwitchRole: isAdmin });
+    return;
   }
 
   if (!id) {
-    sendError(res, 403, "You don't have permissions to be here.")
-    return
+    sendError(res, 403, "You don't have permissions to be here.");
+    return;
   }
 
-  res.json({ role: 'client', canSwitchRole: isAdmin })
-})
+  res.json({ role: 'client', canSwitchRole: isAdmin });
+});
 
-export default router
+export default router;

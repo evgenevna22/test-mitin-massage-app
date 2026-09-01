@@ -1,31 +1,31 @@
-import { onMounted, ref } from 'vue'
-import { SlotsApi } from '@/api/slots'
-import type { SlotDTO } from '@/types'
+import { onMounted, ref } from 'vue';
+import { SlotsApi } from '@/api/slots';
+import type { SlotDTO } from '@/types';
 
 export const useUpcomingSlots = () => {
-  const upcomingSlots = ref<SlotDTO[]>([])
-  const isLoading = ref(false)
+  const upcomingSlots = ref<SlotDTO[]>([]);
+  const isLoading = ref(false);
 
   const getUpcomingSlots = async () => {
     if (isLoading.value) {
-      return
+      return;
     }
 
     try {
-      isLoading.value = true
-      upcomingSlots.value = await SlotsApi.loadUpcomingSlots()
+      isLoading.value = true;
+      upcomingSlots.value = await SlotsApi.loadUpcomingSlots();
     } catch (error) {
-      console.error(error)
+      console.error(error);
       // toast.add({ severity: 'error', summary: "upcoming slots wasn't loaded" })
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
-  }
+  };
 
-  onMounted(getUpcomingSlots)
+  onMounted(getUpcomingSlots);
 
   return {
     upcomingSlots,
     isLoading,
-  }
-}
+  };
+};

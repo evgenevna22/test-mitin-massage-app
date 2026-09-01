@@ -14,34 +14,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { transformDate } from '@utils'
-import { useCalendar } from './use-calendar'
-import { useGetAppointments } from '@composables'
-import type { DatePickerMonthChangeEvent } from 'primevue'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { transformDate } from '@utils';
+import { useCalendar } from './use-calendar';
+import { useGetAppointments } from '@composables';
+import type { DatePickerMonthChangeEvent } from 'primevue';
 
-const today = new Date()
+const today = new Date();
 
-const router = useRouter()
+const router = useRouter();
 
-const { disabledDates, selectCurrentMonth } = useCalendar()
-const { appointments, selectDate, selectMonth } = useGetAppointments()
+const { disabledDates, selectCurrentMonth } = useCalendar();
+const { appointments, selectDate, selectMonth } = useGetAppointments();
 
-const selectedDate = ref(today)
+const selectedDate = ref(today);
 
 const handleDateSelect = async () => {
-  const transformedDate = transformDate(selectedDate.value)
+  const transformedDate = transformDate(selectedDate.value);
 
-  await selectDate(transformedDate)
+  await selectDate(transformedDate);
 
-  router.push(`/client/slots/${transformedDate}`)
-}
+  router.push(`/client/slots/${transformedDate}`);
+};
 
 const handleMonthChange = ({ month }: DatePickerMonthChangeEvent) => {
-  selectCurrentMonth(month)
-  selectMonth(month)
-}
+  selectCurrentMonth(month);
+  selectMonth(month);
+};
 </script>
 
 <style lang="scss" scoped>

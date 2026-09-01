@@ -1,11 +1,11 @@
-import { db } from './firebase'
+import { db } from './firebase';
 
 /**
  * Temporal function to fill the database with time slots
  */
 
-const dates = ['2026-06-10', '2026-06-11', '2026-06-12']
-const times = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00']
+const dates = ['2026-06-10', '2026-06-11', '2026-06-12'];
+const times = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'];
 
 const initSlots = async () => {
   for (const date of dates) {
@@ -17,10 +17,10 @@ const initSlots = async () => {
         userId: null,
         userName: null,
         userNickname: null,
-      })
+      });
     }
   }
-  process.exit(0)
-}
+  process.exit(0);
+};
 
-initSlots()
+initSlots();

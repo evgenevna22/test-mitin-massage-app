@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express'
-import { sendError } from '../helpers'
-import { config } from '../types/config'
+import { NextFunction, Request, Response } from 'express';
+import { sendError } from '../helpers';
+import { config } from '../types/config';
 
 export const verifyAdmin = (
   req: Request,
@@ -13,25 +13,25 @@ export const verifyAdmin = (
       id: config.ADMIN_TELEGRAM_ID,
       first_name: 'Dev',
       username: 'dev_user',
-    }
-    next()
-    return
+    };
+    next();
+    return;
   }
 
-  const initData = req.headers['x-telegram-init-data'] as string
+  const initData = req.headers['x-telegram-init-data'] as string;
 
   if (!initData) {
-    sendError(res, 401, 'There is no user data')
+    sendError(res, 401, 'There is no user data');
 
-    return
+    return;
   }
 
-  const { id } = req.telegramUser
+  const { id } = req.telegramUser;
 
   if (config.MASTER_TELEGRAM_ID !== id && config.ADMIN_TELEGRAM_ID !== id) {
-    sendError(res, 403, "You don't have permissions to go there.")
-    return
+    sendError(res, 403, "You don't have permissions to go there.");
+    return;
   }
 
-  next()
-}
+  next();
+};

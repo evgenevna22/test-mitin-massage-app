@@ -5,29 +5,29 @@
 </template>
 
 <script lang="ts" setup>
-import type { Role } from '@/types'
-import { useRole, useRoleReversal } from '../composables'
-import { useRoleStore } from '@/stores/role'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import type { Role } from '@/types';
+import { useRole, useRoleReversal } from '../composables';
+import { useRoleStore } from '@/stores/role';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
-  viewAs: Role['role']
-}>()
+  viewAs: Role['role'];
+}>();
 
-const router = useRouter()
+const router = useRouter();
 
-const roleStore = useRoleStore()
-const { getAppRole } = useRole()
-const { setCookie } = useRoleReversal()
+const roleStore = useRoleStore();
+const { getAppRole } = useRole();
+const { setCookie } = useRoleReversal();
 
-const isVisible = computed(() => roleStore.canSwitchRole)
+const isVisible = computed(() => roleStore.canSwitchRole);
 
 const handleClickButton = async () => {
-  setCookie(props.viewAs)
-  await getAppRole(true)
-  router.push('/')
-}
+  setCookie(props.viewAs);
+  await getAppRole(true);
+  router.push('/');
+};
 </script>
 
 <style lang="scss" scoped>

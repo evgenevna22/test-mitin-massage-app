@@ -14,18 +14,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useUpcomingSlots } from './use-upcoming-slots'
+import { computed } from 'vue';
+import { useUpcomingSlots } from './use-upcoming-slots';
 
 const props = defineProps<{
-  isPreview?: boolean
-}>()
+  isPreview?: boolean;
+}>();
 
-const { upcomingSlots } = useUpcomingSlots()
+const { upcomingSlots } = useUpcomingSlots();
 
 const slots = computed(() =>
   props.isPreview ? upcomingSlots.value.slice(0, 3) : upcomingSlots.value
-)
+);
 </script>
 
 <style>

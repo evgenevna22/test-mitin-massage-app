@@ -33,8 +33,8 @@
 </template>
 
 <script lang="ts" setup>
-import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue'
-import { RoleSwitcher } from '@components'
+import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue';
+import { RoleSwitcher } from '@components';
 
 const navigationItems = [
   {
@@ -47,7 +47,7 @@ const navigationItems = [
     icon: 'pi pi-calendar',
     label: 'create slots',
   },
-]
+];
 </script>
 
 <style lang="scss">

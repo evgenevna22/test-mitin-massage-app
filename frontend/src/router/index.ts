@@ -1,11 +1,15 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+} from 'vue-router';
 
-import AdminLayout from '@/layouts/AdminLayout.vue'
-import ClientLayout from '@/layouts/ClientLayout.vue'
-import { useRoleStore } from '@/stores/role.ts'
-import { useRole, useSlots } from '@composables'
-import { useSlotsStore } from '@stores/slots'
-import EmptyLayout from '@/layouts/EmptyLayout.vue'
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import ClientLayout from '@/layouts/ClientLayout.vue';
+import { useRoleStore } from '@/stores/role.ts';
+import { useRole, useSlots } from '@composables';
+import { useSlotsStore } from '@stores/slots';
+import EmptyLayout from '@/layouts/EmptyLayout.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -45,18 +49,18 @@ const routes: RouteRecordRaw[] = [
         path: 'slots/:day',
         component: () => import('../views/client/slots/Slots.vue'),
         beforeEnter: (current, _, next) => {
-          const slotsStore = useSlotsStore()
-          const { getSlots } = useSlots()
+          const slotsStore = useSlotsStore();
+          const { getSlots } = useSlots();
 
           if (
             !slotsStore.currentDate &&
             typeof current.params?.day === 'string'
           ) {
-            slotsStore.selectDate(current.params.day)
-            void getSlots()
+            slotsStore.selectDate(current.params.day);
+            void getSlots();
           }
 
-          next()
+          next();
         },
       },
     ],
@@ -104,34 +108,34 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-]
+];
 
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
 router.beforeEach(async (to, from) => {
-  const roleStore = useRoleStore()
-  const { getAppRole } = useRole()
+  const roleStore = useRoleStore();
+  const { getAppRole } = useRole();
 
   if (!roleStore.role) {
-    await getAppRole()
+    await getAppRole();
   }
 
-  const isAdminRoute = Boolean(to.meta.requiresAuth)
-  const isAdminRole = roleStore.role === 'admin'
-  const isFirstNavigation = from.matched.length === 0
+  const isAdminRoute = Boolean(to.meta.requiresAuth);
+  const isAdminRole = roleStore.role === 'admin';
+  const isFirstNavigation = from.matched.length === 0;
 
   if (to.path === '/') {
-    return { path: `/${roleStore.role}` }
+    return { path: `/${roleStore.role}` };
   }
 
   if (isAdminRoute && !isAdminRole) {
-    return { path: '/client' }
+    return { path: '/client' };
   }
 
   if (isFirstNavigation && isAdminRole && !isAdminRoute) {
-    return { path: '/admin' }
+    return { path: '/admin' };
   }
-})
+});

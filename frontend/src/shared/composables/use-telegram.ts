@@ -3,13 +3,13 @@
  */
 export const useTelegramMiniApp = () => {
   // Объект Telegram Web App — доступен глобально после подключения SDK
-  const tg = window.Telegram.WebApp
+  const tg = window.Telegram.WebApp;
 
   // Сообщаем Telegram что приложение готово (убирает лоадер)
-  tg.ready()
+  tg.ready();
 
   // Разворачиваем на весь экран
-  tg.expand()
+  tg.expand();
 
   return {
     // Данные пользователя из Telegram
@@ -18,5 +18,5 @@ export const useTelegramMiniApp = () => {
     initData: tg.initData,
     // Сам объект tg — для доступа к другим методам SDK
     tg,
-  }
-}
+  };
+};

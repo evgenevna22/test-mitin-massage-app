@@ -1,22 +1,22 @@
-import { computed, ref } from 'vue'
-import { transformDate } from '@utils'
-import { useSlotsStore } from '@stores/slots'
+import { computed, ref } from 'vue';
+import { transformDate } from '@utils';
+import { useSlotsStore } from '@stores/slots';
 
 /**
  * Composable is responsible for:
  * - preparing data for displaing available slots for calendar
  */
 export const useCalendar = () => {
-  const LAST_DAY_OF_MONTH = 0
+  const LAST_DAY_OF_MONTH = 0;
 
-  const today = new Date()
-  const currentMonth = ref(String(today.getMonth() + 1).padStart(2, '0'))
-  const currentYear = ref(today.getFullYear())
+  const today = new Date();
+  const currentMonth = ref(String(today.getMonth() + 1).padStart(2, '0'));
+  const currentYear = ref(today.getFullYear());
 
-  const slotsStore = useSlotsStore()
+  const slotsStore = useSlotsStore();
 
-  const appointments = computed(() => slotsStore.appointments)
-  const currentDate = computed(() => slotsStore.currentDate)
+  const appointments = computed(() => slotsStore.appointments);
+  const currentDate = computed(() => slotsStore.currentDate);
 
   const allDaysInMonth = computed<number[]>(() =>
     Array.from(
@@ -29,7 +29,7 @@ export const useCalendar = () => {
       },
       (_, index: number) => index + 1
     )
-  )
+  );
 
   const availableDates = computed<Set<string>>(
     () =>
@@ -39,7 +39,7 @@ export const useCalendar = () => {
           .filter((appointment) => appointment.status === 'free')
           .map((appointment) => appointment.date)
       )
-  )
+  );
 
   const disabledDates = computed<Date[]>(() =>
     allDaysInMonth.value
@@ -55,15 +55,15 @@ export const useCalendar = () => {
         (day) =>
           new Date(currentYear.value, Number(currentMonth.value) - 1, day)
       )
-  )
+  );
 
   const selectCurrentMonth = (month: number) => {
-    currentMonth.value = String(month).padStart(2, '0')
-  }
+    currentMonth.value = String(month).padStart(2, '0');
+  };
 
   return {
     currentDate,
     disabledDates,
     selectCurrentMonth,
-  }
-}
+  };
+};

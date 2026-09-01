@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import Components from 'unplugin-vue-components/vite'
-import { PrimeVueResolver } from '@primevue/auto-import-resolver'
-import { fileURLToPath } from 'url'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import Components from 'unplugin-vue-components/vite';
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
+import { fileURLToPath } from 'url';
 
 export default defineConfig({
   plugins: [
@@ -25,4 +25,4 @@ export default defineConfig({
       '@consts': fileURLToPath(new URL('./src/shared/consts', import.meta.url)),
     },
   },
-})
+});

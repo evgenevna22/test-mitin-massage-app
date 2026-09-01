@@ -1,5 +1,5 @@
-import admin from 'firebase-admin'
-import { config } from './types/config'
+import admin from 'firebase-admin';
+import { config } from './types/config';
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -7,6 +7,6 @@ admin.initializeApp({
     clientEmail: config.FIREBASE_CLIENT_EMAIL,
     privateKey: config.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
   }),
-})
+});
 
-export const db = admin.firestore()
+export const db = admin.firestore();

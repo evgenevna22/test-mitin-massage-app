@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { RoleSwitcher } from '@components'
+import { RoleSwitcher } from '@components';
 
 const navigationItems = [
   {
@@ -33,7 +33,7 @@ const navigationItems = [
     icon: 'pi pi-calendar',
     label: 'calendar',
   },
-]
+];
 </script>
 
 <style lang="scss">

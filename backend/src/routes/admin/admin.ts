@@ -1,36 +1,36 @@
-import { Request, Response, Router } from 'express'
-import { db } from '../../firebase'
-import { getHourInMs, getMinInMs, sendError } from '../../helpers'
+import { Request, Response, Router } from 'express';
+import { db } from '../../firebase';
+import { getHourInMs, getMinInMs, sendError } from '../../helpers';
 import {
   SlotPayloadSchema,
   Slot,
   SlotSchema,
   type DateSlot,
   type TimeSlot,
-} from '../../types'
-import { verifyAdmin } from '../../middleware/verify-admin'
-import { verifyTelegram } from '../../middleware/verify-telegram'
+} from '../../types';
+import { verifyAdmin } from '../../middleware/verify-admin';
+import { verifyTelegram } from '../../middleware/verify-telegram';
 
-const router = Router()
+const router = Router();
 
-router.use(verifyTelegram)
-router.use(verifyAdmin)
+router.use(verifyTelegram);
+router.use(verifyAdmin);
 
 router.post('/slots', async (req: Request, res: Response) => {
-  const slots = SlotPayloadSchema.parse(req.body)
+  const slots = SlotPayloadSchema.parse(req.body);
 
   // date format: 'YYYY-MM-DD'
   // time format: 'HH:MM'
 
-  const { dates, time } = slots
+  const { dates, time } = slots;
 
   const createTimeSlots = (date: DateSlot): TimeSlot[] => {
-    const [year, month, day] = date.split('-')
+    const [year, month, day] = date.split('-');
 
-    const [startHour, startMin] = time.start.split(':').map(Number)
-    const [endHour, endMin] = time.end.split(':').map(Number)
-    const [durHour, durMin] = time.duration.split(':').map(Number)
-    const [gapHour, gapMin] = time.gap.split(':').map(Number)
+    const [startHour, startMin] = time.start.split(':').map(Number);
+    const [endHour, endMin] = time.end.split(':').map(Number);
+    const [durHour, durMin] = time.duration.split(':').map(Number);
+    const [gapHour, gapMin] = time.gap.split(':').map(Number);
 
     const dateSlot = new Date(
       Number(year),
@@ -38,36 +38,36 @@ router.post('/slots', async (req: Request, res: Response) => {
       Number(day),
       startHour,
       startMin
-    )
+    );
 
-    const timeSlots: TimeSlot[] = [time.start]
+    const timeSlots: TimeSlot[] = [time.start];
 
-    const durInMs = getHourInMs(durHour) + getMinInMs(durMin)
-    const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin)
+    const durInMs = getHourInMs(durHour) + getMinInMs(durMin);
+    const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin);
 
     for (
       let i = { hour: startHour, min: startMin };
       i.hour < endHour || (i.hour === endHour && i.min <= endMin);
     ) {
-      const diffMs = dateSlot.getTime() + durInMs + gapInMs
+      const diffMs = dateSlot.getTime() + durInMs + gapInMs;
 
-      dateSlot.setTime(diffMs)
+      dateSlot.setTime(diffMs);
       i = {
         hour: dateSlot.getHours(),
         min: dateSlot.getMinutes(),
-      }
-      timeSlots.push(`${i.hour}:${i.min.toString().padStart(2, '0')}`)
+      };
+      timeSlots.push(`${i.hour}:${i.min.toString().padStart(2, '0')}`);
     }
 
-    return timeSlots
-  }
+    return timeSlots;
+  };
 
   try {
-    const batch = db.batch()
+    const batch = db.batch();
 
     for (const date of dates) {
       for (const time of createTimeSlots(date)) {
-        const ref = db.collection('slots').doc()
+        const ref = db.collection('slots').doc();
         batch.set(ref, {
           date,
           time,
@@ -75,28 +75,28 @@ router.post('/slots', async (req: Request, res: Response) => {
           userId: null,
           userName: null,
           userNickname: null,
-        })
+        });
       }
     }
 
-    await batch.commit()
+    await batch.commit();
 
-    res.json({ success: true })
+    res.json({ success: true });
   } catch (error) {
-    console.error('Ошибка сохранении слотов:', error)
+    console.error('Ошибка сохранении слотов:', error);
 
-    sendError(res, 500, 'Failes to save slots')
+    sendError(res, 500, 'Failes to save slots');
   }
-})
+});
 
 router.get('/upcoming', async (req: Request, res: Response) => {
-  const today = new Date()
+  const today = new Date();
   const transformDate = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   try {
     const result = await db
@@ -106,22 +106,22 @@ router.get('/upcoming', async (req: Request, res: Response) => {
       .orderBy('date')
       .orderBy('time')
       .limit(10)
-      .get()
+      .get();
 
     const slots: Slot[] = result.docs.map((doc) => {
       const data = {
         id: doc.id,
         ...doc.data(),
-      }
-      return SlotSchema.parse(data)
-    })
+      };
+      return SlotSchema.parse(data);
+    });
 
-    res.json(slots)
+    res.json(slots);
   } catch (error) {
-    console.error('The error while recieving slots:', error)
+    console.error('The error while recieving slots:', error);
 
-    sendError(res, 500, 'Failed to recieve clots')
+    sendError(res, 500, 'Failed to recieve clots');
   }
-})
+});
 
-export default router
+export default router;

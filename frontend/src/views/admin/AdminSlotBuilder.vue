@@ -58,72 +58,76 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import type { TimeSlot } from '@/types'
-import { useSlots } from './use-slots'
-import { transformDate } from '@utils'
+import { computed, reactive, ref } from 'vue';
+import type { TimeSlot } from '@/types';
+import { useSlots } from './use-slots';
+import { transformDate } from '@utils';
 
 const Step = {
   First: 0,
   Second: 1,
-}
+};
 
 const getInitialTimeSlotState = (): TimeSlot => ({
   start: '',
   end: '',
   duration: '',
   gap: '',
-})
+});
 
-const { createSlots, isLoading } = useSlots()
+const { createSlots, isLoading } = useSlots();
 
-const step = ref(Step.First)
+const step = ref(Step.First);
 
-const dates = ref<Date[]>([])
-const timeSlot = reactive(getInitialTimeSlotState())
+const dates = ref<Date[]>([]);
+const timeSlot = reactive(getInitialTimeSlotState());
 
-const isTimeSlotsFilled = computed(() => Object.values(timeSlot).every(Boolean))
+const isTimeSlotsFilled = computed(() =>
+  Object.values(timeSlot).every(Boolean)
+);
 
-const stepTitle = computed(() => (step.value === Step.First ? 'dates' : 'time'))
+const stepTitle = computed(() =>
+  step.value === Step.First ? 'dates' : 'time'
+);
 const saveButtonLabel = computed(() =>
   step.value === Step.First ? 'Continue' : 'Save'
-)
+);
 
-const isBackButtonVisible = computed(() => step.value === Step.Second)
+const isBackButtonVisible = computed(() => step.value === Step.Second);
 
 const isSaveButtonDisabled = computed(() =>
   step.value === Step.First ? !dates.value.length : !isTimeSlotsFilled.value
-)
+);
 
 const handleClickButton = async () => {
   if (step.value === Step.First) {
-    step.value = Step.Second
+    step.value = Step.Second;
 
-    return
+    return;
   }
 
   if (dates.value.length && isTimeSlotsFilled.value) {
-    await createSlots(dates.value, timeSlot)
-    resetTimeSlots()
-    step.value = Step.First
+    await createSlots(dates.value, timeSlot);
+    resetTimeSlots();
+    step.value = Step.First;
   }
-}
+};
 
 const handleClickResetButton = () => {
   if (step.value === Step.First) {
-    dates.value = []
-    return
+    dates.value = [];
+    return;
   }
-  resetTimeSlots()
-}
+  resetTimeSlots();
+};
 
 const handleClickBackButton = () => {
-  step.value = Step.First
-}
+  step.value = Step.First;
+};
 
 const resetTimeSlots = () => {
-  Object.assign(timeSlot, getInitialTimeSlotState())
-}
+  Object.assign(timeSlot, getInitialTimeSlotState());
+};
 </script>
 
 <style lang="scss" scoped>

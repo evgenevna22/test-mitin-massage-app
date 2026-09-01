@@ -1,6 +1,6 @@
 export type Breadcrumb = {
-  title: string
-  icon: string
-}
+  title: string;
+  icon: string;
+};
 
-export type Breadcrumbs = Breadcrumb[]
+export type Breadcrumbs = Breadcrumb[];

@@ -1,10 +1,10 @@
-import type { Role } from '@/types/role'
-import { defineStore } from 'pinia'
+import type { Role } from '@/types/role';
+import { defineStore } from 'pinia';
 
 type State = {
-  role: Role['role'] | ''
-  canSwitchRole: boolean
-}
+  role: Role['role'] | '';
+  canSwitchRole: boolean;
+};
 
 export const useRoleStore = defineStore('role-store', {
   state: (): State => ({
@@ -13,8 +13,8 @@ export const useRoleStore = defineStore('role-store', {
   }),
   actions: {
     setRole({ role, canSwitchRole }: Role) {
-      this.role = role
-      this.canSwitchRole = canSwitchRole
+      this.role = role;
+      this.canSwitchRole = canSwitchRole;
     },
   },
-})
+});

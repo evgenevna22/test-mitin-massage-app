@@ -4,5 +4,5 @@
   <RouterView />
 </template>
 <script lang="ts" setup>
-import { Breadcrumbs } from '@components'
+import { Breadcrumbs } from '@components';
 </script>

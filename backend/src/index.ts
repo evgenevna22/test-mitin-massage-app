@@ -1,17 +1,17 @@
-import 'dotenv/config'
-import express from 'express'
-import cors from 'cors'
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
 
-import slotsRender from './routes/client/slots'
-import adminRender from './routes/admin/admin'
-import roleRender from './routes/role'
-import { registerBotHandlers } from './telegram/handlers'
+import slotsRender from './routes/client/slots';
+import adminRender from './routes/admin/admin';
+import roleRender from './routes/role';
+import { registerBotHandlers } from './telegram/handlers';
 
-registerBotHandlers()
+registerBotHandlers();
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 app.use(
   cors({
     origin: [
@@ -19,27 +19,27 @@ app.use(
       'https://test-mitin-massage-app.vercel.app',
     ],
   })
-)
-app.use('/slots', slotsRender)
-app.use('/admin', adminRender)
-app.use('/role', roleRender)
+);
+app.use('/slots', slotsRender);
+app.use('/admin', adminRender);
+app.use('/role', roleRender);
 
 app.get('/', (_, res) => {
-  res.send('Server is working')
-})
+  res.send('Server is working');
+});
 
 app.get('/health', (_, res) => {
   res.json({
     status: 'ok',
-  })
-})
+  });
+});
 
 // app.post('/webhook', (req, res) => {
 //   bot.processUpdate(req.body)
 //   res.sendStatus(200)
 // })
 
-const PORT = process.env.PORT || 2222
+const PORT = process.env.PORT || 2222;
 app.listen(PORT, () => {
-  console.log(`Server is processing on ${PORT} port`)
-})
+  console.log(`Server is processing on ${PORT} port`);
+});

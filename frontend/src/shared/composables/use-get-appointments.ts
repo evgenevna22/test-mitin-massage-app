@@ -1,7 +1,7 @@
-import { computed, onMounted, ref } from 'vue'
-import { SlotsApi } from '@/api/slots'
-import { useSlots } from '.'
-import { useSlotsStore } from '@stores/slots'
+import { computed, onMounted, ref } from 'vue';
+import { SlotsApi } from '@/api/slots';
+import { useSlots } from '.';
+import { useSlotsStore } from '@stores/slots';
 
 /**
  * Composable is responsible for:
@@ -9,50 +9,50 @@ import { useSlotsStore } from '@stores/slots'
  * - loading free slots for selected day
  */
 export const useGetAppointments = () => {
-  const today = new Date()
-  const currentMonth = ref(String(today.getMonth() + 1).padStart(2, '0'))
+  const today = new Date();
+  const currentMonth = ref(String(today.getMonth() + 1).padStart(2, '0'));
 
-  const slotsStore = useSlotsStore()
-  const { getSlots } = useSlots()
+  const slotsStore = useSlotsStore();
+  const { getSlots } = useSlots();
 
-  const appointments = computed(() => slotsStore.appointments)
-  const currentDate = computed(() => slotsStore.currentDate)
+  const appointments = computed(() => slotsStore.appointments);
+  const currentDate = computed(() => slotsStore.currentDate);
 
   const getAppointments = async (month = currentMonth.value) => {
     if (slotsStore.areAppointmentsLoading) {
-      return
+      return;
     }
 
     try {
-      slotsStore.setAppointmentsLoading(true)
-      const appointments = await SlotsApi.getAppointments(month)
+      slotsStore.setAppointmentsLoading(true);
+      const appointments = await SlotsApi.getAppointments(month);
 
       if (!appointments?.length) {
-        return
+        return;
       }
 
-      slotsStore.setAppointments(appointments)
+      slotsStore.setAppointments(appointments);
     } finally {
-      slotsStore.setAppointmentsLoading(false)
+      slotsStore.setAppointmentsLoading(false);
     }
-  }
+  };
 
   const selectDate = async (date: string) => {
     if (date === currentDate.value) {
-      return
+      return;
     }
 
-    slotsStore.selectDate(date)
-    await getSlots()
-  }
+    slotsStore.selectDate(date);
+    await getSlots();
+  };
 
   const selectMonth = async (month: number) => {
-    currentMonth.value = String(month).padStart(2, '0')
+    currentMonth.value = String(month).padStart(2, '0');
 
-    await getAppointments()
-  }
+    await getAppointments();
+  };
 
-  onMounted(getAppointments)
+  onMounted(getAppointments);
 
   return {
     appointments,
@@ -60,5 +60,5 @@ export const useGetAppointments = () => {
     selectDate,
     getAppointments,
     selectMonth,
-  }
-}
+  };
+};

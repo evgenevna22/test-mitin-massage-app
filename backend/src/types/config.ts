@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 const EnvSchema = z.object({
   BOT_TOKEN: z.string().min(1),
@@ -9,6 +9,6 @@ const EnvSchema = z.object({
   FIREBASE_PROJECT_ID: z.string(),
   FIREBASE_CLIENT_EMAIL: z.string(),
   FIREBASE_PRIVATE_KEY: z.string(),
-})
+});
 
-export const config = EnvSchema.parse(process.env)
+export const config = EnvSchema.parse(process.env);

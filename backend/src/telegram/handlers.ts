@@ -1,8 +1,8 @@
-import { bot } from './bot'
+import { bot } from './bot';
 
 export const registerBotHandlers = () => {
   bot.onText(/\/start/, (message) => {
-    const chatId = message.chat.id
+    const chatId = message.chat.id;
 
     bot.sendMessage(chatId, 'Welcome to mitin massage! Book an appointment', {
       reply_markup: {
@@ -15,6 +15,6 @@ export const registerBotHandlers = () => {
           ],
         ],
       },
-    })
-  })
-}
+    });
+  });
+};

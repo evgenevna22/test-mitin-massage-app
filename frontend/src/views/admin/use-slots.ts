@@ -1,34 +1,34 @@
-import { ref } from 'vue'
-import { SlotsApi } from '@/api/slots'
-import { useToast } from 'primevue/usetoast'
-import type { TimeSlot } from '@/types'
-import { transformDate } from '@utils'
+import { ref } from 'vue';
+import { SlotsApi } from '@/api/slots';
+import { useToast } from 'primevue/usetoast';
+import type { TimeSlot } from '@/types';
+import { transformDate } from '@utils';
 
 export const useSlots = () => {
-  const toast = useToast()
+  const toast = useToast();
 
-  const isLoading = ref(false)
+  const isLoading = ref(false);
 
   const createSlots = async (dates: Date[], time: TimeSlot) => {
     if (isLoading.value) {
-      return
+      return;
     }
-    isLoading.value = true
+    isLoading.value = true;
 
     try {
-      const transformedDates = dates.map(transformDate)
-      await SlotsApi.createSlots({ dates: transformedDates, time })
-      toast.add({ severity: 'success', summary: "slots're saved" })
+      const transformedDates = dates.map(transformDate);
+      await SlotsApi.createSlots({ dates: transformedDates, time });
+      toast.add({ severity: 'success', summary: "slots're saved" });
     } catch (error) {
-      console.error(error)
-      toast.add({ severity: 'error', summary: "slots haven't been saved" })
+      console.error(error);
+      toast.add({ severity: 'error', summary: "slots haven't been saved" });
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
-  }
+  };
 
   return {
     isLoading,
     createSlots,
-  }
-}
+  };
+};

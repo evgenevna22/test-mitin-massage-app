@@ -1,112 +1,112 @@
-import { Request, Response, Router } from 'express'
-import { db } from '../../firebase'
-import { SlotSchema, type Slot } from '../../types'
-import { verifyTelegram } from '../../middleware/verify-telegram'
-import { sendError } from '../../helpers'
-import { TelegramService } from '../../telegram'
+import { Request, Response, Router } from 'express';
+import { db } from '../../firebase';
+import { SlotSchema, type Slot } from '../../types';
+import { verifyTelegram } from '../../middleware/verify-telegram';
+import { sendError } from '../../helpers';
+import { TelegramService } from '../../telegram';
 
-const router = Router()
+const router = Router();
 
-router.use(verifyTelegram)
+router.use(verifyTelegram);
 
 router.get('/month/:month', async (req: Request, res: Response) => {
-  const { month } = req.params
+  const { month } = req.params;
 
   if (!month) {
-    sendError(res, 400, 'Param `month` is required')
+    sendError(res, 400, 'Param `month` is required');
 
-    return
+    return;
   }
 
-  const now = new Date()
+  const now = new Date();
 
-  const from = `${now.getFullYear()}-${month}-01`
-  const to = `${now.getFullYear()}-${month}-31`
+  const from = `${now.getFullYear()}-${month}-01`;
+  const to = `${now.getFullYear()}-${month}-31`;
 
   try {
     const result = await db
       .collection('slots')
       .where('date', '>=', from)
       .where('date', '<=', to)
-      .get()
+      .get();
 
     const slots: Slot[] = result.docs
       .map((doc) => {
         const data = {
           id: doc.id,
           ...doc.data(),
-        }
-        return SlotSchema.parse(data)
+        };
+        return SlotSchema.parse(data);
       })
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
-      )
+      );
 
-    res.json(slots)
+    res.json(slots);
   } catch (error) {
-    console.error('Ошибка при получении слотов:', error)
+    console.error('Ошибка при получении слотов:', error);
 
-    sendError(res, 500, 'Не удалось получить слоты')
+    sendError(res, 500, 'Не удалось получить слоты');
   }
-})
+});
 
 router.get('/date/:date', async (req: Request, res: Response) => {
-  const { date } = req.params
+  const { date } = req.params;
 
   if (!date) {
-    sendError(res, 400, 'Param `date` is required')
+    sendError(res, 400, 'Param `date` is required');
 
-    return
+    return;
   }
 
   try {
-    const result = await db.collection('slots').where('date', '==', date).get()
+    const result = await db.collection('slots').where('date', '==', date).get();
 
     const slots: Slot[] = result.docs
       .map((doc) => {
         const data = {
           id: doc.id,
           ...doc.data(),
-        }
-        return SlotSchema.parse(data)
+        };
+        return SlotSchema.parse(data);
       })
       .filter((data) => data.status === 'free')
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
-      )
+      );
 
-    res.json(slots)
+    res.json(slots);
   } catch (error) {
-    console.error('Ошибка при получении слотов:', error)
+    console.error('Ошибка при получении слотов:', error);
 
-    sendError(res, 500, 'Не удалось получить слоты')
+    sendError(res, 500, 'Не удалось получить слоты');
   }
-})
+});
 
 router.put('/:id/book', async (req: Request, res: Response) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (typeof id !== 'string') {
-      sendError(res, 400, 'Param `id` must be a string type')
+      sendError(res, 400, 'Param `id` must be a string type');
 
-      return
+      return;
     }
-    const slotReference = db.collection('slots').doc(id)
-    const slotDocument = await slotReference.get()
+    const slotReference = db.collection('slots').doc(id);
+    const slotDocument = await slotReference.get();
 
     if (!slotDocument.exists) {
-      sendError(res, 404, 'Slot is not defined')
+      sendError(res, 404, 'Slot is not defined');
 
-      return
+      return;
     }
 
-    const slot = slotDocument.data() as Slot
+    const slot = slotDocument.data() as Slot;
 
     if (slot?.status === 'booked') {
-      sendError(res, 409, 'Slot is already booked')
+      sendError(res, 409, 'Slot is already booked');
 
-      return
+      return;
     }
 
     await slotReference.update({
@@ -114,49 +114,49 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       userId: req.telegramUser.id,
       userName: req.telegramUser.first_name,
       userNickname: req.telegramUser.username ?? null,
-    })
+    });
 
     TelegramService.sendAdminNotification(
       `The slot on ${slot.date} was booked by '@${req.telegramUser.username}'`
-    )
+    );
 
     TelegramService.sendClientNotification(
       req.telegramUser.id,
       `You succesefully booked the slot on ${slot.date} at ${slot.time}'`
-    )
+    );
 
-    res.json({ success: true })
+    res.json({ success: true });
   } catch (error) {
-    console.error('Error while booking', error)
+    console.error('Error while booking', error);
 
-    sendError(res, 500, "The booking's finished with error")
+    sendError(res, 500, "The booking's finished with error");
   }
-})
+});
 
 router.patch('/:id/cancel', async (req: Request, res: Response) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (typeof id !== 'string') {
-      sendError(res, 400, 'Param `id` must be a string type')
+      sendError(res, 400, 'Param `id` must be a string type');
 
-      return
+      return;
     }
-    const slotReference = db.collection('slots').doc(id)
-    const slotDocument = await slotReference.get()
+    const slotReference = db.collection('slots').doc(id);
+    const slotDocument = await slotReference.get();
 
     if (!slotDocument.exists) {
-      sendError(res, 404, 'Slot is not defined')
+      sendError(res, 404, 'Slot is not defined');
 
-      return
+      return;
     }
 
-    const slot = slotDocument.data()
+    const slot = slotDocument.data();
 
     if (slot?.status === 'free') {
-      sendError(res, 409, 'Slot is already free')
+      sendError(res, 409, 'Slot is already free');
 
-      return
+      return;
     }
 
     if (slot?.userId !== req.telegramUser.id) {
@@ -164,9 +164,9 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
         res,
         403,
         "Cancelling the someone else's appointment is forbidden"
-      )
+      );
 
-      return
+      return;
     }
 
     await slotReference.update({
@@ -174,14 +174,14 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
       userId: null,
       userName: null,
       userNickname: null,
-    })
+    });
 
-    res.json({ success: true })
+    res.json({ success: true });
   } catch (error) {
-    console.error('Error while cancelling', error)
+    console.error('Error while cancelling', error);
 
-    res.status(500).json({ error: 'The booking was not cancelled' })
+    res.status(500).json({ error: 'The booking was not cancelled' });
   }
-})
+});
 
-export default router
+export default router;

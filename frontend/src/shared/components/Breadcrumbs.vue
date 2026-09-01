@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { useBreadcrumbs } from '../composables'
+import { useBreadcrumbs } from '../composables';
 
-const { breadcrumbs } = useBreadcrumbs()
+const { breadcrumbs } = useBreadcrumbs();
 </script>
 
 <style lang="scss"></style>
