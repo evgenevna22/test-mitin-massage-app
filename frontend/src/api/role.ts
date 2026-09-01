@@ -2,7 +2,6 @@ import type { Role } from '@/types/role'
 import api from '.'
 
 export class RoleApi {
-  public static getRole = async (): Promise<Role | undefined> => {
-    return (await api.get('/role')).data
-  }
+  public static getRole = async (): Promise<Role | undefined> =>
+    (await api.get('/role')).data
 }

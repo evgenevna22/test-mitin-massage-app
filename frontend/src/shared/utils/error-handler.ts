@@ -12,17 +12,17 @@ export const handleError = (
   { error, needToast = true, toastType = 'error' }: ErrorHandler,
   toast: ToastServiceMethods
 ) => {
-  if (axios.isAxiosError<BackendError>(error)) {
-    if (!needToast) {
-      return
-    }
-
-    toast.add({ severity: toastType, summary: error.response?.data.error })
-  } else {
-    if (!needToast) {
-      return
-    }
-
-    toast.add({ severity: toastType, summary: 'Unknown error' })
+  if (!needToast) {
+    throw Error
   }
+
+  const isBackendError = axios.isAxiosError<BackendError>(error)
+
+  toast.add({
+    severity: toastType,
+    summary: isBackendError
+      ? error.response?.data.error
+      : 'Something went wrong. Refresh the page',
+  })
+  throw Error
 }

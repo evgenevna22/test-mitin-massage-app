@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express'
-import { config } from '../config'
+import { config } from '../types/config'
 import { verifyTelegram } from '../middleware/verify-telegram'
 import { sendError } from '../helpers'
 

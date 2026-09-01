@@ -10,7 +10,7 @@ import { useRoleReversal } from './use-role-reversal'
 export const useRole = () => {
   const toast = useToast()
   const roleStore = useRoleStore()
-  const { deleteCookie } = useRoleReversal()
+  const { deleteRoleCookie } = useRoleReversal()
 
   const getAppRole = async (forcedUpdate = false) => {
     if (roleStore.role && !forcedUpdate) {
@@ -19,14 +19,17 @@ export const useRole = () => {
 
     try {
       const role = await RoleApi.getRole()
+
       if (!role) {
-        throw Error
+        const error = new Error()
+        return handleError({ error }, toast)
       }
+
       roleStore.setRole(role)
     } catch (error) {
       handleError({ error }, toast)
     } finally {
-      deleteCookie()
+      deleteRoleCookie()
     }
   }
 

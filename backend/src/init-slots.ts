@@ -1,9 +1,13 @@
-import { db } from './firebase';
+import { db } from './firebase'
 
-const dates = ['2026-06-10', '2026-06-11', '2026-06-12'];
-const times = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'];
+/**
+ * Temporal function to fill the database with time slots
+ */
 
-async function initSlots() {
+const dates = ['2026-06-10', '2026-06-11', '2026-06-12']
+const times = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00']
+
+const initSlots = async () => {
   for (const date of dates) {
     for (const time of times) {
       await db.collection('slots').add({
@@ -12,11 +16,11 @@ async function initSlots() {
         status: 'free',
         userId: null,
         userName: null,
-        userNickname: null
-      });
+        userNickname: null,
+      })
     }
   }
-  process.exit(0);
+  process.exit(0)
 }
 
-initSlots();
+initSlots()

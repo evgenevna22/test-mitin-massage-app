@@ -1,4 +1,4 @@
-import { config } from '../config'
+import { config } from '../types/config'
 import { bot } from './bot'
 
 export class TelegramService {

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { sendError } from '../helpers'
-import { config } from '../config'
+import { config } from '../types/config'
 
 export const verifyAdmin = (
   req: Request,
@@ -8,7 +8,7 @@ export const verifyAdmin = (
   next: NextFunction
 ) => {
   if (config.NODE_ENV === 'development') {
-    // это не нужно, когда буду именно октрывать в мини апке
+    // temporal for local development
     req.telegramUser = {
       id: config.ADMIN_TELEGRAM_ID,
       first_name: 'Dev',
@@ -21,7 +21,7 @@ export const verifyAdmin = (
   const initData = req.headers['x-telegram-init-data'] as string
 
   if (!initData) {
-    sendError(res, 401, 'initData is empty')
+    sendError(res, 401, 'There is no user data')
 
     return
   }

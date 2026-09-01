@@ -85,13 +85,11 @@ router.post('/slots', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Ошибка сохранении слотов:', error)
 
-    sendError(res, 500, 'Не удалось сохранить слоты')
+    sendError(res, 500, 'Failes to save slots')
   }
 })
 
 router.get('/upcoming', async (req: Request, res: Response) => {
-  //where('status','==','booked').where('date','>=', today).orderBy('date').orderBy('time').limit(10)
-
   const today = new Date()
   const transformDate = (date: Date) => {
     const year = date.getFullYear()
@@ -120,9 +118,9 @@ router.get('/upcoming', async (req: Request, res: Response) => {
 
     res.json(slots)
   } catch (error) {
-    console.error('Ошибка при получении слотов:', error)
+    console.error('The error while recieving slots:', error)
 
-    sendError(res, 500, 'Не удалось получить слоты')
+    sendError(res, 500, 'Failed to recieve clots')
   }
 })
 

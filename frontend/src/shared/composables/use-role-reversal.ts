@@ -10,12 +10,12 @@ export const useRoleReversal = () => {
     document.cookie = `${ROLE_MODE_COOKIE_NAME}=${viewAs}; path=/`
   }
 
-  const deleteCookie = () => {
+  const deleteRoleCookie = () => {
     document.cookie = `${ROLE_MODE_COOKIE_NAME}=; Max-Age=0; path=/`
   }
 
   return {
     setCookie,
-    deleteCookie,
+    deleteRoleCookie,
   }
 }
