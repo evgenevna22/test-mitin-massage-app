@@ -1,6 +1,5 @@
-import type { BackendError } from '@/types';
+import type { BackendError, NotificationOptions } from '@/types';
 import axios from 'axios';
-import type { ToastServiceMethods } from 'primevue';
 
 type ErrorHandler = {
   error: unknown;
@@ -10,7 +9,7 @@ type ErrorHandler = {
 
 export const handleError = (
   { error, needToast = true, toastType = 'error' }: ErrorHandler,
-  toast: ToastServiceMethods
+  notifications: { add: (props: NotificationOptions) => void }
 ) => {
   if (!needToast) {
     throw Error;
@@ -18,7 +17,7 @@ export const handleError = (
 
   const isBackendError = axios.isAxiosError<BackendError>(error);
 
-  toast.add({
+  notifications.add({
     severity: toastType,
     summary: isBackendError
       ? error.response?.data.error

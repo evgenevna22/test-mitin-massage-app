@@ -4,7 +4,8 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 /**
- * Composable for breadcrumbs
+ * Composable is responsible for breadcrumbs:
+ * - generates breadcrumbs based on meta route param
  */
 export const useBreadcrumbs = () => {
   const route = useRoute();

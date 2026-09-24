@@ -50,7 +50,7 @@ const timeSlots = computed(() => slotsStore.currentSlots);
 const handleButtonClick = async (id: string) => {
   await selectSlot(id);
   await getSlots();
-  router.push({ path: 'client' });
+  router.push({ path: '/client' });
 };
 </script>
 

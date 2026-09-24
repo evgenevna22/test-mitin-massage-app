@@ -4,9 +4,9 @@ import { useSlots } from '.';
 import { useSlotsStore } from '@stores/slots';
 
 /**
- * Composable is responsible for:
- * - loading free appointments by selected month
- * - loading free slots for selected day
+ * Composable is responsible for client appointments:
+ * - loads free appointments by selected month
+ * - loads free slots for selected day
  */
 export const useGetAppointments = () => {
   const today = new Date();

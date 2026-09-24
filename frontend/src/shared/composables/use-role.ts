@@ -1,14 +1,14 @@
 import { RoleApi } from '@/api/role';
 import { useRoleStore } from '@/stores/role';
-import { useToast } from 'primevue';
 import { handleError } from '@utils';
 import { useRoleReversal } from './use-role-reversal';
+import { useNotifications } from './use-notifications';
 
 /**
  * Composable for getting and saving the role of the application
  */
 export const useRole = () => {
-  const toast = useToast();
+  const notifications = useNotifications();
   const roleStore = useRoleStore();
   const { deleteRoleCookie } = useRoleReversal();
 
@@ -22,12 +22,12 @@ export const useRole = () => {
 
       if (!role) {
         const error = new Error();
-        return handleError({ error }, toast);
+        return handleError({ error }, notifications);
       }
 
       roleStore.setRole(role);
     } catch (error) {
-      handleError({ error }, toast);
+      handleError({ error }, notifications);
     } finally {
       deleteRoleCookie();
     }

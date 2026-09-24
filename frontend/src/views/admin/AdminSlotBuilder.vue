@@ -109,13 +109,14 @@ const handleClickButton = async () => {
   if (dates.value.length && isTimeSlotsFilled.value) {
     await createSlots(dates.value, timeSlot);
     resetTimeSlots();
+    resetDates();
     step.value = Step.First;
   }
 };
 
 const handleClickResetButton = () => {
   if (step.value === Step.First) {
-    dates.value = [];
+    resetDates();
     return;
   }
   resetTimeSlots();
@@ -128,6 +129,11 @@ const handleClickBackButton = () => {
 const resetTimeSlots = () => {
   Object.assign(timeSlot, getInitialTimeSlotState());
 };
+
+const resetDates = () => {
+  dates.value = []
+}
+
 </script>
 
 <style lang="scss" scoped>

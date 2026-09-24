@@ -1,8 +1,11 @@
 import { onMounted, ref } from 'vue';
 import { SlotsApi } from '@/api/slots';
 import type { SlotDTO } from '@/types';
+import { useNotifications } from '@/shared/composables';
 
 export const useUpcomingSlots = () => {
+  const notifications = useNotifications();
+
   const upcomingSlots = ref<SlotDTO[]>([]);
   const isLoading = ref(false);
 
@@ -16,7 +19,10 @@ export const useUpcomingSlots = () => {
       upcomingSlots.value = await SlotsApi.loadUpcomingSlots();
     } catch (error) {
       console.error(error);
-      // toast.add({ severity: 'error', summary: "upcoming slots wasn't loaded" })
+      notifications.add({
+        severity: 'error',
+        summary: "upcoming slots wasn't loaded",
+      });
     } finally {
       isLoading.value = false;
     }

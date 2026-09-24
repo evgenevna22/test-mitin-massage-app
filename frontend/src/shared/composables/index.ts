@@ -4,3 +4,4 @@ export * from './use-breadcrumbs';
 export * from './use-telegram';
 export * from './use-role';
 export * from './use-role-reversal';
+export * from './use-notifications';

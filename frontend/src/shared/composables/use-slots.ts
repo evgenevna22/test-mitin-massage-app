@@ -1,9 +1,13 @@
 import { SlotsApi } from '@/api/slots';
-import { useToast } from 'primevue/usetoast';
 import { useSlotsStore } from '@stores/slots';
+import { useNotifications } from './use-notifications';
 
+/**
+ * Composable is responsible for getting available slots:
+ * - loads available slots based on current date
+ */
 export const useSlots = () => {
-  const toast = useToast();
+  const notifications = useNotifications();
   const slotsStore = useSlotsStore();
 
   const getSlots = async () => {
@@ -22,9 +26,9 @@ export const useSlots = () => {
       slotsStore.setCurrentSlots(slots);
     } catch (error) {
       console.error(error);
-      toast.add({
+      notifications.add({
         severity: 'error',
-        summary: 'Данные по дню не были загружены',
+        summary: 'Slots weren\'t loaded',
       });
     } finally {
       slotsStore.setCurrentSlotsLoading(false);
