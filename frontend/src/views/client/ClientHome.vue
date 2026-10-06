@@ -1,65 +1,31 @@
 <template>
   <RoleSwitcher view-as="admin" />
 
-  <div class="main">
-    <p>welcome to the mitin massage, friend</p>
-
-    <Divider />
-
-    <b>go to:</b>
-    <ul class="menu-items">
-      <li
-        v-for="navItem in navigationItems"
-        :key="navItem.label"
-        class="menu-item"
-      >
-        <router-link v-slot="{ href, navigate }" :to="navItem.route" custom>
-          <a v-ripple :href="href" @click="navigate" class="text-sm leading-4">
-            <span :class="navItem.icon" />
-            <span class="ml-2">{{ navItem.label }}</span>
-          </a>
-        </router-link>
-      </li>
-    </ul>
-  </div>
+  <header>
+    <Hero />
+  </header>
+  <main>
+    <h3>The firing slots:</h3>
+    <div v-for="slot in upcoming" :key="slot.id">
+      date: {{ slot.date }} | time: {{ slot.time }}
+      <router-link v-slot="{ href, navigate }" :to="'form'" custom>
+        <a :href="href" @click="navigate">
+          date: {{ slot.date }} | time: {{ slot.time }}
+        </a>
+      </router-link>
+    </div>
+  </main>
 </template>
 
 <script lang="ts" setup>
 import { RoleSwitcher } from '@components';
+import Hero from './hero/Hero.vue';
+import { useGetAppointments } from '@/shared/composables';
+import { computed } from 'vue';
 
-const navigationItems = [
-  {
-    route: '/client/calendar',
-    icon: 'pi pi-calendar',
-    label: 'calendar',
-  },
-];
+const { appointments } = useGetAppointments();
+
+const upcoming = computed(() => appointments.value.slice(0, 5));
 </script>
 
-<style lang="scss">
-.main {
-  max-width: 500px;
-  width: 100%;
-  margin: 16px auto;
-}
-
-.menu-items {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.menu-item {
-  a {
-    color: inherit;
-    text-decoration: inherit;
-    gap: 4px;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  &:hover {
-    color: gray;
-  }
-}
-</style>
+<style lang="scss"></style>

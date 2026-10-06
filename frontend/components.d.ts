@@ -11,10 +11,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Avatar: typeof import('primevue/avatar')['default']
     Badge: typeof import('primevue/badge')['default']
     Breadcrumb: typeof import('primevue/breadcrumb')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
+    Carousel: typeof import('primevue/carousel')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     Divider: typeof import('primevue/divider')['default']
     Menu: typeof import('primevue/menu')['default']

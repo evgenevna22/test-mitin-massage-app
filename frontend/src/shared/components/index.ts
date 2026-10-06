@@ -6,3 +6,4 @@ export const Spinner = defineAsyncComponent(() => import('./Spinner.vue'));
 export const Breadcrumbs = defineAsyncComponent(
   () => import('./Breadcrumbs.vue')
 );
+export const Review = defineAsyncComponent(() => import('./Review.vue'));

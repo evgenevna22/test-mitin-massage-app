@@ -1,20 +1,27 @@
 @import 'primeicons/primeicons.css';
 
 :root {
-  --white: #FFFFFF;
+  --white: #ffffff;
   --black: #020000;
-  --yellow: #FCA611;
-  --pink: #FB5858;
-  --red: #EA332D;
-  --green: #6B6F3B;
+  --yellow: #fca611;
+  --pink: #fb5858;
+  --red: #ea332d;
+  --green: #6b6f3b;
   --dark-green: #314826;
-  --gray: #C6CCD8;
-  --blue: #469CB0;
-  --dark-blue: #469CB0;
+  --gray: #c6ccd8;
+  --blue: #469cb0;
+  --dark-blue: #2D2C58;
 
-  font-family: 'Inter', sans-serif;
+  --hero-title: #F3E8D0;
+  --background: #F7F5F0;
+
+  --gap: 4px;
+  --gap-2x: calc(var(--gap) * 2);
+
+  font-family: 'InterVariable', sans-serif;
+  line-height: 24px;
   color: var(--black);
-  background: var(--white);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -22,12 +29,6 @@
 
   @media (max-width: 1024px) {
     font-size: 12px;
-  }
-}
-
-@supports (font-variation-settings: normal) {
-  :root {
-    font-family: 'Inter var', sans-serif;
   }
 }
 

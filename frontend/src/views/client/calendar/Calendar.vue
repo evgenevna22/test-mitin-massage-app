@@ -1,5 +1,5 @@
 <template>
-  <img width="60" height="60" src="./../../../assets/max.png" alt="" />
+  <img width="60" height="60" src="/images/max.png" alt="" />
 
   <DatePicker
     v-if="appointments.length"
