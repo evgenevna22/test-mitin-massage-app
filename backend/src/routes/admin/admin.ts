@@ -46,17 +46,23 @@ router.post('/slots', async (req: Request, res: Response) => {
     const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin);
 
     for (
-      let i = { hour: startHour, min: startMin };
-      i.hour < endHour || (i.hour === endHour && i.min <= endMin);
+      let slot = { hour: startHour, min: startMin };
+      slot.hour < endHour || (slot.hour === endHour && slot.min <= endMin);
     ) {
       const diffMs = dateSlot.getTime() + durInMs + gapInMs;
 
       dateSlot.setTime(diffMs);
-      i = {
+      slot = {
         hour: dateSlot.getHours(),
         min: dateSlot.getMinutes(),
       };
-      timeSlots.push(`${i.hour}:${i.min.toString().padStart(2, '0')}`);
+
+       // check the last slot
+      if (slot.hour > endHour) {
+        break;
+      }
+
+      timeSlots.push(`${slot.hour}:${slot.min.toString().padStart(2, '0')}`);
     }
 
     return timeSlots;
