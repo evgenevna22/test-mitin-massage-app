@@ -57,7 +57,8 @@ export const useCalendar = () => {
       )
   );
 
-  const selectCurrentMonth = (month: number) => {
+  const selectCurrentMonth = (year: number, month: number) => {
+    currentYear.value = year;
     currentMonth.value = String(month).padStart(2, '0');
   };
 

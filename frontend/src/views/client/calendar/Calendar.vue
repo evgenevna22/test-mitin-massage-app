@@ -38,9 +38,9 @@ const handleDateSelect = async () => {
   router.push(`/client/slots/${transformedDate}`);
 };
 
-const handleMonthChange = ({ month }: DatePickerMonthChangeEvent) => {
-  selectCurrentMonth(month);
-  selectMonth(month);
+const handleMonthChange = ({ month, year }: DatePickerMonthChangeEvent) => {
+  selectCurrentMonth(year, month);
+  selectMonth(year, month);
 };
 </script>
 

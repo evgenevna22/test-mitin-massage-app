@@ -16,6 +16,15 @@ app.use(ToastService);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
+    options: {
+      components: {
+        card: {
+          css: {
+            bodyPadding: 'var(--gap-2x)',
+          },
+        },
+      },
+    },
   },
 });
 
