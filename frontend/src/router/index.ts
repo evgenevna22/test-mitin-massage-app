@@ -86,7 +86,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'slot-builder',
         name: 'AdminSlotBuilder',
-        component: () => import('../views/admin/AdminSlotBuilder.vue'),
+        component: () => import('../views/admin/slot-builder/AdminSlotBuilder.vue'),
         meta: {
           breadcrumb: {
             label: 'Calendar',

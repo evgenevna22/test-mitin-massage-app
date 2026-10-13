@@ -1,8 +1,6 @@
 export type TimeSlot = {
   start: '';
   end: '';
-  duration: '';
-  gap: '';
 };
 
 export type SlotPayload = {

@@ -25,12 +25,16 @@ router.post('/slots', async (req: Request, res: Response) => {
   const { dates, time } = slots;
 
   const createTimeSlots = (date: DateSlot): TimeSlot[] => {
+    const DEFAULT_DURATION_IN_HOUR = 1;
+    const DEFAULT_GAP_IN_MINS = 30;
+
+    const DEFAULT_DURATION_IN_MS = getHourInMs(DEFAULT_DURATION_IN_HOUR);
+    const DEFAULT_GAP_IN_MS = getMinInMs(DEFAULT_GAP_IN_MINS);
+
     const [year, month, day] = date.split('-');
 
     const [startHour, startMin] = time.start.split(':').map(Number);
     const [endHour, endMin] = time.end.split(':').map(Number);
-    const [durHour, durMin] = time.duration.split(':').map(Number);
-    const [gapHour, gapMin] = time.gap.split(':').map(Number);
 
     const dateSlot = new Date(
       Number(year),
@@ -42,14 +46,12 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     const timeSlots: TimeSlot[] = [time.start];
 
-    const durInMs = getHourInMs(durHour) + getMinInMs(durMin);
-    const gapInMs = getHourInMs(gapHour) + getMinInMs(gapMin);
-
     for (
       let slot = { hour: startHour, min: startMin };
       slot.hour < endHour || (slot.hour === endHour && slot.min <= endMin);
     ) {
-      const diffMs = dateSlot.getTime() + durInMs + gapInMs;
+      const diffMs =
+        dateSlot.getTime() + DEFAULT_DURATION_IN_MS + DEFAULT_GAP_IN_MS;
 
       dateSlot.setTime(diffMs);
       slot = {
@@ -57,7 +59,7 @@ router.post('/slots', async (req: Request, res: Response) => {
         min: dateSlot.getMinutes(),
       };
 
-       // check the last slot
+      // check the last available slot
       if (slot.hour > endHour) {
         break;
       }
@@ -73,6 +75,8 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     for (const date of dates) {
       for (const time of createTimeSlots(date)) {
+        console.log('time:', time);
+
         const ref = db.collection('slots').doc();
         batch.set(ref, {
           date,
@@ -89,7 +93,7 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Ошибка сохранении слотов:', error);
+    console.error('Failes to save slots:', error);
 
     sendError(res, 500, 'Failes to save slots');
   }

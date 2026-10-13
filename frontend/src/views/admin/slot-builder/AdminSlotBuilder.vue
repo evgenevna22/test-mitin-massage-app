@@ -34,12 +34,6 @@
 
           <label>End time</label>
           <input type="time" v-model="timeSlot.end" />
-
-          <label>Gap time</label>
-          <input type="time" v-model="timeSlot.gap" />
-
-          <label>Duration time</label>
-          <input type="time" v-model="timeSlot.duration" />
         </div>
 
         <div class="buttons">
@@ -60,8 +54,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import type { TimeSlot } from '@/types';
-import { useSlots } from './use-slots';
+import { useSlots } from '../use-slots';
 import { transformDate } from '@utils';
+import { useRouter } from 'vue-router';
 
 const Step = {
   First: 0,
@@ -71,9 +66,9 @@ const Step = {
 const getInitialTimeSlotState = (): TimeSlot => ({
   start: '',
   end: '',
-  duration: '',
-  gap: '',
 });
+
+const router = useRouter();
 
 const { createSlots, isLoading } = useSlots();
 
@@ -110,7 +105,8 @@ const handleClickButton = async () => {
     await createSlots(dates.value, timeSlot);
     resetTimeSlots();
     resetDates();
-    step.value = Step.First;
+    
+    router.push('/')
   }
 };
 

@@ -27,8 +27,6 @@ export const CreateDateSlotSchema = z.array(DateScheme).min(1);
 export const CreateTimeSlotSchema = z.object({
   start: TimeScheme,
   end: TimeScheme,
-  duration: TimeScheme,
-  gap: TimeScheme,
 });
 
 export const SlotPayloadSchema = z.object({

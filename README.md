@@ -7,7 +7,7 @@ Mitin Massage is a small Telegram Mini App for booking massage appointments thro
 - Shows the calendar with free appointment times.
 - Lets clients book an available time and receive a confirmation in Telegram.
 - Notifies the administrator when a new appointment is made.
-- Lets administrator creates appointment slots for several dates at once, with a chosen time range, duration, and break.
+- Lets administrator creates appointment slots for several dates at once, with a chosen time range.
 - Shows up a few upcoming booked appointments in the admin area.
 - Determines access from the visitor's Telegram ID. Administrators can also switch to the client view to see the experience from the other side.
 - Verifies `Telegram.WebApp.initData` on the API, except in development mode to make local testing easier.
@@ -103,9 +103,7 @@ A slot-creation request looks like this:
   "dates": ["2026-09-10", "2026-09-11"],
   "time": {
     "start": "10:00",
-    "end": "18:00",
-    "duration": "01:00",
-    "gap": "00:15"
+    "end": "18:00"
   }
 }
 ```
