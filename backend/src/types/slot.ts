@@ -12,15 +12,17 @@ export const SlotSchema = z.object({
   date: DateScheme, // формат "YYYY-MM-DD"
   time: TimeScheme, // формат "HH:MM"
   status: z.enum(['free', 'booked']),
+  isConfirmed: z.boolean().default(false),
+  comment: z.string().max(500).nullable().optional(),
+  massageType: z.string().default(''),
   userId: z.number().nullable(), // Telegram ID клиента
   userName: z.string().nullable(), // имя клиента
   userNickname: z.string().nullable(), // @ник клиента
 });
 
-export const BookStolSchema = z.object({
-  userId: z.number(), // Telegram ID клиента
-  userName: z.string().min(1), // имя клиента
-  userNickname: z.string(), // @ник клиента
+export const BookSlotSchema = z.object({
+  massageType: z.string().trim().min(1).max(100),
+  comment: z.string().trim().max(500).optional(),
 });
 
 export const CreateDateSlotSchema = z.array(DateScheme).min(1);
@@ -35,7 +37,7 @@ export const SlotPayloadSchema = z.object({
 });
 
 export type Slot = z.infer<typeof SlotSchema>;
-export type BookSlot = z.infer<typeof BookStolSchema>;
+export type BookSlot = z.infer<typeof BookSlotSchema>;
 
 export type SlotPayload = z.infer<typeof SlotPayloadSchema>;
 export type CreateDateSlot = z.infer<typeof CreateDateSlotSchema>;

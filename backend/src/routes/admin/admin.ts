@@ -139,6 +139,8 @@ router.post('/slots', async (req: Request, res: Response) => {
           date,
           time,
           status: 'free',
+          isConfirmed: false,
+          massageType: '',
           userId: null,
           userName: null,
           userNickname: null,

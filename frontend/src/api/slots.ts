@@ -1,5 +1,10 @@
 import api from '.';
-import type { ClientSlotDTO, SlotDTO, SlotPayload } from '../types/slot';
+import type {
+  BookSlotPayload,
+  ClientSlotDTO,
+  SlotDTO,
+  SlotPayload,
+} from '../types/slot';
 
 export class SlotsApi {
   public static getAppointments = async (
@@ -41,7 +46,10 @@ export class SlotsApi {
     return (await api.get('admin/upcoming')).data;
   };
 
-  public static bookSlot = async (id: string): Promise<undefined> => {
-    return (await api.put(`slots/${id}/book`)).data;
+  public static bookSlot = async (
+    id: string,
+    payload: BookSlotPayload
+  ): Promise<undefined> => {
+    return (await api.put(`slots/${id}/book`, payload)).data;
   };
 }

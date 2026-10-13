@@ -13,11 +13,16 @@
                 name{{ slot.userName }} <br />
                 <span>@{{ slot.userNickname }}</span>
               </p>
-              <span class="text">тип массажа</span>
-              <span class="text">comment</span>
+              <span class="text">{{
+                slot.massageType || 'Тип не указан'
+              }}</span>
+              <span v-if="slot.comment" class="text">{{ slot.comment }}</span>
             </div>
 
-            <Badge>Подтверждена???</Badge>
+            <Badge
+              :value="confirmationLabel(slot.isConfirmed)"
+              :severity="slot.isConfirmed ? 'success' : 'warn'"
+            />
 
             <Button icon="pi pi-chevron-right" size="small" variant="text" />
           </div>
@@ -38,11 +43,16 @@
                   name{{ slot.userName }} <br />
                   <span>@{{ slot.userNickname }}</span>
                 </p>
-                <span class="text">тип массажа</span>
-                <span class="text">comment</span>
+                <span class="text">{{
+                  slot.massageType || 'Тип не указан'
+                }}</span>
+                <span v-if="slot.comment" class="text">{{ slot.comment }}</span>
               </div>
 
-              <Badge>Подтверждена???</Badge>
+              <Badge
+                :value="confirmationLabel(slot.isConfirmed)"
+                :severity="slot.isConfirmed ? 'success' : 'warn'"
+              />
 
               <Button icon="pi pi-chevron-right" size="small" variant="text" />
             </div>
@@ -60,6 +70,7 @@
 import { computed } from 'vue';
 import { useUpcomingSlots } from './use-upcoming-slots';
 import { transformDate } from '@utils';
+import type { SlotDTO } from '@/types';
 
 const props = defineProps<{
   selectedDate?: Date;
@@ -77,14 +88,21 @@ const slots = computed(() => {
     : upcomingSlots.value;
 });
 
-const slotsByDate = computed(() => {
-  const b = Object.groupBy(upcomingSlots.value, ({ date }) => date);
-  console.log('slotsByDate', b);
+const slotsByDate = computed<Record<string, SlotDTO[]>>(() =>
+  upcomingSlots.value.reduce((slots, slot) => {
+    if (slots[slot.date] === null || slots[slot.date] === undefined) {
+      slots[slot.date] = [];
+    }
+    slots[slot.date].push(slot);
+    
+    return slots;
+  }, {})
+);
 
-  return Object.groupBy(upcomingSlots.value, ({ date }) => date);
-});
+const getDayFromDate = (date: Date) => date.getDate();
 
-const getDayFromDate = (date: string) => new Date(date).getDate();
+const confirmationLabel = (isConfirmed: boolean) =>
+  isConfirmed ? 'Подтверждена' : 'Не подтверждена';
 </script>
 
 <style lang="scss" scoped>

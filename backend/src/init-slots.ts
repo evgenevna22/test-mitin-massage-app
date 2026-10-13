@@ -14,6 +14,8 @@ const initSlots = async () => {
         date,
         time,
         status: 'free',
+        isConfirmed: false,
+        massageType: '',
         userId: null,
         userName: null,
         userNickname: null,

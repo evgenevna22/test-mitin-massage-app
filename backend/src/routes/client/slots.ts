@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
-import { SlotSchema, type Slot } from '../../types';
+import { BookSlotSchema, SlotSchema, type Slot } from '../../types';
 import { verifyTelegram } from '../../middleware/verify-telegram';
 import { sendError } from '../../helpers';
 import { TelegramService } from '../../telegram';
@@ -103,9 +103,16 @@ router.get('/date/:date', async (req: Request, res: Response) => {
 router.put('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const bookingDetails = BookSlotSchema.safeParse(req.body);
 
     if (typeof id !== 'string') {
       sendError(res, 400, 'Param `id` must be a string type');
+
+      return;
+    }
+
+    if (!bookingDetails.success) {
+      sendError(res, 400, 'A massage type is required to book a slot');
 
       return;
     }
@@ -128,6 +135,9 @@ router.put('/:id/book', async (req: Request, res: Response) => {
 
     await slotReference.update({
       status: 'booked',
+      isConfirmed: false,
+      massageType: bookingDetails.data.massageType,
+      comment: bookingDetails.data.comment || null,
       userId: req.telegramUser.id,
       userName: req.telegramUser.first_name,
       userNickname: req.telegramUser.username ?? null,
@@ -188,6 +198,9 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
 
     await slotReference.update({
       status: 'free',
+      isConfirmed: false,
+      massageType: '',
+      comment: null,
       userId: null,
       userName: null,
       userNickname: null,

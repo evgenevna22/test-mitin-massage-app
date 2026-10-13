@@ -93,8 +93,6 @@ const saveButtonLabel = computed(() =>
   step.value === Step.First ? 'Continue' : 'Save'
 );
 
-const isBackButtonVisible = computed(() => step.value === Step.Second);
-
 const isSaveButtonDisabled = computed(() =>
   step.value === Step.First ? !dates.value.length : !isTimeSlotsFilled.value
 );
@@ -121,10 +119,6 @@ const handleClickResetButton = () => {
     return;
   }
   resetTimeSlots();
-};
-
-const handleClickBackButton = () => {
-  step.value = Step.First;
 };
 
 const resetTimeSlots = () => {

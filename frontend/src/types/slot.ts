@@ -8,6 +8,11 @@ export type SlotPayload = {
   time: TimeSlot;
 };
 
+export type BookSlotPayload = {
+  massageType: string;
+  comment?: string;
+};
+
 export type Slot = {
   id: string;
   date: {
@@ -17,6 +22,9 @@ export type Slot = {
   };
   time: string;
   status: 'free' | 'booked';
+  isConfirmed: boolean;
+  comment?: string | null;
+  massageType: string;
   userId: number | null;
   userName: string | null;
   userNickname: string | null;
@@ -27,6 +35,9 @@ export type SlotDTO = {
   date: string;
   time: string;
   status: 'free' | 'booked';
+  isConfirmed: boolean;
+  comment?: string | null;
+  massageType: string;
   userId: number | null;
   userName: string | null;
   userNickname: string | null;
