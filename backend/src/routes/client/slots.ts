@@ -9,19 +9,33 @@ const router = Router();
 
 router.use(verifyTelegram);
 
-router.get('/month/:month', async (req: Request, res: Response) => {
-  const { month } = req.params;
+const toClientSlot = ({ id, date, time, status }: Slot) => ({
+  id,
+  date,
+  time,
+  status,
+});
 
-  if (!month) {
-    sendError(res, 400, 'Param `month` is required');
+router.get('/month/:year/:month', async (req: Request, res: Response) => {
+  const { year, month } = req.params;
+
+  if (
+    typeof year !== 'string' ||
+    typeof month !== 'string' ||
+    !/^\d{4}$/.test(year) ||
+    !/^(0[1-9]|1[0-2])$/.test(month)
+  ) {
+    sendError(res, 400, 'Params `year` and `month` must be in YYYY/MM format');
 
     return;
   }
 
   const now = new Date();
-
-  const from = `${now.getFullYear()}-${month}-01`;
-  const to = `${now.getFullYear()}-${month}-31`;
+  const isCurrentMonth =
+    now.getFullYear() === Number(year) && now.getMonth() + 1 === Number(month);
+  const lastDay = new Date(Number(year), Number(month), 0).getDate();
+  const from = `${year}-${month}-${isCurrentMonth ? String(now.getDate()).padStart(2, '0') : '01'}`;
+  const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
   try {
     const result = await db
@@ -30,7 +44,7 @@ router.get('/month/:month', async (req: Request, res: Response) => {
       .where('date', '<=', to)
       .get();
 
-    const slots: Slot[] = result.docs
+    const slots = result.docs
       .map((doc) => {
         const data = {
           id: doc.id,
@@ -38,15 +52,17 @@ router.get('/month/:month', async (req: Request, res: Response) => {
         };
         return SlotSchema.parse(data);
       })
+      .filter((slot) => slot.status === 'free')
+      .map(toClientSlot)
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
       );
 
     res.json(slots);
   } catch (error) {
-    console.error('Ошибка при получении слотов:', error);
+    console.error('Error retrieving slots:', error);
 
-    sendError(res, 500, 'Не удалось получить слоты');
+    sendError(res, 500, 'Error retrieving slots');
   }
 });
 
@@ -62,7 +78,7 @@ router.get('/date/:date', async (req: Request, res: Response) => {
   try {
     const result = await db.collection('slots').where('date', '==', date).get();
 
-    const slots: Slot[] = result.docs
+    const slots = result.docs
       .map((doc) => {
         const data = {
           id: doc.id,
@@ -71,15 +87,16 @@ router.get('/date/:date', async (req: Request, res: Response) => {
         return SlotSchema.parse(data);
       })
       .filter((data) => data.status === 'free')
+      .map(toClientSlot)
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
       );
 
     res.json(slots);
   } catch (error) {
-    console.error('Ошибка при получении слотов:', error);
+    console.error('Error retrieving slots:', error);
 
-    sendError(res, 500, 'Не удалось получить слоты');
+    sendError(res, 500, 'Error retrieving slots');
   }
 });
 

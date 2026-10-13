@@ -11,6 +11,7 @@ import { useSlotsStore } from '@stores/slots';
 export const useGetAppointments = () => {
   const today = new Date();
   const currentMonth = ref(String(today.getMonth() + 1).padStart(2, '0'));
+  const currentYear = ref(today.getFullYear());
 
   const slotsStore = useSlotsStore();
   const { getSlots } = useSlots();
@@ -18,20 +19,18 @@ export const useGetAppointments = () => {
   const appointments = computed(() => slotsStore.appointments);
   const currentDate = computed(() => slotsStore.currentDate);
 
-  const getAppointments = async (month = currentMonth.value) => {
+  const getAppointments = async (
+    year = currentYear.value,
+    month = currentMonth.value
+  ) => {
     if (slotsStore.areAppointmentsLoading) {
       return;
     }
 
     try {
       slotsStore.setAppointmentsLoading(true);
-      const appointments = await SlotsApi.getAppointments(month);
-
-      if (!appointments?.length) {
-        return;
-      }
-
-      slotsStore.setAppointments(appointments);
+      const appointments = await SlotsApi.getAppointments(year, month);
+      slotsStore.setAppointments(appointments ?? []);
     } finally {
       slotsStore.setAppointmentsLoading(false);
     }
@@ -46,10 +45,11 @@ export const useGetAppointments = () => {
     await getSlots();
   };
 
-  const selectMonth = async (month: number) => {
+  const selectMonth = async (year: number, month: number) => {
+    currentYear.value = year;
     currentMonth.value = String(month).padStart(2, '0');
 
-    await getAppointments();
+    await getAppointments(year, currentMonth.value);
   };
 
   onMounted(getAppointments);

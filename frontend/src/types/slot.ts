@@ -31,3 +31,5 @@ export type SlotDTO = {
   userName: string | null;
   userNickname: string | null;
 };
+
+export type ClientSlotDTO = Pick<SlotDTO, 'id' | 'date' | 'time' | 'status'>;

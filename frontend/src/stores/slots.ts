@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import type { SlotDTO } from '../types/slot';
+import type { ClientSlotDTO } from '../types/slot';
 
 type State = {
-  appointments: Array<SlotDTO>;
+  appointments: Array<ClientSlotDTO>;
   areAppointmentsLoading: boolean;
   currentDate: string;
-  currentSlots: Array<SlotDTO>;
+  currentSlots: Array<ClientSlotDTO>;
   areCurrentSlotsLoading: boolean;
 };
 
@@ -22,7 +22,7 @@ export const useSlotsStore = defineStore('slots-store', {
       this.currentDate = date;
     },
 
-    setAppointments(appointments: SlotDTO[]) {
+    setAppointments(appointments: ClientSlotDTO[]) {
       this.appointments = appointments;
     },
 
@@ -30,7 +30,7 @@ export const useSlotsStore = defineStore('slots-store', {
       this.areAppointmentsLoading = loading;
     },
 
-    setCurrentSlots(slots: SlotDTO[]) {
+    setCurrentSlots(slots: ClientSlotDTO[]) {
       this.currentSlots = slots;
     },
 

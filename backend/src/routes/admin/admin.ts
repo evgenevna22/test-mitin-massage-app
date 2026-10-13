@@ -1,6 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
-import { getHourInMs, getMinInMs, sendError } from '../../helpers';
+import {
+  getHourInMs,
+  getMinInMs,
+  isMonthValid,
+  isYearValid,
+  sendError,
+} from '../../helpers';
 import {
   SlotPayloadSchema,
   Slot,
@@ -15,6 +21,59 @@ const router = Router();
 
 router.use(verifyTelegram);
 router.use(verifyAdmin);
+
+type MonthDatesFilter = 'working' | 'booked';
+
+const getMonthDates =
+  (filter: MonthDatesFilter) => async (req: Request, res: Response) => {
+    const { year, month } = req.params;
+
+    if (
+      typeof year !== 'string' ||
+      typeof month !== 'string' ||
+      !isYearValid(year) ||
+      !isMonthValid(month)
+    ) {
+      sendError(
+        res,
+        400,
+        'Params `year` and `month` must be in YYYY/MM format'
+      );
+
+      return;
+    }
+
+    const lastDay = new Date(Number(year), Number(month), 0).getDate();
+    const from = `${year}-${month}-01`;
+    const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+
+    try {
+      const result = await db
+        .collection('slots')
+        .where('date', '>=', from)
+        .where('date', '<=', to)
+        .get();
+
+      const slots: Slot[] = result.docs.map((doc) =>
+        SlotSchema.parse({ id: doc.id, ...doc.data() })
+      );
+      const filteredSlots =
+        filter === 'booked'
+          ? slots.filter((slot) => slot.status === 'booked')
+          : slots;
+      const dates = [...new Set(filteredSlots.map((slot) => slot.date))].sort();
+
+      res.json(dates);
+    } catch (error) {
+      console.error('Failed to retrieve admin calendar dates:', error);
+
+      sendError(res, 500, 'Failed to retrieve admin calendar dates');
+    }
+  };
+
+router.get('/slots/month/:year/:month/working-dates', getMonthDates('working'));
+
+router.get('/slots/month/:year/:month/booked-dates', getMonthDates('booked'));
 
 router.post('/slots', async (req: Request, res: Response) => {
   const slots = SlotPayloadSchema.parse(req.body);
@@ -75,8 +134,6 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     for (const date of dates) {
       for (const time of createTimeSlots(date)) {
-        console.log('time:', time);
-
         const ref = db.collection('slots').doc();
         batch.set(ref, {
           date,
