@@ -11,7 +11,7 @@ export class SlotsApi {
     year: number,
     month: string
   ): Promise<ClientSlotDTO[] | undefined> => {
-    return (await api.get(`slots/month/${year}/${month}`)).data;
+    return (await api.get(`availability/${year}/${month}`)).data;
   };
 
   public static getSlots = async (
@@ -30,16 +30,14 @@ export class SlotsApi {
     year: number,
     month: string
   ): Promise<string[]> => {
-    return (await api.get(`admin/slots/month/${year}/${month}/working-dates`))
-      .data;
+    return (await api.get(`admin/working-dates/${year}/${month}`)).data;
   };
 
   public static getBookedDates = async (
     year: number,
     month: string
   ): Promise<string[]> => {
-    return (await api.get(`admin/slots/month/${year}/${month}/booked-dates`))
-      .data;
+    return (await api.get(`admin/booked-dates/${year}/${month}`)).data;
   };
 
   public static loadUpcomingSlots = async (): Promise<SlotDTO[]> => {

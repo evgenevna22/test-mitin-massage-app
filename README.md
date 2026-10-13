@@ -89,13 +89,13 @@ Every route except `/` and `/health` expects Telegram authentication. Routes bel
 | --- | --- | --- |
 | `GET` | `/health` | Check that the server is available |
 | `GET` | `/role` | Read the current role and role-switching permission |
-| `GET` | `/slots/month/:year/:month` | Get free client slots for a month |
+| `GET` | `/availability/:year/:month` | Get free client slots for a month |
 | `GET` | `/slots/date/:date` | Get free client slots for a date |
 | `PUT` | `/slots/:id/book` | Book a slot |
 | `PATCH` | `/slots/:id/cancel` | Cancel the current user's appointment |
 | `POST` | `/admin/slots` | Create slots for one or more dates |
-| `GET` | `/admin/slots/month/:year/:month/working-dates` | Get admin working dates for a month |
-| `GET` | `/admin/slots/month/:year/:month/booked-dates` | Get admin booked dates for a month |
+| `GET` | `/admin/working-dates/:year/:month` | Get admin working dates for a month |
+| `GET` | `/admin/booked-dates/:year/:month` | Get admin booked dates for a month |
 | `GET` | `/admin/upcoming` | Get up to 10 upcoming booked slots |
 
 A slot-creation request looks like this:

@@ -71,9 +71,9 @@ const getMonthDates =
     }
   };
 
-router.get('/slots/month/:year/:month/working-dates', getMonthDates('working'));
+router.get('/working-dates/:year/:month', getMonthDates('working'));
 
-router.get('/slots/month/:year/:month/booked-dates', getMonthDates('booked'));
+router.get('/booked-dates/:year/:month', getMonthDates('booked'));
 
 router.post('/slots', async (req: Request, res: Response) => {
   const slots = SlotPayloadSchema.parse(req.body);

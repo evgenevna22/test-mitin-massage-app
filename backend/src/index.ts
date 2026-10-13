@@ -20,6 +20,7 @@ app.use(
     ],
   })
 );
+app.use('/availability', slotsRender);
 app.use('/slots', slotsRender);
 app.use('/admin', adminRender);
 app.use('/role', roleRender);

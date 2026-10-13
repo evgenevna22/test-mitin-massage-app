@@ -16,7 +16,41 @@ const toClientSlot = ({ id, date, time, status }: Slot) => ({
   status,
 });
 
-router.get('/month/:year/:month', async (req: Request, res: Response) => {
+router.get('/date/:date', async (req: Request, res: Response) => {
+  const { date } = req.params;
+
+  if (!date) {
+    sendError(res, 400, 'Param `date` is required');
+
+    return;
+  }
+
+  try {
+    const result = await db.collection('slots').where('date', '==', date).get();
+
+    const slots = result.docs
+      .map((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        return SlotSchema.parse(data);
+      })
+      .filter((data) => data.status === 'free')
+      .map(toClientSlot)
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+      );
+
+    res.json(slots);
+  } catch (error) {
+    console.error('Error retrieving slots:', error);
+
+    sendError(res, 500, 'Error retrieving slots');
+  }
+});
+
+router.get('/:year/:month', async (req: Request, res: Response) => {
   const { year, month } = req.params;
 
   if (
@@ -53,40 +87,6 @@ router.get('/month/:year/:month', async (req: Request, res: Response) => {
         return SlotSchema.parse(data);
       })
       .filter((slot) => slot.status === 'free')
-      .map(toClientSlot)
-      .sort(
-        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
-      );
-
-    res.json(slots);
-  } catch (error) {
-    console.error('Error retrieving slots:', error);
-
-    sendError(res, 500, 'Error retrieving slots');
-  }
-});
-
-router.get('/date/:date', async (req: Request, res: Response) => {
-  const { date } = req.params;
-
-  if (!date) {
-    sendError(res, 400, 'Param `date` is required');
-
-    return;
-  }
-
-  try {
-    const result = await db.collection('slots').where('date', '==', date).get();
-
-    const slots = result.docs
-      .map((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        return SlotSchema.parse(data);
-      })
-      .filter((data) => data.status === 'free')
       .map(toClientSlot)
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
