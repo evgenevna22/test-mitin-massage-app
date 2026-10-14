@@ -4,20 +4,20 @@ import { useNotifications } from './use-notifications';
 
 /**
  * Composable is responsible for getting available slots:
- * - loads available slots based on current date
+ * - loads available slots based on selected date
  */
 export const useSlots = () => {
   const notifications = useNotifications();
   const slotsStore = useSlotsStore();
 
-  const getSlots = async () => {
-    if (slotsStore.areCurrentSlotsLoading || !slotsStore.currentDate) {
+  const getSlotsByDay = async () => {
+    if (slotsStore.areCurrentSlotsLoading || !slotsStore.selectedDate) {
       return;
     }
 
     try {
       slotsStore.setCurrentSlotsLoading(true);
-      const slots = await SlotsApi.getSlots(slotsStore.currentDate);
+      const slots = await SlotsApi.getSlots(slotsStore.selectedDate);
 
       if (!slots?.length) {
         throw Error;
@@ -36,6 +36,6 @@ export const useSlots = () => {
   };
 
   return {
-    getSlots,
+    getSlotsByDay,
   };
 };

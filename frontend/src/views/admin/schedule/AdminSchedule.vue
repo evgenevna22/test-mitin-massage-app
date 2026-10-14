@@ -8,7 +8,13 @@
       <TabPanels>
         <TabPanel value="0">
           <div class="month-view">
-            <DatePicker v-model="selectedDate" inline />
+            <Calendar
+              :pre-selected-date="selectedDate"
+              :disabled-Dates="disabledDates"
+              :working-dates="workingDates"
+              :booked-dates="bookedDates"
+              @date-select="handleDateSelect"
+            />
 
             <AdminUpcomingSlots
               :selected-date="selectedDate"
@@ -41,6 +47,12 @@
 
     <div class="buttons">
       <Button
+        label="Изменить день"
+        :loading="isLoading"
+        :disabled="isSaveButtonDisabled"
+        @click="handleClickButton"
+      />
+      <Button
         :label="saveButtonLabel"
         :loading="isLoading"
         :disabled="isSaveButtonDisabled"
@@ -53,12 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import type { TimeSlot } from '@/types';
 import { transformDate } from '@utils';
 import { useRouter } from 'vue-router';
-import { useSlots } from './use-slots';
-import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue';
+import { useSlots } from '../use-slots';
+import AdminUpcomingSlots from '../upcoming-slots/AdminUpcomingSlots.vue';
+import Calendar from '@components/calendar/Calendar.vue';
+import { useAdminMonthDates } from '@/shared/composables/use-admin-month-dates.ts';
 
 const Step = {
   First: 0,
@@ -72,6 +86,7 @@ const getInitialTimeSlotState = (): TimeSlot => ({
 
 const router = useRouter();
 const { createSlots, isLoading } = useSlots();
+const { workingDates, bookedDates, loadMonthDates } = useAdminMonthDates();
 
 const today = new Date();
 
@@ -79,6 +94,7 @@ const step = ref(Step.First);
 
 const selectedDate = ref<Date>(today);
 const dates = ref<Date[]>([]);
+const disabledDates = computed(() => []);
 
 const timeSlot = reactive(getInitialTimeSlotState());
 
@@ -121,6 +137,10 @@ const handleClickResetButton = () => {
   resetTimeSlots();
 };
 
+const handleDateSelect = (date: Date) => {
+  selectedDate.value = date;
+};
+
 const resetTimeSlots = () => {
   Object.assign(timeSlot, getInitialTimeSlotState());
 };
@@ -128,6 +148,13 @@ const resetTimeSlots = () => {
 const resetDates = () => {
   dates.value = [];
 };
+
+onMounted(() => {
+  loadMonthDates(
+    selectedDate.value.getFullYear(),
+    (selectedDate.value.getMonth() + 1).toString()
+  );
+});
 </script>
 
 <style lang="scss" scoped>
@@ -138,5 +165,11 @@ const resetDates = () => {
 
 .upcoming-slots {
   width: max-content;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
 }
 </style>

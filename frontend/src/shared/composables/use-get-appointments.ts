@@ -14,10 +14,10 @@ export const useGetAppointments = () => {
   const currentYear = ref(today.getFullYear());
 
   const slotsStore = useSlotsStore();
-  const { getSlots } = useSlots();
+  const { getSlotsByDay } = useSlots();
 
   const appointments = computed(() => slotsStore.appointments);
-  const currentDate = computed(() => slotsStore.currentDate);
+  const currentDate = computed(() => slotsStore.selectedDate);
 
   const getAppointments = async (
     year = currentYear.value,
@@ -42,7 +42,7 @@ export const useGetAppointments = () => {
     }
 
     slotsStore.selectDate(date);
-    await getSlots();
+    await getSlotsByDay();
   };
 
   const selectMonth = async (year: number, month: number) => {

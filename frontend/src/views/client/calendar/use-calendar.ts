@@ -16,7 +16,6 @@ export const useCalendar = () => {
   const slotsStore = useSlotsStore();
 
   const appointments = computed(() => slotsStore.appointments);
-  const currentDate = computed(() => slotsStore.currentDate);
 
   const allDaysInMonth = computed<number[]>(() =>
     Array.from(
@@ -63,7 +62,6 @@ export const useCalendar = () => {
   };
 
   return {
-    currentDate,
     disabledDates,
     selectCurrentMonth,
   };

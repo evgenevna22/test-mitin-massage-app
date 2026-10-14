@@ -50,14 +50,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../views/client/slots/Slots.vue'),
         beforeEnter: (current, _, next) => {
           const slotsStore = useSlotsStore();
-          const { getSlots } = useSlots();
+          const { getSlotsByDay } = useSlots();
 
           if (
-            !slotsStore.currentDate &&
+            !slotsStore.selectedDate &&
             typeof current.params?.day === 'string'
           ) {
             slotsStore.selectDate(current.params.day);
-            void getSlots();
+            void getSlotsByDay();
           }
 
           next();

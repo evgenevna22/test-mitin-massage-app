@@ -1,68 +1,25 @@
 <template>
   <div v-if="slots?.length" class="slots">
     <template v-if="selectedDate">
-      <h4 class="title">Записи на {{ getDayFromDate(selectedDate) }}</h4>
+      <h4 class="title">Appointments for {{ getDayFromDate(selectedDate) }}</h4>
 
-      <Card v-for="slot in slots" :key="slot.id">
-        <template #content>
-          <div class="slot">
-            <span class="time">{{ slot.time }}</span>
-
-            <div class="info">
-              <p class="name">
-                name{{ slot.userName }} <br />
-                <span>@{{ slot.userNickname }}</span>
-              </p>
-              <span class="text">{{
-                slot.massageType || 'Тип не указан'
-              }}</span>
-              <span v-if="slot.comment" class="text">{{ slot.comment }}</span>
-            </div>
-
-            <Badge
-              :value="confirmationLabel(slot.isConfirmed)"
-              :severity="slot.isConfirmed ? 'success' : 'warn'"
-            />
-
-            <Button icon="pi pi-chevron-right" size="small" variant="text" />
-          </div>
-        </template>
-      </Card>
+      <template v-for="slot in slots" :key="slot.id">
+        <AdminUpcomingCard :upcoming-slot="slot" />
+      </template>
     </template>
 
     <template v-else>
       <div v-for="(slotByDate, date) in slotsByDate" :key="date">
-        <h4 class="title">Записи на {{ date }}</h4>
-        <Card v-for="slot in slotByDate" :key="slot.id">
-          <template #content>
-            <div class="slot">
-              <span class="time">{{ slot.time }}</span>
+        <h4 class="title">Appointments for {{ date }}</h4>
 
-              <div class="info">
-                <p class="name">
-                  name{{ slot.userName }} <br />
-                  <span>@{{ slot.userNickname }}</span>
-                </p>
-                <span class="text">{{
-                  slot.massageType || 'Тип не указан'
-                }}</span>
-                <span v-if="slot.comment" class="text">{{ slot.comment }}</span>
-              </div>
-
-              <Badge
-                :value="confirmationLabel(slot.isConfirmed)"
-                :severity="slot.isConfirmed ? 'success' : 'warn'"
-              />
-
-              <Button icon="pi pi-chevron-right" size="small" variant="text" />
-            </div>
-          </template>
-        </Card>
+        <template v-for="slot in slotByDate" :key="slot.id">
+          <AdminUpcomingCard :upcoming-slot="slot" />
+        </template>
       </div>
     </template>
   </div>
   <div v-else>
-    <span class="title">There is no slots for you, hon</span>
+    <span class="title">There is nothing for you, hon</span>
   </div>
 </template>
 
@@ -71,6 +28,7 @@ import { computed } from 'vue';
 import { useUpcomingSlots } from './use-upcoming-slots';
 import { transformDate } from '@utils';
 import type { SlotDTO } from '@/types';
+import AdminUpcomingCard from './AdminUpcomingCard.vue';
 
 const props = defineProps<{
   selectedDate?: Date;
@@ -89,20 +47,17 @@ const slots = computed(() => {
 });
 
 const slotsByDate = computed<Record<string, SlotDTO[]>>(() =>
-  upcomingSlots.value.reduce((slots, slot) => {
-    if (slots[slot.date] === null || slots[slot.date] === undefined) {
+  upcomingSlots.value.reduce<Record<string, SlotDTO[]>>((slots, slot) => {
+    if (!slots[slot.date]) {
       slots[slot.date] = [];
     }
     slots[slot.date].push(slot);
-    
+
     return slots;
   }, {})
 );
 
 const getDayFromDate = (date: Date) => date.getDate();
-
-const confirmationLabel = (isConfirmed: boolean) =>
-  isConfirmed ? 'Подтверждена' : 'Не подтверждена';
 </script>
 
 <style lang="scss" scoped>
@@ -116,23 +71,5 @@ const confirmationLabel = (isConfirmed: boolean) =>
   gap: var(--gap-2x);
   justify-content: center;
   flex-wrap: wrap;
-}
-
-.slot {
-  display: flex;
-  gap: var(--gap-2x);
-  justify-content: center;
-  align-items: center;
-}
-
-.time,
-.name {
-  font-size: var(--font-size-subtitle);
-  font-weight: 600;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
 }
 </style>

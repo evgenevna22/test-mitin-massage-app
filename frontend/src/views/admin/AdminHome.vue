@@ -5,13 +5,12 @@
   </header>
 
   <div class="main">
-
     <AdminSchedule />
   </div>
 </template>
 
 <script lang="ts" setup>
-import AdminSchedule from './AdminSchedule.vue';
+import AdminSchedule from './schedule/AdminSchedule.vue';
 import { RoleSwitcher } from '@components';
 </script>
 

@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
 import { BookSlotSchema, SlotSchema, type Slot } from '../../types';
 import { verifyTelegram } from '../../middleware/verify-telegram';
-import { sendError } from '../../helpers';
+import { isMonthValid, isYearValid, sendError } from '../../helpers';
 import { TelegramService } from '../../telegram';
 
 const router = Router();
@@ -16,6 +16,7 @@ const toClientSlot = ({ id, date, time, status }: Slot) => ({
   status,
 });
 
+// api to receive slots for a specific day
 router.get('/date/:date', async (req: Request, res: Response) => {
   const { date } = req.params;
 
@@ -50,14 +51,15 @@ router.get('/date/:date', async (req: Request, res: Response) => {
   }
 });
 
+// api to receive only free slots for a specific month
 router.get('/:year/:month', async (req: Request, res: Response) => {
   const { year, month } = req.params;
 
   if (
     typeof year !== 'string' ||
     typeof month !== 'string' ||
-    !/^\d{4}$/.test(year) ||
-    !/^(0[1-9]|1[0-2])$/.test(month)
+    isYearValid(year) ||
+    isMonthValid(month)
   ) {
     sendError(res, 400, 'Params `year` and `month` must be in YYYY/MM format');
 

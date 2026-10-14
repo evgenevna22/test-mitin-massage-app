@@ -71,15 +71,15 @@ const getMonthDates =
     }
   };
 
+// api to receive slots for a specific month
 router.get('/working-dates/:year/:month', getMonthDates('working'));
 
+// api to receive booked slots for a specific month
 router.get('/booked-dates/:year/:month', getMonthDates('booked'));
 
+// api to create slots for a specific dates
 router.post('/slots', async (req: Request, res: Response) => {
   const slots = SlotPayloadSchema.parse(req.body);
-
-  // date format: 'YYYY-MM-DD'
-  // time format: 'HH:MM'
 
   const { dates, time } = slots;
 
@@ -118,7 +118,6 @@ router.post('/slots', async (req: Request, res: Response) => {
         min: dateSlot.getMinutes(),
       };
 
-      // check the last available slot
       if (slot.hour > endHour) {
         break;
       }
@@ -158,6 +157,7 @@ router.post('/slots', async (req: Request, res: Response) => {
   }
 });
 
+// api to receive 10 upcoming booked slots
 router.get('/upcoming', async (req: Request, res: Response) => {
   const today = new Date();
   const transformDate = (date: Date) => {
@@ -189,7 +189,7 @@ router.get('/upcoming', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('The error while recieving slots:', error);
 
-    sendError(res, 500, 'Failed to recieve clots');
+    sendError(res, 500, 'Failed to receive clots');
   }
 });
 

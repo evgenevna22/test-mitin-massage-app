@@ -4,7 +4,7 @@ import type { ClientSlotDTO } from '../types/slot';
 type State = {
   appointments: Array<ClientSlotDTO>;
   areAppointmentsLoading: boolean;
-  currentDate: string;
+  selectedDate: string;
   currentSlots: Array<ClientSlotDTO>;
   areCurrentSlotsLoading: boolean;
 };
@@ -13,13 +13,13 @@ export const useSlotsStore = defineStore('slots-store', {
   state: (): State => ({
     appointments: [],
     areAppointmentsLoading: false,
-    currentDate: '',
+    selectedDate: '',
     currentSlots: [],
     areCurrentSlotsLoading: false,
   }),
   actions: {
     selectDate(date: string) {
-      this.currentDate = date;
+      this.selectedDate = date;
     },
 
     setAppointments(appointments: ClientSlotDTO[]) {

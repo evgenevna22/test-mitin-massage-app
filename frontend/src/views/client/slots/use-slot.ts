@@ -1,12 +1,13 @@
 import { SlotsApi } from '@/api/slots';
+import type { BookSlotPayload } from '@/types';
 import { useNotifications } from '@/shared/composables';
 
 export const useSlot = () => {
   const notifications = useNotifications();
 
-  const selectSlot = async (id: string) => {
+  const selectSlot = async (id: string, payload: BookSlotPayload) => {
     try {
-      await SlotsApi.bookSlot(id);
+      await SlotsApi.bookSlot(id, payload);
 
       notifications.add({
         severity: 'success',
