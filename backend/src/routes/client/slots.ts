@@ -16,7 +16,7 @@ const toClientSlot = ({ id, date, time, status }: Slot) => ({
   status,
 });
 
-// api to receive slots for a specific day
+// api to receive free slots for a specific day
 router.get('/date/:date', async (req: Request, res: Response) => {
   const { date } = req.params;
 
@@ -52,7 +52,7 @@ router.get('/date/:date', async (req: Request, res: Response) => {
 });
 
 // api to receive only free slots for a specific month
-router.get('/:year/:month', async (req: Request, res: Response) => {
+router.get('/availability/:year/:month', async (req: Request, res: Response) => {
   const { year, month } = req.params;
 
   if (
@@ -102,6 +102,7 @@ router.get('/:year/:month', async (req: Request, res: Response) => {
   }
 });
 
+// api to book slot by id
 router.put('/:id/book', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -162,6 +163,7 @@ router.put('/:id/book', async (req: Request, res: Response) => {
   }
 });
 
+// api to cancel slot by id
 router.patch('/:id/cancel', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

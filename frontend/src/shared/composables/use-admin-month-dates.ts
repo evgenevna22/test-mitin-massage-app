@@ -1,4 +1,4 @@
-import { SlotsApi } from '@/api/slots';
+import { AdminSlotsApi } from '@/api/admin-slots';
 import { ref } from 'vue';
 import { useNotifications } from './use-notifications';
 
@@ -10,14 +10,14 @@ export const useAdminMonthDates = () => {
 
   const workingDates = ref<string[]>([]);
   const bookedDates = ref<string[]>([]);
-  const isLoading = ref(false);
+  const isMonthDatesLoading = ref(false);
 
   const loadMonthDates = async (year: number, month: string) => {
     try {
-      isLoading.value = true;
+      isMonthDatesLoading.value = true;
       const [working, booked] = await Promise.all([
-        SlotsApi.getWorkingDates(year, month),
-        SlotsApi.getBookedDates(year, month),
+        AdminSlotsApi.getWorkingDates(year, month),
+        AdminSlotsApi.getBookedDates(year, month),
       ]);
       workingDates.value = working;
       bookedDates.value = booked;
@@ -28,14 +28,14 @@ export const useAdminMonthDates = () => {
         summary: "Slots weren't loaded",
       });
     } finally {
-      isLoading.value = false;
+      isMonthDatesLoading.value = false;
     }
   };
 
   return {
     workingDates,
     bookedDates,
-    isLoading,
+    isMonthDatesLoading,
     loadMonthDates,
   };
 };

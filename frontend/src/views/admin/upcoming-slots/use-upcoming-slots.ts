@@ -1,5 +1,5 @@
 import { onMounted, ref } from 'vue';
-import { SlotsApi } from '@/api/slots';
+import { AdminSlotsApi } from '@/api/admin-slots';
 import type { SlotDTO } from '@/types';
 import { useNotifications } from '@/shared/composables';
 
@@ -16,7 +16,7 @@ export const useUpcomingSlots = () => {
 
     try {
       isLoading.value = true;
-      upcomingSlots.value = await SlotsApi.loadUpcomingSlots();
+      upcomingSlots.value = await AdminSlotsApi.getUpcomingSlots();
     } catch (error) {
       console.error(error);
       notifications.add({

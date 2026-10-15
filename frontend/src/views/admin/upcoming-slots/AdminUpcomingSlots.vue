@@ -4,7 +4,7 @@
       <h4 class="title">Appointments for {{ getDayFromDate(selectedDate) }}</h4>
 
       <template v-for="slot in slots" :key="slot.id">
-        <AdminUpcomingCard :upcoming-slot="slot" />
+        <SlotCard :upcoming-slot="slot" />
       </template>
     </template>
 
@@ -13,13 +13,10 @@
         <h4 class="title">Appointments for {{ date }}</h4>
 
         <template v-for="slot in slotByDate" :key="slot.id">
-          <AdminUpcomingCard :upcoming-slot="slot" />
+          <SlotCard :upcoming-slot="slot" />
         </template>
       </div>
     </template>
-  </div>
-  <div v-else>
-    <span class="title">There is nothing for you, hon</span>
   </div>
 </template>
 
@@ -28,7 +25,7 @@ import { computed } from 'vue';
 import { useUpcomingSlots } from './use-upcoming-slots';
 import { transformDate } from '@utils';
 import type { SlotDTO } from '@/types';
-import AdminUpcomingCard from './AdminUpcomingCard.vue';
+import SlotCard from './SlotCard.vue';
 
 const props = defineProps<{
   selectedDate?: Date;

@@ -1,23 +1,28 @@
-import { ref } from 'vue';
-import { SlotsApi } from '@/api/slots';
-import type { TimeSlot } from '@/types';
+import { reactive, ref } from 'vue';
+import { AdminSlotsApi } from '@/api/admin-slots';
+import type { SlotDTO, TimeSlot } from '@/types';
 import { transformDate } from '@utils';
 import { useNotifications } from '@/shared/composables';
 
 export const useSlots = () => {
   const notifications = useNotifications();
 
-  const isLoading = ref(false);
+  const slotsByMonth = ref<SlotDTO[] | undefined>([]);
+
+  const loadingStatus = reactive({
+    creatingSlots: false,
+    gettingSlots: false,
+  });
 
   const createSlots = async (dates: Date[], time: TimeSlot) => {
-    if (isLoading.value) {
+    if (loadingStatus.creatingSlots) {
       return;
     }
-    isLoading.value = true;
+    loadingStatus.creatingSlots = true;
 
     try {
       const transformedDates = dates.map(transformDate);
-      await SlotsApi.createSlots({ dates: transformedDates, time });
+      await AdminSlotsApi.createSlots({ dates: transformedDates, time });
       notifications.add({ severity: 'success', summary: "slots're saved" });
     } catch (error) {
       console.error(error);
@@ -26,12 +31,33 @@ export const useSlots = () => {
         summary: "slots haven't been saved",
       });
     } finally {
-      isLoading.value = false;
+      loadingStatus.creatingSlots = false;
+    }
+  };
+
+  const getSlotsByMonth = async (year: number, month: string) => {
+    if (loadingStatus.gettingSlots) {
+      return;
+    }
+    loadingStatus.gettingSlots = true;
+
+    try {
+      slotsByMonth.value = await AdminSlotsApi.getSlotsByMonth(year, month);
+    } catch (error) {
+      console.error(error);
+      notifications.add({
+        severity: 'error',
+        summary: "slots haven't been loaded",
+      });
+    } finally {
+      loadingStatus.gettingSlots = false;
     }
   };
 
   return {
-    isLoading,
+    slotsByMonth,
+    loadingStatus,
     createSlots,
+    getSlotsByMonth,
   };
 };

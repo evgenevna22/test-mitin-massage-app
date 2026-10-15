@@ -1,4 +1,4 @@
-import { SlotsApi } from '@/api/slots';
+import { ClientSlotsApi } from '@/api/client-slots';
 import { useSlotsStore } from '@stores/slots';
 import { useNotifications } from './use-notifications';
 
@@ -17,7 +17,7 @@ export const useSlots = () => {
 
     try {
       slotsStore.setCurrentSlotsLoading(true);
-      const slots = await SlotsApi.getSlots(slotsStore.selectedDate);
+      const slots = await ClientSlotsApi.getSlots(slotsStore.selectedDate);
 
       if (!slots?.length) {
         throw Error;
@@ -28,7 +28,7 @@ export const useSlots = () => {
       console.error(error);
       notifications.add({
         severity: 'error',
-        summary: 'Slots weren\'t loaded',
+        summary: "Slots weren't loaded",
       });
     } finally {
       slotsStore.setCurrentSlotsLoading(false);

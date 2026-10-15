@@ -77,6 +77,80 @@ router.get('/working-dates/:year/:month', getMonthDates('working'));
 // api to receive booked slots for a specific month
 router.get('/booked-dates/:year/:month', getMonthDates('booked'));
 
+// api to receive all master slots for a specific month
+router.get('/slots/:year/:month', async (req: Request, res: Response) => {
+  const { year, month } = req.params;
+
+  if (
+    typeof year !== 'string' ||
+    typeof month !== 'string' ||
+    !isYearValid(year) ||
+    !isMonthValid(month)
+  ) {
+    sendError(res, 400, 'Params `year` and `month` must be in YYYY/MM format');
+
+    return;
+  }
+
+  const lastDay = new Date(Number(year), Number(month), 0).getDate();
+  const from = `${year}-${month}-01`;
+  const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+
+  try {
+    const result = await db
+      .collection('slots')
+      .where('date', '>=', from)
+      .where('date', '<=', to)
+      .get();
+
+    const slots: Slot[] = result.docs.map((doc) =>
+      SlotSchema.parse({ id: doc.id, ...doc.data() })
+    );
+
+    res.json(slots);
+  } catch (error) {
+    console.error('Failed to retrieve master slots:', error);
+
+    sendError(res, 500, 'Failed to retrieve master slots');
+  }
+});
+
+// api to receive 10 upcoming booked slots
+router.get('/upcoming', async (req: Request, res: Response) => {
+  const today = new Date();
+  const transformDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  try {
+    const result = await db
+      .collection('slots')
+      .where('status', '==', 'booked')
+      .where('date', '>=', transformDate(today))
+      .orderBy('date')
+      .orderBy('time')
+      .limit(10)
+      .get();
+
+    const slots: Slot[] = result.docs.map((doc) => {
+      const data = {
+        id: doc.id,
+        ...doc.data(),
+      };
+      return SlotSchema.parse(data);
+    });
+
+    res.json(slots);
+  } catch (error) {
+    console.error('The error while recieving slots:', error);
+
+    sendError(res, 500, 'Failed to receive clots');
+  }
+});
+
 // api to create slots for a specific dates
 router.post('/slots', async (req: Request, res: Response) => {
   const slots = SlotPayloadSchema.parse(req.body);
@@ -154,42 +228,6 @@ router.post('/slots', async (req: Request, res: Response) => {
     console.error('Failes to save slots:', error);
 
     sendError(res, 500, 'Failes to save slots');
-  }
-});
-
-// api to receive 10 upcoming booked slots
-router.get('/upcoming', async (req: Request, res: Response) => {
-  const today = new Date();
-  const transformDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  try {
-    const result = await db
-      .collection('slots')
-      .where('status', '==', 'booked')
-      .where('date', '>=', transformDate(today))
-      .orderBy('date')
-      .orderBy('time')
-      .limit(10)
-      .get();
-
-    const slots: Slot[] = result.docs.map((doc) => {
-      const data = {
-        id: doc.id,
-        ...doc.data(),
-      };
-      return SlotSchema.parse(data);
-    });
-
-    res.json(slots);
-  } catch (error) {
-    console.error('The error while recieving slots:', error);
-
-    sendError(res, 500, 'Failed to receive clots');
   }
 });
 

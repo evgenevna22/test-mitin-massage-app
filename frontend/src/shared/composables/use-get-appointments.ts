@@ -1,5 +1,5 @@
 import { computed, onMounted, ref } from 'vue';
-import { SlotsApi } from '@/api/slots';
+import { ClientSlotsApi } from '@/api/client-slots';
 import { useSlots } from '.';
 import { useSlotsStore } from '@stores/slots';
 
@@ -29,7 +29,7 @@ export const useGetAppointments = () => {
 
     try {
       slotsStore.setAppointmentsLoading(true);
-      const appointments = await SlotsApi.getAppointments(year, month);
+      const appointments = await ClientSlotsApi.getAppointments(year, month);
       slotsStore.setAppointments(appointments ?? []);
     } finally {
       slotsStore.setAppointmentsLoading(false);
