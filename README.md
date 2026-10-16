@@ -7,9 +7,9 @@ Mitin Massage is a small Telegram Mini App for booking massage appointments thro
 - Shows the calendar with free appointment times.
 - Lets clients book an available time and receive a confirmation in Telegram.
 - Notifies the administrator when a new appointment is made.
-- Lets administrator creates appointment slots for several dates at once, with a chosen time range.
-- Shows up a few upcoming booked appointments in the admin area.
-- Determines access from the visitor's Telegram ID. Administrators can also switch to the client view to see the experience from the other side.
+- Lets each master create appointment slots for several dates at once, with a chosen time range.
+- Shows a few upcoming booked appointments in the master's area.
+- Determines master access from the visitor's Telegram ID. Masters can switch to the client view to see the experience from the other side.
 - Verifies `Telegram.WebApp.initData` on the API, except in development mode to make local testing easier.
 
 ## Built with
@@ -53,8 +53,8 @@ VITE_API_URL=http://localhost:2222
 BOT_TOKEN=<bot_token>
 PORT=2222
 NODE_ENV=development
-MASTER_TELEGRAM_ID=<primary_admin_telegram_id>
-ADMIN_TELEGRAM_ID=<notification_admin_telegram_id>
+MASTER_TELEGRAM_IDS=<master_1_telegram_id>,<master_2_telegram_id>
+DEV_TELEGRAM_USER_ID=<optional_master_telegram_id_for_local_testing>
 FIREBASE_PROJECT_ID=<firebase_project_id>
 FIREBASE_CLIENT_EMAIL=<service_account_client_email>
 FIREBASE_PRIVATE_KEY=<service_account_private_key>
@@ -77,26 +77,30 @@ pnpm dev
 
 Vite serves the app at `http://localhost:5173` by default, while the API listens on `http://localhost:2222`.
 
-For development: uses `ADMIN_TELEGRAM_ID` as the current user, making it possible to explore the app and API outside Telegram.
+For development: uses the first ID in `MASTER_TELEGRAM_IDS` as the current user unless `DEV_TELEGRAM_USER_ID` is set to one of the configured master IDs. Change this value and restart the backend to emulate the other master locally.
 
 For production: requests come from the Telegram Web App; the server checks the `x-telegram-init-data` header and validates that the signed data is still fresh.
 
+Deploy the Firestore composite indexes declared in `firestore.indexes.json` with `firebase deploy --only firestore:indexes` after selecting the Firebase project.
+
 ## API
 
-Every route except `/` and `/health` expects Telegram authentication. Routes below `/admin` are also restricted to administrator IDs.
+Every route except `/` and `/health` expects Telegram authentication. Routes below `/master` are restricted to the authenticated master's Telegram ID. Clients choose a master before viewing that master's calendar.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
 | `GET` | `/health` | Check that the server is available |
 | `GET` | `/role` | Read the current role and role-switching permission |
-| `GET` | `/availability/:year/:month` | Get free client slots for a month |
-| `GET` | `/slots/date/:date` | Get free client slots for a date |
+| `GET` | `/slots/masters` | List masters available for booking |
+| `GET` | `/slots/availability/:masterId/:year/:month` | Get free slots for a master's month |
+| `GET` | `/slots/:masterId/date/:date` | Get free slots for a master's date |
 | `PUT` | `/slots/:id/book` | Book a slot |
 | `PATCH` | `/slots/:id/cancel` | Cancel the current user's appointment |
-| `POST` | `/admin/slots` | Create slots for one or more dates |
-| `GET` | `/admin/working-dates/:year/:month` | Get admin working dates for a month |
-| `GET` | `/admin/booked-dates/:year/:month` | Get admin booked dates for a month |
-| `GET` | `/admin/upcoming` | Get up to 10 upcoming booked slots |
+| `POST` | `/master/slots` | Create slots for one or more dates for the authenticated master |
+| `GET` | `/master/slots/:year/:month` | Get the authenticated master's slots for a month |
+| `GET` | `/master/working-dates/:year/:month` | Get the authenticated master's working dates for a month |
+| `GET` | `/master/booked-dates/:year/:month` | Get the authenticated master's booked dates for a month |
+| `GET` | `/master/upcoming` | Get up to 10 upcoming booked slots for the authenticated master |
 
 A slot-creation request looks like this:
 

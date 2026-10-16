@@ -15,6 +15,7 @@ export type BookSlotPayload = {
 
 export type Slot = {
   id: string;
+  masterId: string;
   date: {
     day: number;
     month: number;
@@ -32,6 +33,7 @@ export type Slot = {
 
 export type SlotDTO = {
   id: string;
+  masterId: string;
   date: string;
   time: string;
   status: 'free' | 'booked';

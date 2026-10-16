@@ -11,13 +11,20 @@ export const useSlots = () => {
   const slotsStore = useSlotsStore();
 
   const getSlotsByDay = async () => {
-    if (slotsStore.areCurrentSlotsLoading || !slotsStore.selectedDate) {
+    if (
+      slotsStore.areCurrentSlotsLoading ||
+      !slotsStore.selectedDate ||
+      !slotsStore.selectedMasterId
+    ) {
       return;
     }
 
     try {
       slotsStore.setCurrentSlotsLoading(true);
-      const slots = await ClientSlotsApi.getSlots(slotsStore.selectedDate);
+      const slots = await ClientSlotsApi.getSlots(
+        slotsStore.selectedMasterId,
+        slotsStore.selectedDate
+      );
 
       if (!slots?.length) {
         throw Error;

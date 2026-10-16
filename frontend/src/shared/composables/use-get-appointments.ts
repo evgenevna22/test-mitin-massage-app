@@ -23,13 +23,17 @@ export const useGetAppointments = () => {
     year = currentYear.value,
     month = currentMonth.value
   ) => {
-    if (slotsStore.areAppointmentsLoading) {
+    if (slotsStore.areAppointmentsLoading || !slotsStore.selectedMasterId) {
       return;
     }
 
     try {
       slotsStore.setAppointmentsLoading(true);
-      const appointments = await ClientSlotsApi.getAppointments(year, month);
+      const appointments = await ClientSlotsApi.getAppointments(
+        slotsStore.selectedMasterId,
+        year,
+        month
+      );
       slotsStore.setAppointments(appointments ?? []);
     } finally {
       slotsStore.setAppointmentsLoading(false);

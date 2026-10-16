@@ -5,4 +5,4 @@ export * from './use-telegram';
 export * from './use-role';
 export * from './use-role-reversal';
 export * from './use-notifications';
-export * from './use-admin-month-dates';
+export * from './use-master-month-dates';

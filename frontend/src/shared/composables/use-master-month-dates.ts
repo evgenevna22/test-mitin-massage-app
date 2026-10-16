@@ -1,11 +1,11 @@
-import { AdminSlotsApi } from '@/api/admin-slots';
+import { MasterSlotsApi } from '@/api/master-slots';
 import { ref } from 'vue';
 import { useNotifications } from './use-notifications';
 
 /**
  * Composable is responsible for getting working and booked dates
  */
-export const useAdminMonthDates = () => {
+export const useMasterMonthDates = () => {
   const notifications = useNotifications();
 
   const workingDates = ref<string[]>([]);
@@ -16,8 +16,8 @@ export const useAdminMonthDates = () => {
     try {
       isMonthDatesLoading.value = true;
       const [working, booked] = await Promise.all([
-        AdminSlotsApi.getWorkingDates(year, month),
-        AdminSlotsApi.getBookedDates(year, month),
+        MasterSlotsApi.getWorkingDates(year, month),
+        MasterSlotsApi.getBookedDates(year, month),
       ]);
       workingDates.value = working;
       bookedDates.value = booked;

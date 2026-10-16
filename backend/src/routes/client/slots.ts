@@ -1,9 +1,10 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
-import { BookSlotSchema, SlotSchema, type Slot } from '../../types';
+import { BookSlotSchema, DateScheme, SlotSchema, type Slot } from '../../types';
 import { verifyTelegram } from '../../middleware/verify-telegram';
 import { isMonthValid, isYearValid, sendError } from '../../helpers';
 import { TelegramService } from '../../telegram';
+import { config } from '../../types/config';
 
 const router = Router();
 
@@ -16,18 +17,44 @@ const toClientSlot = ({ id, date, time, status }: Slot) => ({
   status,
 });
 
-// api to receive free slots for a specific day
-router.get('/date/:date', async (req: Request, res: Response) => {
-  const { date } = req.params;
+// Public list used by clients to choose a master's calendar.
+router.get('/masters', (_req: Request, res: Response) => {
+  res.json(
+    config.MASTER_TELEGRAM_IDS.map((id, index) => ({
+      id,
+      name: `Master ${index + 1}`,
+    }))
+  );
+});
 
-  if (!date) {
-    sendError(res, 400, 'Param `date` is required');
+// api to receive free slots for a specific day and master
+router.get('/:masterId/date/:date', async (req: Request, res: Response) => {
+  const { masterId, date } = req.params;
+
+  if (typeof masterId !== 'string') {
+    sendError(res, 400, 'Param `masterId` must be in proper format');
+
+    return;
+  }
+
+  if (!config.MASTER_TELEGRAM_IDS.includes(masterId)) {
+    sendError(res, 404, 'Master is not defined');
+    return;
+  }
+
+  if (!DateScheme.safeParse(date).success) {
+    sendError(res, 400, 'Param `date` must be in YYYY-MM-DD format');
 
     return;
   }
 
   try {
-    const result = await db.collection('slots').where('date', '==', date).get();
+    const result = await db
+      .collection('slots')
+      .where('masterId', '==', masterId)
+      .where('date', '==', date)
+      .where('status', '==', 'free')
+      .get();
 
     const slots = result.docs
       .map((doc) => {
@@ -37,7 +64,6 @@ router.get('/date/:date', async (req: Request, res: Response) => {
         };
         return SlotSchema.parse(data);
       })
-      .filter((data) => data.status === 'free')
       .map(toClientSlot)
       .sort(
         (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
@@ -52,55 +78,75 @@ router.get('/date/:date', async (req: Request, res: Response) => {
 });
 
 // api to receive only free slots for a specific month
-router.get('/availability/:year/:month', async (req: Request, res: Response) => {
-  const { year, month } = req.params;
+router.get(
+  '/availability/:masterId/:year/:month',
+  async (req: Request, res: Response) => {
+    const { masterId, year, month } = req.params;
 
-  if (
-    typeof year !== 'string' ||
-    typeof month !== 'string' ||
-    isYearValid(year) ||
-    isMonthValid(month)
-  ) {
-    sendError(res, 400, 'Params `year` and `month` must be in YYYY/MM format');
+    if (typeof masterId !== 'string') {
+      sendError(res, 400, 'Param `masterId` must be in proper format');
 
-    return;
-  }
+      return;
+    }
 
-  const now = new Date();
-  const isCurrentMonth =
-    now.getFullYear() === Number(year) && now.getMonth() + 1 === Number(month);
-  const lastDay = new Date(Number(year), Number(month), 0).getDate();
-  const from = `${year}-${month}-${isCurrentMonth ? String(now.getDate()).padStart(2, '0') : '01'}`;
-  const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+    if (!config.MASTER_TELEGRAM_IDS.includes(masterId)) {
+      sendError(res, 404, 'Master is not defined');
+      return;
+    }
 
-  try {
-    const result = await db
-      .collection('slots')
-      .where('date', '>=', from)
-      .where('date', '<=', to)
-      .get();
-
-    const slots = result.docs
-      .map((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        return SlotSchema.parse(data);
-      })
-      .filter((slot) => slot.status === 'free')
-      .map(toClientSlot)
-      .sort(
-        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+    if (
+      typeof year !== 'string' ||
+      typeof month !== 'string' ||
+      !isYearValid(year) ||
+      !isMonthValid(month)
+    ) {
+      sendError(
+        res,
+        400,
+        'Params `year` and `month` must be in YYYY/MM format'
       );
 
-    res.json(slots);
-  } catch (error) {
-    console.error('Error retrieving slots:', error);
+      return;
+    }
 
-    sendError(res, 500, 'Error retrieving slots');
+    const now = new Date();
+    const isCurrentMonth =
+      now.getFullYear() === Number(year) &&
+      now.getMonth() + 1 === Number(month);
+    const lastDay = new Date(Number(year), Number(month), 0).getDate();
+    const from = `${year}-${month}-${isCurrentMonth ? String(now.getDate()).padStart(2, '0') : '01'}`;
+    const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+
+    try {
+      const result = await db
+        .collection('slots')
+        .where('masterId', '==', masterId)
+        .where('status', '==', 'free')
+        .where('date', '>=', from)
+        .where('date', '<=', to)
+        .get();
+
+      const slots = result.docs
+        .map((doc) => {
+          const data = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          return SlotSchema.parse(data);
+        })
+        .map(toClientSlot)
+        .sort(
+          (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)
+        );
+
+      res.json(slots);
+    } catch (error) {
+      console.error('Error retrieving slots:', error);
+
+      sendError(res, 500, 'Error retrieving slots');
+    }
   }
-});
+);
 
 // api to book slot by id
 router.put('/:id/book', async (req: Request, res: Response) => {
@@ -129,7 +175,9 @@ router.put('/:id/book', async (req: Request, res: Response) => {
 
       const currentSlot = slotDocument.data() as Slot;
       if (currentSlot.status !== 'free') {
-        throw Object.assign(new Error('Slot is already booked'), { status: 409 });
+        throw Object.assign(new Error('Slot is already booked'), {
+          status: 409,
+        });
       }
 
       transaction.update(slotReference, {
@@ -145,7 +193,8 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       return currentSlot;
     });
 
-    TelegramService.sendAdminNotification(
+    TelegramService.sendMasterNotification(
+      slot.masterId,
       `The slot on ${slot.date} was booked by '@${req.telegramUser.username}'`
     );
 

@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 
 import slotsRender from './routes/client/slots';
-import adminRender from './routes/admin/admin';
+import masterRender from './routes/master/master';
 import roleRender from './routes/role';
 import { registerBotHandlers } from './telegram/handlers';
 
@@ -20,9 +20,8 @@ app.use(
     ],
   })
 );
-app.use('/availability', slotsRender);
 app.use('/slots', slotsRender);
-app.use('/admin', adminRender);
+app.use('/master', masterRender);
 app.use('/role', roleRender);
 
 app.get('/', (_, res) => {

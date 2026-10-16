@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
 import {
+  buildSlotId,
   getHourInMs,
   getMinInMs,
   isMonthValid,
@@ -14,19 +15,21 @@ import {
   type DateSlot,
   type TimeSlot,
 } from '../../types';
-import { verifyAdmin } from '../../middleware/verify-admin';
+import { verifyMaster } from '../../middleware/verify-master';
 import { verifyTelegram } from '../../middleware/verify-telegram';
+import type { DocumentReference } from 'firebase-admin/firestore';
 
 const router = Router();
 
 router.use(verifyTelegram);
-router.use(verifyAdmin);
+router.use(verifyMaster);
 
 type MonthDatesFilter = 'working' | 'booked';
 
 const getMonthDates =
   (filter: MonthDatesFilter) => async (req: Request, res: Response) => {
     const { year, month } = req.params;
+    const masterId = String(req.telegramUser.id);
 
     if (
       typeof year !== 'string' ||
@@ -48,26 +51,28 @@ const getMonthDates =
     const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
     try {
-      const result = await db
+      let query = db
         .collection('slots')
+        .where('masterId', '==', masterId)
         .where('date', '>=', from)
-        .where('date', '<=', to)
-        .get();
+        .where('date', '<=', to);
+
+      if (filter === 'booked') {
+        query = query.where('status', '==', 'booked');
+      }
+
+      const result = await query.get();
 
       const slots: Slot[] = result.docs.map((doc) =>
         SlotSchema.parse({ id: doc.id, ...doc.data() })
       );
-      const filteredSlots =
-        filter === 'booked'
-          ? slots.filter((slot) => slot.status === 'booked')
-          : slots;
-      const dates = [...new Set(filteredSlots.map((slot) => slot.date))].sort();
+      const dates = [...new Set(slots.map((slot) => slot.date))].sort();
 
       res.json(dates);
     } catch (error) {
-      console.error('Failed to retrieve admin calendar dates:', error);
+      console.error('Failed to retrieve master calendar dates:', error);
 
-      sendError(res, 500, 'Failed to retrieve admin calendar dates');
+      sendError(res, 500, 'Failed to retrieve master calendar dates');
     }
   };
 
@@ -80,6 +85,7 @@ router.get('/booked-dates/:year/:month', getMonthDates('booked'));
 // api to receive all master slots for a specific month
 router.get('/slots/:year/:month', async (req: Request, res: Response) => {
   const { year, month } = req.params;
+  const masterId = String(req.telegramUser.id);
 
   if (
     typeof year !== 'string' ||
@@ -99,6 +105,7 @@ router.get('/slots/:year/:month', async (req: Request, res: Response) => {
   try {
     const result = await db
       .collection('slots')
+      .where('masterId', '==', masterId)
       .where('date', '>=', from)
       .where('date', '<=', to)
       .get();
@@ -117,6 +124,7 @@ router.get('/slots/:year/:month', async (req: Request, res: Response) => {
 
 // api to receive 10 upcoming booked slots
 router.get('/upcoming', async (req: Request, res: Response) => {
+  const masterId = String(req.telegramUser.id);
   const today = new Date();
   const transformDate = (date: Date) => {
     const year = date.getFullYear();
@@ -128,6 +136,7 @@ router.get('/upcoming', async (req: Request, res: Response) => {
   try {
     const result = await db
       .collection('slots')
+      .where('masterId', '==', masterId)
       .where('status', '==', 'booked')
       .where('date', '>=', transformDate(today))
       .orderBy('date')
@@ -145,14 +154,15 @@ router.get('/upcoming', async (req: Request, res: Response) => {
 
     res.json(slots);
   } catch (error) {
-    console.error('The error while recieving slots:', error);
+    console.error('The error while receiving slots:', error);
 
-    sendError(res, 500, 'Failed to receive clots');
+    sendError(res, 500, 'Failed to receive slots');
   }
 });
 
 // api to create slots for a specific dates
 router.post('/slots', async (req: Request, res: Response) => {
+  const masterId = String(req.telegramUser.id);
   const slots = SlotPayloadSchema.parse(req.body);
 
   const { dates, time } = slots;
@@ -196,38 +206,57 @@ router.post('/slots', async (req: Request, res: Response) => {
         break;
       }
 
-      timeSlots.push(`${slot.hour}:${slot.min.toString().padStart(2, '0')}`);
+      timeSlots.push(
+        `${slot.hour.toString().padStart(2, '0')}:${slot.min.toString().padStart(2, '0')}`
+      );
     }
 
     return timeSlots;
   };
 
   try {
-    const batch = db.batch();
+    const slotWrites: Array<{
+      ref: DocumentReference;
+      data: Omit<Slot, 'id'>;
+    }> = [];
 
     for (const date of dates) {
       for (const time of createTimeSlots(date)) {
-        const ref = db.collection('slots').doc();
-        batch.set(ref, {
-          date,
-          time,
-          status: 'free',
-          isConfirmed: false,
-          massageType: '',
-          userId: null,
-          userName: null,
-          userNickname: null,
+        const ref = db.collection('slots').doc(buildSlotId(masterId, date, time));
+        slotWrites.push({
+          ref,
+          data: {
+            masterId,
+            date,
+            time,
+            status: 'free',
+            isConfirmed: false,
+            massageType: '',
+            userId: null,
+            userName: null,
+            userNickname: null,
+          },
         });
       }
     }
 
-    await batch.commit();
+    await db.runTransaction(async (transaction) => {
+      const existingDocuments = await transaction.getAll(
+        ...slotWrites.map(({ ref }) => ref)
+      );
+
+      existingDocuments.forEach((document, index) => {
+        if (!document.exists) {
+          transaction.create(slotWrites[index].ref, slotWrites[index].data);
+        }
+      });
+    });
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Failes to save slots:', error);
+    console.error('Failed to save slots:', error);
 
-    sendError(res, 500, 'Failes to save slots');
+    sendError(res, 500, 'Failed to save slots');
   }
 });
 

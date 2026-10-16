@@ -1,16 +1,22 @@
+import 'dotenv/config';
 import { db } from './firebase';
+import { buildSlotId } from './helpers';
+import { config } from './types/config';
 
 /**
  * Temporal function to fill the database with time slots
  */
 
-const dates = ['2026-06-10', '2026-06-11', '2026-06-12'];
-const times = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'];
+const dates = ['2026-10-18', '2026-10-29'];
+const times = ['16:00', '17:30', '19:00', '20:30'];
 
 const initSlots = async () => {
+  const masterId = config.MASTER_TELEGRAM_IDS[0];
+
   for (const date of dates) {
     for (const time of times) {
-      await db.collection('slots').add({
+      await db.collection('slots').doc(buildSlotId(masterId, date, time)).create({
+        masterId,
         date,
         time,
         status: 'free',

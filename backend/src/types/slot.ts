@@ -1,16 +1,23 @@
 import { z } from 'zod';
 
-export const TimeScheme = z.string().regex(/^\d{2}:\d{2}/);
-export const DateScheme = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+export const TimeScheme = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/);
+export const DateScheme = z
+  .string()
+  .regex(/^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/)
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  });
 
 // Возможные статусы слота
 export type SlotStatus = 'free' | 'booked';
 
 // Модель слота как она хранится в Firestore
 export const SlotSchema = z.object({
-  id: z.string(), // автогенерированный ID документа
+  id: z.string(), // детерминированный ID: masterId_date_time
+  masterId: z.string().min(1), // Telegram ID мастера в строковом формате
   date: DateScheme, // формат "YYYY-MM-DD"
-  time: TimeScheme, // формат "HH:MM"
+  time: TimeScheme, // формат "HH:mm"
   status: z.enum(['free', 'booked']),
   isConfirmed: z.boolean().default(false),
   comment: z.string().max(500).nullable().optional(),

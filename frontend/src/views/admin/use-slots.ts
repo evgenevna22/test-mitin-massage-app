@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue';
-import { AdminSlotsApi } from '@/api/admin-slots';
+import { MasterSlotsApi } from '@/api/master-slots';
 import type { SlotDTO, TimeSlot } from '@/types';
 import { transformDate } from '@utils';
 import { useNotifications } from '@/shared/composables';
@@ -22,7 +22,7 @@ export const useSlots = () => {
 
     try {
       const transformedDates = dates.map(transformDate);
-      await AdminSlotsApi.createSlots({ dates: transformedDates, time });
+      await MasterSlotsApi.createSlots({ dates: transformedDates, time });
       notifications.add({ severity: 'success', summary: "slots're saved" });
     } catch (error) {
       console.error(error);
@@ -42,7 +42,7 @@ export const useSlots = () => {
     loadingStatus.gettingSlots = true;
 
     try {
-      slotsByMonth.value = await AdminSlotsApi.getSlotsByMonth(year, month);
+      slotsByMonth.value = await MasterSlotsApi.getSlotsByMonth(year, month);
     } catch (error) {
       console.error(error);
       notifications.add({

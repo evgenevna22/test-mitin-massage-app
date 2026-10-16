@@ -20,6 +20,8 @@ declare module 'vue' {
     DatePicker: typeof import('primevue/datepicker')['default']
     Divider: typeof import('primevue/divider')['default']
     Menu: typeof import('primevue/menu')['default']
+    OverlayBadge: typeof import('primevue/overlaybadge')['default']
+    ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Skeleton: typeof import('primevue/skeleton')['default']

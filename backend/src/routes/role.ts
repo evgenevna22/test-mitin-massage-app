@@ -9,24 +9,22 @@ router.use(verifyTelegram);
 
 /**
  * This route is responsible for reterning the role. Additionally:
- * - if the user is admin, they can change the role to see the app through client's app and return back.
- * So there is the condition: if initially the role was admin, the flag `canSwitchRole` is true.
+ * Masters can switch between their schedule view and the client experience.
  */
 router.get('/', async (req: Request, res: Response) => {
   const { id } = req.telegramUser;
 
   const roleMode = req.headers['role-mode'];
 
-  const isAdmin =
-    config.MASTER_TELEGRAM_ID === id || config.ADMIN_TELEGRAM_ID === id;
+  const isMaster = config.MASTER_TELEGRAM_IDS.includes(String(id));
 
-  if (isAdmin && roleMode) {
-    res.json({ role: roleMode, canSwitchRole: isAdmin });
+  if (isMaster && roleMode === 'client') {
+    res.json({ role: 'client', canSwitchRole: true });
     return;
   }
 
-  if (isAdmin) {
-    res.json({ role: 'admin', canSwitchRole: isAdmin });
+  if (isMaster) {
+    res.json({ role: 'master', canSwitchRole: true });
     return;
   }
 
@@ -35,7 +33,7 @@ router.get('/', async (req: Request, res: Response) => {
     return;
   }
 
-  res.json({ role: 'client', canSwitchRole: isAdmin });
+  res.json({ role: 'client', canSwitchRole: false });
 });
 
 export default router;

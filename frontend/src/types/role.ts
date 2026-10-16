@@ -1,4 +1,4 @@
 export type Role = {
-  role: 'admin' | 'client';
+  role: 'master' | 'client';
   canSwitchRole: boolean;
 };

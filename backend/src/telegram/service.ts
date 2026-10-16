@@ -1,9 +1,8 @@
-import { config } from '../types/config';
 import { bot } from './bot';
 
 export class TelegramService {
-  static sendAdminNotification = async (text: string) => {
-    return bot.sendMessage(config.ADMIN_TELEGRAM_ID, text); // will be master's ID
+  static sendMasterNotification = async (masterId: string, text: string) => {
+    return bot.sendMessage(Number(masterId), text);
   };
 
   static sendClientNotification = async (id: number, text: string) => {

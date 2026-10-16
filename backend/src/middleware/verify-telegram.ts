@@ -9,9 +9,14 @@ export const verifyTelegram = (
   next: NextFunction
 ) => {
   if (process.env.NODE_ENV === 'development') {
-    // temporal for local development
+    const configuredDevId = config.DEV_TELEGRAM_USER_ID;
+    const devMasterId = configuredDevId &&
+      config.MASTER_TELEGRAM_IDS.includes(configuredDevId)
+      ? configuredDevId
+      : config.MASTER_TELEGRAM_IDS[0];
+
     req.telegramUser = {
-      id: config.ADMIN_TELEGRAM_ID,
+      id: Number(devMasterId),
       first_name: 'Dev',
       username: 'dev_user',
     };

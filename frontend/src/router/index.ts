@@ -35,7 +35,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../views/client/ClientHome.vue'),
       },
       {
-        path: 'calendar',
+        path: 'calendar/:masterId',
         component: () => import('../views/client/calendar/Calendar.vue'),
         name: 'Calendar',
         meta: {
@@ -46,15 +46,22 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'slots/:day',
+        path: 'slots/:masterId/:day',
         component: () => import('../views/client/slots/Slots.vue'),
         beforeEnter: (current, _, next) => {
           const slotsStore = useSlotsStore();
           const { getSlotsByDay } = useSlots();
 
           if (
-            !slotsStore.selectedDate &&
-            typeof current.params?.day === 'string'
+            typeof current.params.masterId === 'string' &&
+            current.params.masterId !== slotsStore.selectedMasterId
+          ) {
+            slotsStore.selectMaster(current.params.masterId);
+          }
+
+          if (
+            typeof current.params.day === 'string' &&
+            current.params.day !== slotsStore.selectedDate
           ) {
             slotsStore.selectDate(current.params.day);
             void getSlotsByDay();
@@ -67,25 +74,25 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-    path: '/admin',
+    path: '/master',
     component: AdminLayout,
-    name: 'Admin',
+    name: 'Master',
     meta: {
       requiresAuth: true,
       breadcrumb: {
-        label: 'AdminHome',
+        label: 'MasterHome',
         icon: 'pi pi-home',
       },
     },
     children: [
       {
         path: '',
-        name: 'AdminHome',
+        name: 'MasterHome',
         component: () => import('../views/admin/AdminHome.vue'),
       },
       {
         path: 'slot-builder',
-        name: 'AdminSlotBuilder',
+        name: 'MasterSlotBuilder',
         component: () => import('../views/admin/slot-builder/AdminSlotBuilder.vue'),
         meta: {
           breadcrumb: {
@@ -96,7 +103,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'upcoming-slots',
-        name: 'AdminUpcomingSlots',
+        name: 'MasterUpcomingSlots',
         component: () =>
           import('../views/admin/upcoming-slots/AdminUpcomingSlots.vue'),
         meta: {
@@ -123,19 +130,19 @@ router.beforeEach(async (to, from) => {
     await getAppRole();
   }
 
-  const isAdminRoute = Boolean(to.meta.requiresAuth);
-  const isAdminRole = roleStore.role === 'admin';
+  const isMasterRoute = Boolean(to.meta.requiresAuth);
+  const isMasterRole = roleStore.role === 'master';
   const isFirstNavigation = from.matched.length === 0;
 
   if (to.path === '/') {
     return { path: `/${roleStore.role}` };
   }
 
-  if (isAdminRoute && !isAdminRole) {
+  if (isMasterRoute && !isMasterRole) {
     return { path: '/client' };
   }
 
-  if (isFirstNavigation && isAdminRole && !isAdminRoute) {
-    return { path: '/admin' };
+  if (isFirstNavigation && isMasterRole && !isMasterRoute) {
+    return { path: '/master' };
   }
 });

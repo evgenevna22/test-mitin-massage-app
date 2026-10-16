@@ -15,15 +15,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { transformDate } from '@utils';
 import { useCalendar } from './use-calendar';
 import { useGetAppointments } from '@composables';
+import { useSlotsStore } from '@stores/slots';
 import type { DatePickerMonthChangeEvent } from 'primevue';
 
 const today = new Date();
 
 const router = useRouter();
+const route = useRoute();
+const masterId = String(route.params.masterId);
+const slotsStore = useSlotsStore();
+slotsStore.selectMaster(masterId);
 
 const { disabledDates, selectCurrentMonth } = useCalendar();
 const { appointments, selectDate, selectMonth } = useGetAppointments();
@@ -35,7 +40,7 @@ const handleDateSelect = async () => {
 
   await selectDate(transformedDate);
 
-  router.push(`/client/slots/${transformedDate}`);
+  router.push(`/client/slots/${masterId}/${transformedDate}`);
 };
 
 const handleMonthChange = ({ month, year }: DatePickerMonthChangeEvent) => {

@@ -61,13 +61,13 @@ import { computed, onMounted, ref } from 'vue';
 import { RoleSwitcher, SkeletonProgress } from '@components';
 import AdminUpcomingSlots from './upcoming-slots/AdminUpcomingSlots.vue';
 import Calendar from '@components/calendar/Calendar.vue';
-import { useAdminMonthDates } from '@/shared/composables/use-admin-month-dates';
+import { useMasterMonthDates } from '@/shared/composables/use-master-month-dates';
 import AdminSchedule from './schedule/AdminSchedule.vue';
 import { useSlots } from './use-slots';
 
 const { getSlotsByMonth, slotsByMonth } = useSlots();
 const { workingDates, bookedDates, loadMonthDates, isMonthDatesLoading } =
-  useAdminMonthDates();
+  useMasterMonthDates();
 
 const today = new Date();
 
