@@ -120,30 +120,29 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       return;
     }
     const slotReference = db.collection('slots').doc(id);
-    const slotDocument = await slotReference.get();
+    const slot = await db.runTransaction(async (transaction) => {
+      const slotDocument = await transaction.get(slotReference);
 
-    if (!slotDocument.exists) {
-      sendError(res, 404, 'Slot is not defined');
+      if (!slotDocument.exists) {
+        throw Object.assign(new Error('Slot is not defined'), { status: 404 });
+      }
 
-      return;
-    }
+      const currentSlot = slotDocument.data() as Slot;
+      if (currentSlot.status !== 'free') {
+        throw Object.assign(new Error('Slot is already booked'), { status: 409 });
+      }
 
-    const slot = slotDocument.data() as Slot;
+      transaction.update(slotReference, {
+        status: 'booked',
+        isConfirmed: false,
+        massageType: bookingDetails.data.massageType,
+        comment: bookingDetails.data.comment || null,
+        userId: req.telegramUser.id,
+        userName: req.telegramUser.first_name,
+        userNickname: req.telegramUser.username ?? null,
+      });
 
-    if (slot?.status === 'booked') {
-      sendError(res, 409, 'Slot is already booked');
-
-      return;
-    }
-
-    await slotReference.update({
-      status: 'booked',
-      isConfirmed: false,
-      massageType: bookingDetails.data.massageType,
-      comment: bookingDetails.data.comment || null,
-      userId: req.telegramUser.id,
-      userName: req.telegramUser.first_name,
-      userNickname: req.telegramUser.username ?? null,
+      return currentSlot;
     });
 
     TelegramService.sendAdminNotification(
@@ -157,6 +156,14 @@ router.put('/:id/book', async (req: Request, res: Response) => {
 
     res.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && 'status' in error) {
+      const status = error.status;
+      if (status === 404 || status === 409) {
+        sendError(res, status, error.message);
+        return;
+      }
+    }
+
     console.error('Error while booking', error);
 
     sendError(res, 500, "The booking's finished with error");
