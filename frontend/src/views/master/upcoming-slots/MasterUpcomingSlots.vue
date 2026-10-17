@@ -1,10 +1,9 @@
 <template>
-  <div v-if="slots?.length" class="slots">
+  <div v-if="slots?.length" class="upcoming-slots">
     <template v-if="selectedDate">
       <h4 class="title">Appointments for {{ getDayFromDate(selectedDate) }}</h4>
-
       <template v-for="slot in slots" :key="slot.id">
-        <SlotCard :upcoming-slot="slot" />
+        <SlotCard class="slot-card" :upcoming-slot="slot" />
       </template>
     </template>
 
@@ -13,7 +12,7 @@
         <h4 class="title">Appointments for {{ date }}</h4>
 
         <template v-for="slot in slotByDate" :key="slot.id">
-          <SlotCard :upcoming-slot="slot" />
+          <SlotCard class="slot-card" :upcoming-slot="slot" />
         </template>
       </div>
     </template>
@@ -62,11 +61,10 @@ const getDayFromDate = (date: Date) => date.getDate();
   font-size: var(--font-size-subtitle);
 }
 
-.slots {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-2x);
-  justify-content: center;
-  flex-wrap: wrap;
+.slot-card {
+  padding: 0 var(--gap-2x);
+  border-radius: var(--gap-2x);
+  background: var(--background-surface);
+  border: 1px solid var(--border-surface);
 }
 </style>

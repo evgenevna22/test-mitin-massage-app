@@ -13,7 +13,11 @@
   --dark-blue: #2d2c58;
 
   --hero-title: #f3e8d0;
+
   --background: #f7f5f0;
+  --background-surface: #faf9f6;
+
+  --border-surface: #efeae0;
 
   --gap: 4px;
   --gap-2x: calc(var(--gap) * 2);
@@ -45,6 +49,21 @@
 
   @media (max-width: 1024px) {
     font-size: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --background: #0b0e10;
+    --background-surface: #14191d;
+    --border-surface: #252C32;
+
+    color: var(--white);
+    background: var(--background-dark-theme);
+    // prime vue
+    // card
+    --p-card-body-padding: var(--gap-2x) !important;
+    --p-disabled-opacity: 0.3 !important;
+    // tabpanels
+    --p-tabs-tabpanel-color: var(--black);
   }
 }
 

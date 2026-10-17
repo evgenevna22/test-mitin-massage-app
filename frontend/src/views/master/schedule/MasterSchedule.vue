@@ -40,21 +40,17 @@ const handleSlotEdit = () => {};
 <style lang="scss" scoped>
 .master-schedule {
   padding: var(--gap-2x);
-  border: 1px solid #efeae0;
+  border: 1px solid var(--border-surface);
   border-radius: var(--gap-2x);
-  background: #faf9f6;
+  background: var(--background-surface);
 }
 
 .title {
   padding: var(--gap-2x) 0;
 }
 
-.upcoming-slots {
-  width: max-content;
-}
-
 .card {
-  border-top: 1px solid #efeae0;
+  border-top: 1px solid var(--border-surface);
 }
 
 .buttons {

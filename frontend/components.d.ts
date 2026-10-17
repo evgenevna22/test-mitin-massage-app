@@ -18,7 +18,6 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     Carousel: typeof import('primevue/carousel')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
-    FloatLabel: typeof import('primevue/floatlabel')['default']
     InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

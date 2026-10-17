@@ -1,5 +1,5 @@
 <template>
-  <div class="upcoming-card">
+  <div class="slot-card">
     <span class="time">{{ upcomingSlot.time }}</span>
 
     <div v-if="upcomingSlot.status === 'free'">Free</div>
@@ -58,7 +58,7 @@ const handleButtonClick = () => {
 </script>
 
 <style lang="scss" scoped>
-.upcoming-card {
+.slot-card {
   display: flex;
   padding: var(--gap-2x) 0;
   gap: var(--gap-2x);

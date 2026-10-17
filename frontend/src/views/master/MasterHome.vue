@@ -41,7 +41,7 @@
             </div>
           </TabPanel>
           <TabPanel value="1">
-            <MasterUpcomingSlots class="upcoming-slots" />
+            <MasterUpcomingSlots />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -155,10 +155,6 @@ onMounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-}
-
-.upcoming-slots {
-  width: max-content;
 }
 
 .action-buttons {
