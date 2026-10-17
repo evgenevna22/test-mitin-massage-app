@@ -1,31 +1,55 @@
 <template>
-  <RoleSwitcher view-as="admin" />
+  <RoleSwitcher view-as="master" />
 
   <header>
     <Hero />
   </header>
   <main>
-    <h3>The firing slots:</h3>
-    <div v-for="slot in upcoming" :key="slot.id">
-      date: {{ slot.date }} | time: {{ slot.time }}
-      <router-link v-slot="{ href, navigate }" :to="'form'" custom>
-        <a :href="href" @click="navigate">
-          date: {{ slot.date }} | time: {{ slot.time }}
-        </a>
-      </router-link>
+    <h3>Choose a master</h3>
+    <p v-if="isLoading">Loading masters…</p>
+    <p v-else-if="!masters.length">No masters are available.</p>
+    <div v-else class="master-list">
+      <Button
+        v-for="master in masters"
+        :key="master.id"
+        :label="master.name"
+        @click="chooseMaster(master.id)"
+      />
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { RoleSwitcher } from '@components';
+import { ClientSlotsApi } from '@/api/client-slots';
+import type { MasterDTO } from '@/types';
 import Hero from './hero/Hero.vue';
-import { useGetAppointments } from '@/shared/composables';
-import { computed } from 'vue';
 
-const { appointments } = useGetAppointments();
+const router = useRouter();
+const masters = ref<MasterDTO[]>([]);
+const isLoading = ref(true);
 
-const upcoming = computed(() => appointments.value.slice(0, 5));
+const chooseMaster = (masterId: string) => {
+  router.push(`/client/calendar/${encodeURIComponent(masterId)}`);
+};
+
+onMounted(async () => {
+  try {
+    masters.value = await ClientSlotsApi.getMasters();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.master-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+</style>

@@ -25,11 +25,11 @@ export const useSlots = () => {
       await MasterSlotsApi.createSlots({ dates: transformedDates, time });
       notifications.add({ severity: 'success', summary: "slots're saved" });
     } catch (error) {
-      console.error(error);
       notifications.add({
         severity: 'error',
         summary: "slots haven't been saved",
       });
+      throw error;
     } finally {
       loadingStatus.creatingSlots = false;
     }

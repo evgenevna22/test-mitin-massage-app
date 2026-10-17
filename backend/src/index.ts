@@ -16,6 +16,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173',
+      'http://192.168.1.95:5173',
       'https://test-mitin-massage-app.vercel.app',
     ],
   })

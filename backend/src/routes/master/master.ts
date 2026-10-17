@@ -13,11 +13,13 @@ import {
   Slot,
   SlotSchema,
   type DateSlot,
+  type SlotPayload,
   type TimeSlot,
 } from '../../types';
 import { verifyMaster } from '../../middleware/verify-master';
 import { verifyTelegram } from '../../middleware/verify-telegram';
 import type { DocumentReference } from 'firebase-admin/firestore';
+import { ZodError } from 'zod';
 
 const router = Router();
 
@@ -163,7 +165,19 @@ router.get('/upcoming', async (req: Request, res: Response) => {
 // api to create slots for a specific dates
 router.post('/slots', async (req: Request, res: Response) => {
   const masterId = String(req.telegramUser.id);
-  const slots = SlotPayloadSchema.parse(req.body);
+  let slots: SlotPayload;
+
+  try {
+    slots = SlotPayloadSchema.parse(req.body);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      sendError(res, 400, error.issues[0]?.message ?? 'Invalid slot data');
+      return;
+    }
+
+    sendError(res, 400, 'Invalid slot data');
+    return;
+  }
 
   const { dates, time } = slots;
 
@@ -222,7 +236,9 @@ router.post('/slots', async (req: Request, res: Response) => {
 
     for (const date of dates) {
       for (const time of createTimeSlots(date)) {
-        const ref = db.collection('slots').doc(buildSlotId(masterId, date, time));
+        const ref = db
+          .collection('slots')
+          .doc(buildSlotId(masterId, date, time));
         slotWrites.push({
           ref,
           data: {

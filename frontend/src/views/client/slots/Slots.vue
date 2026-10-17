@@ -13,43 +13,100 @@
       {{ $route.params.day }}
     </template>
     <template #content>
-      <Spinner v-if="isLoading" />
+      <SkeletonProgress v-if="isLoading" />
 
       <div v-else class="time-slots">
         <Button
           v-for="timeSlot of timeSlots"
           :key="timeSlot.date"
           size="small"
-          @click="handleButtonClick(timeSlot.id)"
+          @click="openBookingForm(timeSlot.id)"
         >
           {{ timeSlot.time }}
         </Button>
       </div>
+
+      <form
+        v-if="selectedSlotId"
+        class="booking-form"
+        @submit.prevent="bookSlot"
+      >
+        <BookForm
+          v-model:massage-type="bookingDetails.massageType"
+          v-model:comment="bookingDetails.comment"
+        />
+        <div class="booking-form__actions">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            @click="resetBookingForm"
+          />
+          <Button
+            type="submit"
+            label="Book"
+            :disabled="!bookingDetails.massageType.trim()"
+          />
+        </div>
+      </form>
     </template>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useSlotsStore } from '@stores/slots';
-import { Spinner } from '@components';
 import { useSlot } from './use-slot';
+import { SkeletonProgress } from '@components';
 import { useSlots } from '@composables';
 import { useRouter } from 'vue-router';
+import BookForm from '../BookForm.vue';
 
 const router = useRouter();
 
 const slotsStore = useSlotsStore();
 const { selectSlot } = useSlot();
-const { getSlots } = useSlots();
+const { getSlotsByDay } = useSlots();
 
 const isLoading = computed(() => slotsStore.areCurrentSlotsLoading);
 
 const timeSlots = computed(() => slotsStore.currentSlots);
+const selectedSlotId = ref<string | null>(null);
+const bookingDetails = reactive({
+  massageType: '',
+  comment: '',
+});
 
-const handleButtonClick = async (id: string) => {
-  await selectSlot(id);
-  await getSlots();
+const openBookingForm = (id: string) => {
+  selectedSlotId.value = id;
+};
+
+const resetBookingForm = () => {
+  selectedSlotId.value = null;
+  bookingDetails.massageType = '';
+  bookingDetails.comment = '';
+};
+
+const bookSlot = async () => {
+  if (!selectedSlotId.value || !bookingDetails.massageType.trim()) {
+    return;
+  }
+
+  const isBooked = await selectSlot(selectedSlotId.value, {
+    massageType: bookingDetails.massageType.trim(),
+    ...(bookingDetails.comment.trim() && {
+      comment: bookingDetails.comment.trim(),
+    }),
+
+    
+  });
+  console.log('isBooked', isBooked);
+
+  // if (!isBooked) {
+  //   return;
+  // }
+
+  await getSlotsByDay();
+  resetBookingForm();
   router.push({ path: '/client' });
 };
 </script>
@@ -59,5 +116,18 @@ const handleButtonClick = async (id: string) => {
   display: flex;
   gap: 4px;
   justify-content: center;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.booking-form__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: end;
 }
 </style>

@@ -1,6 +1,5 @@
 export type CalendarProps = {
-  preSelectedDate: Date;
-  mode?: 'multiple' | '';
+  mode?: 'multiple' | 'single';
   disabledDates?: Date[];
   workingDates?: string[];
   bookedDates?: string[];

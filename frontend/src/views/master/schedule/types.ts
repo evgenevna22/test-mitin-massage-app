@@ -1,6 +1,6 @@
 import type { SlotDTO } from '@/types';
 
-export type AdminScheduleProps = {
-  selectedDate: Date;
+export type MasterScheduleProps = {
+  selectedDates: Date[];
   slotsByMonth: SlotDTO[];
 };

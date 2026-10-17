@@ -1,6 +1,6 @@
 export type TimeSlot = {
-  start: '';
-  end: '';
+  start: string;
+  end: string;
 };
 
 export type SlotPayload = {

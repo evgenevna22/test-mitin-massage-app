@@ -18,10 +18,8 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     Carousel: typeof import('primevue/carousel')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
-    Divider: typeof import('primevue/divider')['default']
-    Menu: typeof import('primevue/menu')['default']
-    OverlayBadge: typeof import('primevue/overlaybadge')['default']
-    ProgressSpinner: typeof import('primevue/progressspinner')['default']
+    FloatLabel: typeof import('primevue/floatlabel')['default']
+    InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Skeleton: typeof import('primevue/skeleton')['default']
@@ -30,10 +28,6 @@ declare module 'vue' {
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
-    Timeline: typeof import('primevue/timeline')['default']
     Toast: typeof import('primevue/toast')['default']
-  }
-  export interface GlobalDirectives {
-    Ripple: typeof import('primevue/ripple')['default']
   }
 }

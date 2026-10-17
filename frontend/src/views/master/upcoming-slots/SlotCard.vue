@@ -24,7 +24,12 @@
       />
     </template>
 
-    <Button :icon="iconName" size="small" variant="text" />
+    <Button
+      class="action-button"
+      :icon="iconName"
+      rounded
+      @click="handleButtonClick"
+    />
   </div>
 </template>
 
@@ -36,6 +41,8 @@ const props = defineProps<{
   upcomingSlot: SlotDTO;
 }>();
 
+const emits = defineEmits(['create-slot', 'edit-slot']);
+
 const confirmationLabel = computed(() =>
   props.upcomingSlot.isConfirmed ? 'Confirmed' : 'Not confirmed'
 );
@@ -44,14 +51,30 @@ const iconName = computed(
   () =>
     `pi ${props.upcomingSlot.status === 'free' ? 'pi-plus' : 'pi-chevron-right'}`
 );
+
+const handleButtonClick = () => {
+  emits(props.upcomingSlot.status === 'free' ? 'create-slot' : 'edit-slot');
+};
 </script>
 
 <style lang="scss" scoped>
 .upcoming-card {
   display: flex;
-  padding: var(--gap-2x);
+  padding: var(--gap-2x) 0;
   gap: var(--gap-2x);
   align-items: center;
+}
+
+.time {
+  width: 15%;
+}
+
+.name {
+  width: 40%;
+}
+
+.status {
+  width: auto;
 }
 
 .time,
@@ -65,7 +88,8 @@ const iconName = computed(
   flex-direction: column;
 }
 
-.status {
+.status,
+.action-button {
   margin-left: auto;
 }
 </style>

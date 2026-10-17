@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useUpcomingSlots } from './use-upcoming-slots';
+import { useUpcomingSlots } from './use-upcoming-slots.ts';
 import { transformDate } from '@utils';
 import type { SlotDTO } from '@/types';
 import SlotCard from './SlotCard.vue';

@@ -1,8 +1,8 @@
 import type { SlotDTO } from '@/types';
 import { computed } from 'vue';
-import type { AdminScheduleProps } from './types';
+import type { MasterScheduleProps } from './types';
 
-export const useSlotsSchedule = (props: AdminScheduleProps) => {
+export const useSlotsSchedule = (props: MasterScheduleProps) => {
   const slotsByDate = computed<Record<string, SlotDTO[]>>(() => {
     return props.slotsByMonth.reduce<Record<string, SlotDTO[]>>(
       (slots, slot) => {

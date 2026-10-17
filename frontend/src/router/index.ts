@@ -88,12 +88,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'MasterHome',
-        component: () => import('../views/admin/AdminHome.vue'),
+        component: () => import('../views/master/MasterHome.vue'),
       },
       {
         path: 'slot-builder',
         name: 'MasterSlotBuilder',
-        component: () => import('../views/admin/slot-builder/AdminSlotBuilder.vue'),
+        component: () => import('../views/master/slot-builder/MasterSlotBuilder.vue'),
         meta: {
           breadcrumb: {
             label: 'Calendar',
@@ -105,7 +105,7 @@ const routes: RouteRecordRaw[] = [
         path: 'upcoming-slots',
         name: 'MasterUpcomingSlots',
         component: () =>
-          import('../views/admin/upcoming-slots/AdminUpcomingSlots.vue'),
+          import('../views/master/upcoming-slots/MasterUpcomingSlots.vue'),
         meta: {
           breadcrumb: {
             label: 'Calendar',

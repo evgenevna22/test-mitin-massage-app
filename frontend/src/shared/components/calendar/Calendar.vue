@@ -1,11 +1,11 @@
 <template>
   <DatePicker
-    v-model="selectedDate"
-    inline
+    v-model="datepickerValue"
     :selection-mode="mode"
     :disabled-dates="disabledDates"
-    @date-select="$emit('date-select', $event)"
+    inline
     @month-change="$emit('month-change', $event)"
+    @value-change="$emit('date-select', $event)"
   >
     <template #date="{ date: { day, month, year } }">
       <div class="calendar-day">
@@ -52,17 +52,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { CalendarProps } from './types';
 import { useCalendarStatuses } from './use-calendar-statuses';
 
-const props = defineProps<CalendarProps>();
+const props = withDefaults(defineProps<CalendarProps>(), {
+  mode: 'single',
+});
 
 defineEmits(['date-select', 'month-change']);
 
 const { getDayStatus } = useCalendarStatuses(props);
 
-const selectedDate = ref(props.preSelectedDate);
+const today = new Date();
+
+const selectedDay = ref<Date>(today);
+const selectedDays = ref<Date[]>([]);
+
+const datepickerValue = computed<Date | Date[]>({
+  get: () => (props.mode === 'single' ? selectedDay.value : selectedDays.value),
+
+  set: (value) => {
+    if (props.mode === 'single' && value instanceof Date) {
+      selectedDay.value = value;
+    } else if (props.mode === 'multiple' && Array.isArray(value)) {
+      selectedDays.value = value;
+    }
+  },
+});
 </script>
 
 <style lang="scss" scoped>

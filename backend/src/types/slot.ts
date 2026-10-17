@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { HOUR_IN_MIN } from '../consts';
+
+const MIN_SLOT_DURATION_IN_MINS = 60;
 
 export const TimeScheme = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/);
 export const DateScheme = z
@@ -6,7 +9,9 @@ export const DateScheme = z
   .regex(/^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/)
   .refine((value) => {
     const date = new Date(`${value}T00:00:00.000Z`);
-    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+    return (
+      !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+    );
   });
 
 // Возможные статусы слота
@@ -33,10 +38,30 @@ export const BookSlotSchema = z.object({
 });
 
 export const CreateDateSlotSchema = z.array(DateScheme).min(1);
-export const CreateTimeSlotSchema = z.object({
-  start: TimeScheme,
-  end: TimeScheme,
-});
+
+export const CreateTimeSlotSchema = z
+  .object({
+    start: TimeScheme,
+    end: TimeScheme,
+  })
+  .refine(({ start, end }) => start < end, {
+    path: ['end'],
+    message: 'End time must be later than start time',
+  })
+  .refine(
+    ({ start, end }) => {
+      const toMinutes = (time: string) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * HOUR_IN_MIN + minutes;
+      };
+
+      return toMinutes(end) - toMinutes(start) >= MIN_SLOT_DURATION_IN_MINS;
+    },
+    {
+      path: ['end'],
+      message: `Time range must be at least ${MIN_SLOT_DURATION_IN_MINS} minutes`,
+    }
+  );
 
 export const SlotPayloadSchema = z.object({
   dates: CreateDateSlotSchema,
