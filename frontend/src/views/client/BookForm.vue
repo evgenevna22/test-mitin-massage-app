@@ -1,8 +1,8 @@
 <template>
   <div class="book-form">
     <FloatLabel variant="on">
-      <InputText id="username" v-model="username" disabled />
-      <label for="username">Username</label>
+      <InputText id="massage-type" v-model="massageType" />
+      <label for="massage-type">Тип массажа</label>
     </FloatLabel>
     <FloatLabel variant="on">
       <InputText id="comment" v-model="comment" />
@@ -12,10 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
-const username = '@username';
-const comment = ref('');
+const massageType = defineModel<string>('massageType', { required: true });
+const comment = defineModel<string>('comment', { required: true });
 </script>
 
 <style scoped></style>

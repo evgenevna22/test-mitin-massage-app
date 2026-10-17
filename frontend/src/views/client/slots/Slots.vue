@@ -31,10 +31,10 @@
         class="booking-form"
         @submit.prevent="bookSlot"
       >
-        <BookForm
+        <!-- <BookForm
           v-model:massage-type="bookingDetails.massageType"
           v-model:comment="bookingDetails.comment"
-        />
+        /> -->
         <div class="booking-form__actions">
           <Button
             label="Cancel"
@@ -59,7 +59,7 @@ import { useSlot } from './use-slot';
 import { SkeletonProgress } from '@components';
 import { useSlots } from '@composables';
 import { useRouter } from 'vue-router';
-import BookForm from '../BookForm.vue';
+// import BookForm from '../BookForm.vue';
 
 const router = useRouter();
 
