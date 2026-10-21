@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue';
 import { MasterSlotsApi } from '@/api/master-slots';
-import type { SlotDTO, TimeSlot } from '@/types';
+import type { RescheduleSlotPayload, SlotDTO, TimeSlot } from '@/types';
 import { transformDate } from '@utils';
 import { useNotifications } from '@/shared/composables';
 
@@ -12,6 +12,7 @@ export const useSlots = () => {
   const loadingStatus = reactive({
     creatingSlots: false,
     gettingSlots: false,
+    reschedulingSlot: false,
   });
 
   const createSlots = async (dates: Date[], time: TimeSlot) => {
@@ -32,6 +33,20 @@ export const useSlots = () => {
       throw error;
     } finally {
       loadingStatus.creatingSlots = false;
+    }
+  };
+
+  const rescheduleSlot = async (payload: RescheduleSlotPayload) => {
+    if (loadingStatus.reschedulingSlot) return;
+    loadingStatus.reschedulingSlot = true;
+    try {
+      await MasterSlotsApi.rescheduleSlot(payload);
+      notifications.add({ severity: 'success', summary: 'Booking rescheduled' });
+    } catch (error) {
+      notifications.add({ severity: 'error', summary: 'Booking could not be rescheduled' });
+      throw error;
+    } finally {
+      loadingStatus.reschedulingSlot = false;
     }
   };
 
@@ -59,5 +74,6 @@ export const useSlots = () => {
     loadingStatus,
     createSlots,
     getSlotsByMonth,
+    rescheduleSlot,
   };
 };

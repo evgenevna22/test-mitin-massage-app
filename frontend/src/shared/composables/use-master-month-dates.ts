@@ -10,17 +10,21 @@ export const useMasterMonthDates = () => {
 
   const workingDates = ref<string[]>([]);
   const bookedDates = ref<string[]>([]);
+  const freeWorkingDates = ref<string[]>([]);
+
   const isMonthDatesLoading = ref(false);
 
   const loadMonthDates = async (year: number, month: string) => {
     try {
       isMonthDatesLoading.value = true;
-      const [working, booked] = await Promise.all([
+      const [working, booked, freeWorking] = await Promise.all([
         MasterSlotsApi.getWorkingDates(year, month),
         MasterSlotsApi.getBookedDates(year, month),
+        MasterSlotsApi.getFreeWorkingDates(year, month),
       ]);
       workingDates.value = working;
       bookedDates.value = booked;
+      freeWorkingDates.value = freeWorking;
     } catch (error) {
       console.error(error);
       notifications.add({
@@ -35,6 +39,7 @@ export const useMasterMonthDates = () => {
   return {
     workingDates,
     bookedDates,
+    freeWorkingDates,
     isMonthDatesLoading,
     loadMonthDates,
   };

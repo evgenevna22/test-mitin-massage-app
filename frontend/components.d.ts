@@ -17,6 +17,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
     Carousel: typeof import('primevue/carousel')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

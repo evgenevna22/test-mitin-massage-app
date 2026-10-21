@@ -9,12 +9,12 @@
           name{{ upcomingSlot.userName }} <br />
           <span>@{{ upcomingSlot.userNickname }}</span>
         </p>
-        <span class="text">{{
-          upcomingSlot.massageType || 'Тип не указан'
-        }}</span>
-        <span v-if="upcomingSlot.comment" class="text">{{
-          upcomingSlot.comment
-        }}</span>
+        <span v-if="upcomingSlot.massageType" class="text">
+          {{ upcomingSlot.massageType }}
+        </span>
+        <span v-if="upcomingSlot.comment" class="text">
+          {{ upcomingSlot.comment }}
+        </span>
       </div>
 
       <Badge
@@ -25,9 +25,11 @@
     </template>
 
     <Button
+      v-if="!isEditingMode || upcomingSlot.status === 'free'"
       class="action-button"
       :icon="iconName"
       rounded
+      :disabled="isEditingMode && upcomingSlot.status !== 'free'"
       @click="handleButtonClick"
     />
   </div>
@@ -36,12 +38,21 @@
 <script setup lang="ts">
 import type { SlotDTO } from '@/types';
 import { computed } from 'vue';
+import { useConfirm } from 'primevue/useconfirm';
 
 const props = defineProps<{
   upcomingSlot: SlotDTO;
+  isEditingMode?: boolean;
 }>();
 
-const emits = defineEmits(['create-slot', 'edit-slot']);
+const emits = defineEmits([
+  'create-slot',
+  'edit-slot',
+  'delete-slot',
+  'select-target',
+]);
+
+const confirm = useConfirm();
 
 const confirmationLabel = computed(() =>
   props.upcomingSlot.isConfirmed ? 'Confirmed' : 'Not confirmed'
@@ -53,7 +64,26 @@ const iconName = computed(
 );
 
 const handleButtonClick = () => {
-  emits(props.upcomingSlot.status === 'free' ? 'create-slot' : 'edit-slot');
+  if (props.isEditingMode) {
+    emits('select-target', props.upcomingSlot);
+    return;
+  }
+  confirm.require({
+    header: 'Slot details',
+    rejectProps: {
+      label: 'Delete',
+      severity: 'danger',
+    },
+    acceptProps: {
+      label: 'Edit',
+    },
+    reject: () => {
+      emits('delete-slot', props.upcomingSlot);
+    },
+    accept: () => {
+      emits('edit-slot', props.upcomingSlot);
+    },
+  });
 };
 </script>
 

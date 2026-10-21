@@ -6,8 +6,11 @@
       <div class="card" v-for="slot in slotsBySelectedDate" :key="slot.id">
         <SlotCard
           :upcoming-slot="slot"
-          @create-slot="handleSlotCreate"
-          @edit-slot="handleSlotEdit"
+          :is-editing-mode="isEditingMode"
+          @create-slot="$emit('create-slot')"
+          @edit-slot="$emit('edit-slot', $event)"
+          @select-target="$emit('select-target', $event)"
+          @delete-slot="$emit('delete-slot')"
         />
       </div>
     </template>
@@ -23,6 +26,8 @@ import { computed } from 'vue';
 
 const props = defineProps<MasterScheduleProps>();
 
+defineEmits(['create-slot', 'edit-slot', 'delete-slot', 'select-target']);
+
 const { slotsByDate } = useSlotsSchedule(props);
 
 const slotsBySelectedDate = computed(() => {
@@ -32,9 +37,6 @@ const slotsBySelectedDate = computed(() => {
     ? []
     : slots.sort((current, next) => (current.time > next.time ? 1 : -1));
 });
-
-const handleSlotCreate = () => {};
-const handleSlotEdit = () => {};
 </script>
 
 <style lang="scss" scoped>

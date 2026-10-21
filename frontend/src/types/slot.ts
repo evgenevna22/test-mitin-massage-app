@@ -8,6 +8,12 @@ export type SlotPayload = {
   time: TimeSlot;
 };
 
+export type RescheduleSlotPayload = {
+  sourceSlotId: string;
+  targetSlotId: string;
+  comment: string;
+};
+
 export type BookSlotPayload = {
   massageType: string;
   comment?: string;

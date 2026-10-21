@@ -9,9 +9,7 @@ import {
   sendError,
 } from '../../helpers';
 import {
-  SlotPayloadSchema,
   Slot,
-  SlotSchema,
   type DateSlot,
   type SlotPayload,
   type TimeSlot,
@@ -20,13 +18,19 @@ import { verifyMaster } from '../../middleware/verify-master';
 import { verifyTelegram } from '../../middleware/verify-telegram';
 import type { DocumentReference } from 'firebase-admin/firestore';
 import { ZodError } from 'zod';
+import {
+  ReschedulePayloadSchema,
+  SlotPayloadSchema,
+  SlotSchema,
+} from '../../schemas';
+import { TelegramService } from '../../telegram';
 
 const router = Router();
 
 router.use(verifyTelegram);
 router.use(verifyMaster);
 
-type MonthDatesFilter = 'working' | 'booked';
+type MonthDatesFilter = 'working' | 'booked' | 'free-working-dates';
 
 const getMonthDates =
   (filter: MonthDatesFilter) => async (req: Request, res: Response) => {
@@ -63,6 +67,10 @@ const getMonthDates =
         query = query.where('status', '==', 'booked');
       }
 
+      if (filter === 'free-working-dates') {
+        query = query.where('status', '==', 'free');
+      }
+
       const result = await query.get();
 
       const slots: Slot[] = result.docs.map((doc) =>
@@ -78,11 +86,125 @@ const getMonthDates =
     }
   };
 
+// api to reschedule slot
+router.post('/slots/reschedule', async (req: Request, res: Response) => {
+  const parsed = ReschedulePayloadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    sendError(
+      res,
+      400,
+      parsed.error.issues[0]?.message ?? 'Invalid reschedule data'
+    );
+    return;
+  }
+
+  const { sourceSlotId, targetSlotId, comment } = parsed.data;
+
+  if (sourceSlotId === targetSlotId) {
+    sendError(res, 400, 'Source and target slots must be different');
+    return;
+  }
+
+  const masterId = String(req.telegramUser.id);
+  const sourceRef = db.collection('slots').doc(sourceSlotId);
+  const targetRef = db.collection('slots').doc(targetSlotId);
+
+  try {
+    const movedBooking = await db.runTransaction(async (transaction) => {
+      const [sourceDoc, targetDoc] = await transaction.getAll(
+        sourceRef,
+        targetRef
+      );
+
+      if (sourceDoc.exists && targetDoc.exists) {
+        throw Object.assign(new Error('Slot is not defined'), { status: 404 });
+      }
+
+      const source = SlotSchema.parse({
+        id: sourceDoc.id,
+        ...sourceDoc.data(),
+      });
+
+      const target = SlotSchema.parse({
+        id: targetDoc.id,
+        ...targetDoc.data(),
+      });
+
+      if (source.masterId !== masterId || target.masterId !== masterId) {
+        throw Object.assign(new Error('Slot is not defined'), { status: 404 });
+      }
+
+      if (source.status !== 'booked') {
+        throw Object.assign(new Error('Booking is no longer available'), {
+          status: 409,
+        });
+      }
+
+      if (target.status !== 'free') {
+        throw Object.assign(new Error('Target slot is no longer free'), {
+          status: 409,
+        });
+      }
+
+      transaction.update(targetRef, {
+        status: 'booked',
+        isConfirmed: source.isConfirmed,
+        comment: comment.trim() || null,
+        massageType: source.massageType,
+        userId: source.userId,
+        userName: source.userName,
+        userNickname: source.userNickname,
+      });
+
+      transaction.update(sourceRef, {
+        status: 'free',
+        isConfirmed: false,
+        comment: null,
+        massageType: '',
+        userId: null,
+        userName: null,
+        userNickname: null,
+      });
+
+      return {
+        ...source,
+        date: target.date,
+        time: target.time,
+        comment: comment.trim() || null,
+      };
+    });
+
+    if (movedBooking.userId) {
+      void TelegramService.sendClientNotification(
+        movedBooking.userId,
+        `Your booking was rescheduled to ${movedBooking.date} at ${movedBooking.time}.`
+      ).catch((error: ZodError) =>
+        console.error('Failed to notify client about reschedule:', error)
+      );
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'status' in error &&
+      (error.status === 404 || error.status === 409)
+    ) {
+      sendError(res, error.status, error.message);
+      return;
+    }
+    sendError(res, 500, 'Failed to reschedule booking');
+  }
+});
+
 // api to receive slots for a specific month
 router.get('/working-dates/:year/:month', getMonthDates('working'));
 
 // api to receive booked slots for a specific month
 router.get('/booked-dates/:year/:month', getMonthDates('booked'));
+
+// api to receive booked slots for a specific month
+router.get('/free-working-dates/:year/:month', getMonthDates('free-working-dates'));
 
 // api to receive all master slots for a specific month
 router.get('/slots/:year/:month', async (req: Request, res: Response) => {

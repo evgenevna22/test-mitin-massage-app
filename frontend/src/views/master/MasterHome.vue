@@ -22,13 +22,20 @@
                   :working-dates="workingDates"
                   :booked-dates="bookedDates"
                   @date-select="handleDateSelect"
+                  @month-change="handleMonthChange"
                 />
 
                 <MasterSchedule
                   v-if="!isCreatingMode && slotsByMonth"
                   :selected-dates="selectedDates"
                   :slots-by-month="slotsByMonth"
+                  :is-editing-mode="isEditingMode"
+                  @create-slot="handleCreateSlot"
+                  @edit-slot="handleEditSlot"
+                  @delete-slot="handleDeleteSlot"
+                  @select-target="handleTargetSelect"
                 />
+
                 <MasterSlotBuilder
                   v-else
                   :selected-dates="selectedDates"
@@ -47,14 +54,32 @@
       </Tabs>
     </div>
 
+    <SlotForm
+      v-if="sourceSlot && targetSlot"
+      :current-slot="sourceSlot"
+      :target-slot="targetSlot"
+      :saving="loadingStatus.reschedulingSlot"
+      @back="closeRescheduleDialog"
+      @save="handleReschedule"
+    />
+
     <div class="action-buttons">
       <Button
-        v-if="!isCreatingMode"
+        v-if="calendarView === 'default'"
         class="action-button"
         icon="pi pi-plus"
         label="Add work slots"
         size="large"
         @click="handleClickAddSlots"
+      />
+      <Button
+        v-else-if="isEditingMode"
+        class="action-button"
+        icon="pi pi-times"
+        label="Cancel"
+        severity="danger"
+        size="large"
+        @click="handleClickReturn"
       />
     </div>
   </div>
@@ -70,21 +95,42 @@ import MasterSchedule from './schedule/MasterSchedule.vue';
 import { useSlots } from './use-slots.ts';
 import MasterSlotBuilder from './slot-builder/MasterSlotBuilder.vue';
 import type { TimeSlot } from '@/types/slot.ts';
+import type { SlotDTO } from '@/types/slot.ts';
+import { SlotForm } from '@components';
 
 type CalendarView = 'creating' | 'editing' | 'default';
 
-const { getSlotsByMonth, slotsByMonth, createSlots, loadingStatus } =
-  useSlots();
-const { workingDates, bookedDates, loadMonthDates, isMonthDatesLoading } =
-  useMasterMonthDates();
+const {
+  getSlotsByMonth,
+  slotsByMonth,
+  createSlots,
+  loadingStatus,
+  rescheduleSlot,
+} = useSlots();
+
+const {
+  workingDates,
+  bookedDates,
+  freeWorkingDates,
+  loadMonthDates,
+  isMonthDatesLoading,
+} = useMasterMonthDates();
 
 const today = new Date();
 
 const selectedDates = ref<Date[]>([]);
+
 const slotCreationError = ref('');
+
 const calendarView = ref<CalendarView>('default');
+const sourceSlot = ref<SlotDTO>();
+const targetSlot = ref<SlotDTO>();
+
+const visibleYear = ref(today.getFullYear());
+const visibleMonth = ref(today.getMonth() + 1);
 
 const isCreatingMode = computed(() => calendarView.value === 'creating');
+const isEditingMode = computed(() => calendarView.value === 'editing');
 
 const calendarMode = computed(() =>
   isCreatingMode.value ? 'multiple' : 'single'
@@ -100,9 +146,22 @@ const disabledDates = computed<Date[]>(() => {
     return workingDatesFormatted.value;
   }
 
-  if (calendarView.value === 'editing') {
-    // return workingDates.value.map((day) => new Date(day));
-    return []; // понять, нужна ли еще одна ручка с бэка
+  if (isEditingMode.value) {
+    const availableDays = new Set(freeWorkingDates.value);
+    const lastDay = new Date(
+      visibleYear.value,
+      visibleMonth.value,
+      0
+    ).getDate();
+
+    return Array.from({ length: lastDay }, (_, index) => index + 1)
+      .filter(
+        (day) =>
+          !availableDays.has(
+            `${visibleYear.value}-${String(visibleMonth.value).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+          )
+      )
+      .map((day) => new Date(visibleYear.value, visibleMonth.value - 1, day));
   }
 
   return [];
@@ -118,6 +177,8 @@ const handleClickAddSlots = () => {
 };
 
 const handleClickReturn = () => {
+  sourceSlot.value = undefined;
+  targetSlot.value = undefined;
   calendarView.value = 'default';
 };
 
@@ -133,6 +194,65 @@ const handleClickCreate = async (timeSlots: TimeSlot) => {
     slotCreationError.value =
       responseError.response?.data?.error || 'Failed to save slots';
   }
+};
+
+const handleCreateSlot = () => {};
+
+const handleEditSlot = (slot: SlotDTO) => {
+  sourceSlot.value = slot;
+  targetSlot.value = undefined;
+  calendarView.value = 'editing';
+};
+const handleDeleteSlot = () => {};
+
+const handleTargetSelect = (slot: SlotDTO) => {
+  if (slot.status !== 'free' || !sourceSlot.value) return;
+  targetSlot.value = slot;
+};
+
+const closeRescheduleDialog = () => {
+  targetSlot.value = undefined;
+};
+
+const handleReschedule = async (comment: string) => {
+  if (!sourceSlot.value || !targetSlot.value) {
+    return;
+  }
+
+  try {
+    await rescheduleSlot({
+      sourceSlotId: sourceSlot.value.id,
+      targetSlotId: targetSlot.value.id,
+      comment,
+    });
+    const newDate = new Date(`${targetSlot.value.date}T00:00:00`);
+
+    await Promise.all([
+      getSlotsByMonth(visibleYear.value, String(visibleMonth.value)),
+      loadMonthDates(visibleYear.value, String(visibleMonth.value)),
+    ]);
+
+    selectedDates.value = [newDate];
+    targetSlot.value = undefined;
+    sourceSlot.value = undefined;
+
+    calendarView.value = 'default';
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleMonthChange = ({
+  month,
+  year,
+}: {
+  month: number;
+  year: number;
+}) => {
+  visibleYear.value = year;
+  visibleMonth.value = month + 1;
+  loadMonthDates(year, String(month + 1));
+  getSlotsByMonth(year, String(month + 1));
 };
 
 onMounted(() => {

@@ -7,12 +7,14 @@ import Aura from '@primeuix/themes/aura';
 
 import App from './App.vue';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
 app.use(ToastService);
+app.use(ConfirmationService);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
