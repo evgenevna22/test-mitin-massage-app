@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import './style.scss';
-import { router } from './router';
+import { router } from './app/router';
 import PrimeVue from 'primevue/config';
 import { createPinia } from 'pinia';
 import Aura from '@primeuix/themes/aura';
@@ -12,7 +12,6 @@ import ConfirmationService from 'primevue/confirmationservice';
 const app = createApp(App);
 
 app.use(createPinia());
-app.use(router);
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(PrimeVue, {
@@ -29,5 +28,6 @@ app.use(PrimeVue, {
     },
   },
 });
+app.use(router);
 
 app.mount('#app');
