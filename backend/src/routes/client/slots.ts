@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../../firebase';
-import { BookSlotSchema, DateScheme, SlotSchema, type Slot } from '../../types';
+import { BookSlotSchema, DateScheme, SlotSchema } from '../../schemas';
+import type { Slot } from '../../types';
 import { verifyTelegram } from '../../middleware/verify-telegram';
 import { isMonthValid, isYearValid, sendError } from '../../helpers';
 import { TelegramService } from '../../telegram';

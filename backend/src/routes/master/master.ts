@@ -30,61 +30,60 @@ const router = Router();
 router.use(verifyTelegram);
 router.use(verifyMaster);
 
-type MonthDatesFilter = 'working' | 'booked' | 'free-working-dates';
+const getMonthOccupancy = async (req: Request, res: Response) => {
+  const { year, month } = req.params;
+  const masterId = String(req.telegramUser.id);
 
-const getMonthDates =
-  (filter: MonthDatesFilter) => async (req: Request, res: Response) => {
-    const { year, month } = req.params;
-    const masterId = String(req.telegramUser.id);
+  if (
+    typeof year !== 'string' ||
+    typeof month !== 'string' ||
+    !isYearValid(year) ||
+    !isMonthValid(month)
+  ) {
+    sendError(res, 400, 'Params `year` and `month` must be in YYYY/MM format');
+    return;
+  }
 
-    if (
-      typeof year !== 'string' ||
-      typeof month !== 'string' ||
-      !isYearValid(year) ||
-      !isMonthValid(month)
-    ) {
-      sendError(
-        res,
-        400,
-        'Params `year` and `month` must be in YYYY/MM format'
-      );
+  const lastDay = new Date(Number(year), Number(month), 0).getDate();
+  const from = `${year}-${month}-01`;
+  const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
 
-      return;
+  try {
+    const result = await db
+      .collection('slots')
+      .where('masterId', '==', masterId)
+      .where('date', '>=', from)
+      .where('date', '<=', to)
+      .get();
+
+    const slots: Slot[] = result.docs.map((doc) =>
+      SlotSchema.parse({ id: doc.id, ...doc.data() })
+    );
+    const monthOccupancy = {
+      workingDates: new Set<string>(),
+      bookedDates: new Set<string>(),
+      datesWithFreeSlots: new Set<string>(),
+    };
+
+    for (const slot of slots) {
+      monthOccupancy.workingDates.add(slot.date);
+      if (slot.status === 'booked') {
+        monthOccupancy.bookedDates.add(slot.date);
+      } else {
+        monthOccupancy.datesWithFreeSlots.add(slot.date);
+      }
     }
 
-    const lastDay = new Date(Number(year), Number(month), 0).getDate();
-    const from = `${year}-${month}-01`;
-    const to = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
-
-    try {
-      let query = db
-        .collection('slots')
-        .where('masterId', '==', masterId)
-        .where('date', '>=', from)
-        .where('date', '<=', to);
-
-      if (filter === 'booked') {
-        query = query.where('status', '==', 'booked');
-      }
-
-      if (filter === 'free-working-dates') {
-        query = query.where('status', '==', 'free');
-      }
-
-      const result = await query.get();
-
-      const slots: Slot[] = result.docs.map((doc) =>
-        SlotSchema.parse({ id: doc.id, ...doc.data() })
-      );
-      const dates = [...new Set(slots.map((slot) => slot.date))].sort();
-
-      res.json(dates);
-    } catch (error) {
-      console.error('Failed to retrieve master calendar dates:', error);
-
-      sendError(res, 500, 'Failed to retrieve master calendar dates');
-    }
-  };
+    res.json({
+      workingDates: [...monthOccupancy.workingDates].sort(),
+      bookedDates: [...monthOccupancy.bookedDates].sort(),
+      datesWithFreeSlots: [...monthOccupancy.datesWithFreeSlots].sort(),
+    });
+  } catch (error) {
+    console.error('Failed to retrieve master calendar slots:', error);
+    sendError(res, 500, 'Failed to retrieve master calendar slots');
+  }
+};
 
 // api to reschedule slot
 router.post('/slots/reschedule', async (req: Request, res: Response) => {
@@ -116,7 +115,7 @@ router.post('/slots/reschedule', async (req: Request, res: Response) => {
         targetRef
       );
 
-      if (sourceDoc.exists && targetDoc.exists) {
+      if (!sourceDoc.exists || !targetDoc.exists) {
         throw Object.assign(new Error('Slot is not defined'), { status: 404 });
       }
 
@@ -198,13 +197,7 @@ router.post('/slots/reschedule', async (req: Request, res: Response) => {
 });
 
 // api to receive slots for a specific month
-router.get('/working-dates/:year/:month', getMonthDates('working'));
-
-// api to receive booked slots for a specific month
-router.get('/booked-dates/:year/:month', getMonthDates('booked'));
-
-// api to receive booked slots for a specific month
-router.get('/free-working-dates/:year/:month', getMonthDates('free-working-dates'));
+router.get('/calendar-dates/:year/:month', getMonthOccupancy);
 
 // api to receive all master slots for a specific month
 router.get('/slots/:year/:month', async (req: Request, res: Response) => {
