@@ -1,4 +1,4 @@
-import { computed, type Ref, ref } from 'vue';
+import { type Ref, ref } from 'vue';
 import type { SlotDTO } from '@/pages/client/model/slot';
 import type { CalendarView } from './types';
 
