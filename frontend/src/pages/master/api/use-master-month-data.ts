@@ -1,4 +1,4 @@
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useNotifications } from '@/shared/api';
 import type { MonthOccupancy } from '../model';
 import type { SlotDTO } from '@/shared/model';
@@ -7,8 +7,6 @@ import { MasterSlotsApi } from './master-slots';
 /** Loads detailed slots and calendar occupancy for one month together. */
 export const useMasterMonthData = () => {
   const notifications = useNotifications();
-
-  const today = new Date();
 
   const slotsDetailsByMonth = ref<SlotDTO[]>([]);
 
@@ -40,10 +38,6 @@ export const useMasterMonthData = () => {
       isMonthDataLoading.value = false;
     }
   };
-
-  onMounted(async () => {
-    await loadMonthData(today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'));
-  });
 
   return {
     slotsDetailsByMonth,

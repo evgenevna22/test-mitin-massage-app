@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import Calendar from '@/shared/ui/calendar/Calendar.vue';
 import type { CalendarProps } from '@/shared/ui/calendar/types';
 import type { MonthOccupancy } from '@/pages/master/model';
@@ -62,7 +62,7 @@ const props = withDefaults(
   { mode: 'single' }
 );
 
-defineEmits<{
+const emit = defineEmits<{
   'date-select': [value: Date | Date[]];
   'month-change': [value: { month: number; year: number }];
 }>();
@@ -104,6 +104,12 @@ const getDayStatus = ({ day, month, year }: CalendarDay) => {
     busy: bookedDateSet.value.has(key),
   };
 };
+
+onMounted(() => {
+  const today = new Date();
+
+  emit('date-select', today);
+});
 </script>
 
 <style lang="scss" scoped>

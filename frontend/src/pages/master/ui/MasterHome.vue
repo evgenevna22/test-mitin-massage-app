@@ -13,15 +13,7 @@
         </TabList>
         <TabPanels>
           <TabPanel value="month">
-            <MasterMonthOverview
-              v-if="view === 'overview'"
-              @create-work-days="view = 'work-days'"
-            />
-            <MasterWorkDays
-              v-else
-              @cancel="view = 'overview'"
-              @completed="view = 'overview'"
-            />
+            <MasterMonthView />
           </TabPanel>
           <TabPanel value="list">
             <MasterBookings />
@@ -35,18 +27,11 @@
 <script setup lang="ts">
 import { RoleSwitcher } from '@/features/switch-role';
 import MasterBookings from './master-bookings/MasterBookings.vue';
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent } from 'vue';
 
-type View = 'overview' | 'work-days';
-
-const MasterMonthOverview = defineAsyncComponent(
-  () => import('./master-month-view/scenarios/MasterMonthOverview.vue')
+const MasterMonthView = defineAsyncComponent(
+  () => import('./master-month-view/MasterMonthView.vue')
 );
-const MasterWorkDays = defineAsyncComponent(
-  () => import('./master-month-view/scenarios/MasterWorkDays.vue')
-);
-
-const view = ref<View>('overview');
 </script>
 
 <style lang="scss" scoped>

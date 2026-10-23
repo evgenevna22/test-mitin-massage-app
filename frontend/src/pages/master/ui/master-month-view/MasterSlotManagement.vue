@@ -54,16 +54,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { SkeletonProgress } from '@/shared/ui';
-import MasterCalendar from '../master-calendar/MasterCalendar.vue';
-import MasterSchedule from '../master-schedule/MasterSchedule.vue';
-import MasterSlotEditingForm from '../master-slot-editing-form/MasterSlotEditingForm.vue';
+import MasterCalendar from './master-calendar/MasterCalendar.vue';
+import MasterSchedule from './master-schedule/MasterSchedule.vue';
+import MasterSlotEditingForm from './master-slot-editing-form/MasterSlotEditingForm.vue';
 import { useMasterMonthData } from '@/pages/master/api/use-master-month-data';
-import type { CalendarView } from '../model/types';
-import { useMonthNavigation } from '../model/use-master-month-navigation';
-import { useExistingSlotActions } from '../model/use-existing-slot-actions';
-import { useManualBookingCreation } from '../model/use-manual-booking-creation';
+import type { CalendarView } from './model/types';
+import { useMonthNavigation } from './model/use-master-month-navigation';
+import { useExistingSlotActions } from './model/use-existing-slot-actions';
+import { useManualBookingCreation } from './model/use-manual-booking-creation';
 
 defineEmits<{ 'create-work-days': [] }>();
 
@@ -97,6 +97,15 @@ const {
 });
 
 const { handleCreateSlot } = useManualBookingCreation();
+
+onMounted(async () => {
+  const today = new Date();
+
+  await loadMonthData(
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0')
+  );
+});
 </script>
 
 <style lang="scss" scoped>

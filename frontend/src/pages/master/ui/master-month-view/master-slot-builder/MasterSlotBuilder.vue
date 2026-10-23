@@ -31,11 +31,12 @@
         :invalid="!isTimeSlotsValid"
       />
 
-      <span v-if="!isTimeSlotsValid" class="invalid-message"
-        >Set correct time intervals: the start time must be earlier than end
-        time</span
-      >
-      <span v-else-if="serverError" class="invalid-message">{{ serverError }}</span>
+      <span v-if="!isTimeSlotsValid" class="invalid-message">
+        Set correct time intervals: the start time must be earlier than end time
+      </span>
+      <span v-else-if="serverError" class="invalid-message">
+        {{ serverError }}
+      </span>
 
       <div class="action-buttons">
         <Button
@@ -44,6 +45,7 @@
           label="Save"
           size="large"
           type="submit"
+          :loading="isLoading"
           :disabled="!isFormValid"
         />
         <Button
@@ -63,6 +65,7 @@
 import { computed, reactive } from 'vue';
 import type { TimeSlot } from '@/shared/model';
 import { transformDate } from '@shared/lib';
+import { useWorkSlotCreation } from './use-work-slot-creation';
 
 const TIME_PLACEHOLDER = '00:00';
 
@@ -73,12 +76,13 @@ const getInitialTimeSlotState = (): TimeSlot => ({
 
 const props = defineProps<{
   selectedDates: Date[];
-  serverError?: string;
 }>();
 
-const emits = defineEmits(['create', 'return']);
+const emits = defineEmits(['created', 'return']);
 
 const timeSlot = reactive(getInitialTimeSlotState());
+
+const { serverError, isLoading, saveWorkSlots } = useWorkSlotCreation();
 
 const isTimeSlotsValid = computed(() => {
   const isEmpty = Object.values(timeSlot).every(
@@ -89,16 +93,18 @@ const isTimeSlotsValid = computed(() => {
   return !isEmpty && isValidRange;
 });
 
-const isFormValid = computed(() => {
-  return Boolean(props.selectedDates.length && isTimeSlotsValid.value);
-});
+const isFormValid = computed(() =>
+  Boolean(props.selectedDates.length && isTimeSlotsValid.value)
+);
 
 const handleSubmit = async () => {
   if (!isFormValid.value) {
     return;
   }
 
-  emits('create', timeSlot);
+  await saveWorkSlots(props.selectedDates, timeSlot);
+
+  emits('created');
 };
 </script>
 

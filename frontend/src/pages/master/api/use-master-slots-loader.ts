@@ -21,12 +21,6 @@ export const useMasterSlotsLoader = () => {
       const transformedDates = dates.map(transformDate);
       await MasterSlotsApi.createSlots({ dates: transformedDates, time });
       notifications.add({ severity: 'success', summary: "slots're saved" });
-    } catch (error) {
-      notifications.add({
-        severity: 'error',
-        summary: "slots haven't been saved",
-      });
-      throw error;
     } finally {
       loadingStatus.creatingSlots = false;
     }
