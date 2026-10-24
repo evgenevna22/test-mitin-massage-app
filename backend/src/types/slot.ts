@@ -12,6 +12,7 @@ import {
 export type SlotPayload = z.infer<typeof SlotPayloadSchema>;
 
 export type Slot = z.infer<typeof SlotSchema>;
+export type Booking = Omit<Slot, 'id' | 'masterId' | 'date' | 'time'>;
 export type BookSlot = z.infer<typeof BookSlotSchema>;
 
 export type CreateDateSlot = z.infer<typeof CreateDateSlotSchema>;

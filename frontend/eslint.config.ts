@@ -1,26 +1,28 @@
-import js from '@eslint/js';
+import eslint from '@eslint/js';
+import eslintPluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import pluginVue from 'eslint-plugin-vue';
-import { defineConfig } from 'eslint/config';
+import typescriptEslint from 'typescript-eslint';
 
-export default defineConfig([
+export default typescriptEslint.config(
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    ignores: ['**/dist/**', '**/coverage/**', '**/*.d.ts'],
   },
-  tseslint.configs.recommended,
-  pluginVue.configs['flat/essential'],
+  eslint.configs.recommended,
+  ...typescriptEslint.configs.recommended,
+  ...eslintPluginVue.configs['flat/essential'],
   {
-    files: ['**/*.vue'],
-    languageOptions: { parserOptions: { parser: tseslint.parser } },
-  },
-  {
-    // override/add rules settings here
+    files: ['src/**/*.{ts,vue}'],
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: {
+        parser: typescriptEslint.parser,
+      },
+    },
     rules: {
-      'vue/multi-word-component-names': ['warn'],
+      // TypeScript reports undefined names with better type information.
+      'no-undef': 'off',
+      // Project components already use concise names such as Calendar and Hero.
+      'vue/multi-word-component-names': 'off',
     },
   },
-]);
+);

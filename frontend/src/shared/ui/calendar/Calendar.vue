@@ -4,6 +4,7 @@
     :selection-mode="mode"
     :disabled-dates="disabledDates"
     inline
+    :min-date="minDate"
     @month-change="$emit('month-change', $event)"
     @value-change="$emit('date-select', $event)"
   >

@@ -24,8 +24,8 @@ export const useWorkSlotCreation = () => {
         selectedDates[0].getFullYear(),
         String(selectedDates[0].getMonth() + 1).padStart(2, '0')
       );
-    } catch (cause) {
-      const responseError = cause as {
+    } catch (error) {
+      const responseError = error as {
         response?: { data?: { error?: string } };
       };
       serverError.value =

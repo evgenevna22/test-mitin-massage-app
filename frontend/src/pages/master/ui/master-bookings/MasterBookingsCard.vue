@@ -6,8 +6,8 @@
     <template v-else>
       <div class="info">
         <p class="name">
-          name{{ upcomingSlot.userName }} <br />
-          <span>@{{ upcomingSlot.userNickname }}</span>
+          <!-- add copy text func -->
+          @{{ upcomingSlot.userName }} <br />
         </p>
         <span v-if="upcomingSlot.massageType" class="text">
           {{ upcomingSlot.massageType }}
@@ -25,7 +25,10 @@
     </template>
 
     <Button
-      v-if="!isEditingMode || upcomingSlot.status === 'free'"
+      v-if="
+        actionButtonsAvailable &&
+        (!isEditingMode || upcomingSlot.status === 'free')
+      "
       class="action-button"
       :icon="iconName"
       rounded
@@ -40,10 +43,14 @@ import type { SlotDTO } from '@/shared/model';
 import { computed } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 
-const props = defineProps<{
-  upcomingSlot: SlotDTO;
-  isEditingMode?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    upcomingSlot: SlotDTO;
+    isEditingMode?: boolean;
+    actionButtonsAvailable?: boolean;
+  }>(),
+  { actionButtonsAvailable: true }
+);
 
 const emits = defineEmits([
   'create-slot',
@@ -54,13 +61,14 @@ const emits = defineEmits([
 
 const confirm = useConfirm();
 
+const isSlotBooked = computed(() => props.upcomingSlot.status === 'booked');
+
 const confirmationLabel = computed(() =>
   props.upcomingSlot.isConfirmed ? 'Confirmed' : 'Not confirmed'
 );
 
 const iconName = computed(
-  () =>
-    `pi ${props.upcomingSlot.status === 'free' ? 'pi-plus' : 'pi-chevron-right'}`
+  () => `pi ${isSlotBooked.value ? 'pi-chevron-right' : 'pi-plus'}`
 );
 
 const handleButtonClick = () => {
@@ -68,20 +76,22 @@ const handleButtonClick = () => {
     emits('select-target', props.upcomingSlot);
     return;
   }
+
   confirm.require({
-    header: 'Slot details',
+    header: `${isSlotBooked.value ? 'Booking' : 'Slot'} details`,
     rejectProps: {
-      label: 'Delete',
+      label: `Delete ${isSlotBooked.value ? 'booking' : 'slot'}`,
       severity: 'danger',
     },
     acceptProps: {
-      label: 'Edit',
+      label: isSlotBooked.value ? 'Edit booking' : 'Create booking',
     },
     reject: () => {
       emits('delete-slot', props.upcomingSlot);
     },
     accept: () => {
-      emits('edit-slot', props.upcomingSlot);
+      const eventName = isSlotBooked.value ? 'edit-slot' : 'create-slot';
+      emits(eventName, props.upcomingSlot);
     },
   });
 };

@@ -3,7 +3,11 @@
     <template v-if="selectedDate">
       <h4 class="title">Appointments for {{ getDayFromDate(selectedDate) }}</h4>
       <template v-for="slot in slots" :key="slot.id">
-        <MasterBookingsCard class="slot-card" :upcoming-slot="slot" />
+        <MasterBookingsCard
+          class="slot-card"
+          :upcoming-slot="slot"
+          :action-buttons-available="false"
+        />
       </template>
     </template>
 
@@ -12,7 +16,11 @@
         <h4 class="title">Appointments for {{ date }}</h4>
 
         <template v-for="slot in slotByDate" :key="slot.id">
-          <MasterBookingsCard class="slot-card" :upcoming-slot="slot" />
+          <MasterBookingsCard
+            class="slot-card"
+            :upcoming-slot="slot"
+            :action-buttons-available="false"
+          />
         </template>
       </div>
     </template>

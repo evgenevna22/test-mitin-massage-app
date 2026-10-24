@@ -104,6 +104,10 @@ const handleSubmit = async () => {
 
   await saveWorkSlots(props.selectedDates, timeSlot);
 
+  if (serverError.value) {
+    return;
+  }
+
   emits('created');
 };
 </script>

@@ -8,7 +8,7 @@
         <MasterBookingsCard
           :upcoming-slot="slot"
           :is-editing-mode="isEditingMode"
-          @create-slot="$emit('create-slot')"
+          @create-slot="$emit('create-slot', $event)"
           @edit-slot="$emit('edit-slot', $event)"
           @select-target="$emit('select-target', $event)"
           @delete-slot="$emit('delete-slot')"

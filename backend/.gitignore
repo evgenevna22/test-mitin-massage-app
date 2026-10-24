@@ -7,3 +7,5 @@ dist
 .DS_Store
 !.vscode/extensions.json
 .idea
+
+src/init-slots.ts

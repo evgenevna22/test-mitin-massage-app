@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { HOUR_IN_MIN, MIN_SLOT_DURATION_IN_MINS } from '../consts';
+import { MIN_SLOT_DURATION_IN_MINS } from '../consts';
+import { getMinutesFromTime } from '../helpers';
 
 export const TimeScheme = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/);
 export const DateScheme = z
@@ -47,12 +48,10 @@ export const CreateTimeSlotSchema = z
   })
   .refine(
     ({ start, end }) => {
-      const toMinutes = (time: string) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * HOUR_IN_MIN + minutes;
-      };
-
-      return toMinutes(end) - toMinutes(start) >= MIN_SLOT_DURATION_IN_MINS;
+      return (
+        getMinutesFromTime(end) - getMinutesFromTime(start) >=
+        MIN_SLOT_DURATION_IN_MINS
+      );
     },
     {
       path: ['end'],
@@ -69,4 +68,13 @@ export const ReschedulePayloadSchema = z.object({
   sourceSlotId: z.string().min(1),
   targetSlotId: z.string().min(1),
   comment: z.string().max(500),
+});
+
+export const ManualBookingPayloadSchema = z.object({
+  date: DateScheme,
+  time: TimeScheme,
+  userId: z.number().int().positive(),
+  userName: z.string().trim().max(500),
+  massageType: z.string().trim().min(1).max(100),
+  comment: z.string().trim().max(500).optional(),
 });

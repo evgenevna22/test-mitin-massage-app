@@ -2,6 +2,7 @@
   <div class="master-calendar">
     <Calendar
       :mode="mode"
+      :min-date="minDate"
       :disabled-dates="disabledDates"
       @date-select="$emit('date-select', $event)"
       @month-change="$emit('month-change', $event)"
@@ -49,17 +50,19 @@ import type { CalendarProps } from '@/shared/ui/calendar/types';
 import type { MonthOccupancy } from '@/pages/master/model';
 
 type CalendarDay = { day: number; month: number; year: number };
-type CalendarView = 'creating' | 'editing' | 'default';
 
 const props = withDefaults(
   defineProps<
     Pick<CalendarProps, 'mode'> & {
       monthOccupancy: MonthOccupancy;
-      viewMode: CalendarView;
       visibleMonth: { year: number; month: number };
+      disabledDates?: Date[];
+      minDate?: Date;
     }
   >(),
-  { mode: 'single' }
+  {
+    mode: 'single',
+  }
 );
 
 const emit = defineEmits<{
@@ -71,30 +74,6 @@ const workingDateSet = computed(
   () => new Set(props.monthOccupancy.workingDates)
 );
 const bookedDateSet = computed(() => new Set(props.monthOccupancy.bookedDates));
-const disabledDates = computed<Date[]>(() => {
-  if (props.viewMode === 'creating') {
-    return props.monthOccupancy.workingDates.map(
-      (date) => new Date(`${date}T00:00:00`)
-    );
-  }
-
-  if (props.viewMode !== 'editing') {
-    return [];
-  }
-
-  const { year, month } = props.visibleMonth;
-  const datesWithFreeSlots = new Set(props.monthOccupancy.datesWithFreeSlots);
-  const lastDay = new Date(year, month, 0).getDate();
-
-  return Array.from({ length: lastDay }, (_, index) => index + 1)
-    .filter(
-      (day) =>
-        !datesWithFreeSlots.has(
-          `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-        )
-    )
-    .map((day) => new Date(year, month - 1, day));
-});
 
 const getDayStatus = ({ day, month, year }: CalendarDay) => {
   const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;

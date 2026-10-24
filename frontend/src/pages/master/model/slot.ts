@@ -14,6 +14,15 @@ export type RescheduleSlotPayload = {
   comment: string;
 };
 
+export type ManualBookingPayload = {
+  date: string;
+  time: string;
+  userId: number;
+  userName: string;
+  massageType: string;
+  comment?: string;
+};
+
 export type BookSlotPayload = {
   massageType: string;
   comment?: string;

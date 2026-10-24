@@ -4,9 +4,9 @@
     <MasterCalendar
       v-show="!isMonthSlotsLoading"
       mode="multiple"
-      view-mode="creating"
       :month-occupancy="monthOccupancy"
       :visible-month="visibleMonth"
+      :min-date="minDate"
       @date-select="selectDates"
       @month-change="handleMonthChange"
     />
@@ -32,7 +32,7 @@ defineEmits<{
   completed: [];
 }>();
 
-// disabled dates прокидывать отсюда
+const minDate = new Date();
 
 const {
   monthOccupancy,
@@ -42,6 +42,7 @@ const {
 
 const { selectedDates, visibleMonth, selectDates, handleMonthChange } =
   useMonthNavigation(loadMonthData);
+
 </script>
 
 <style lang="scss" scoped>

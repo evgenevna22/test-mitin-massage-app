@@ -3,20 +3,20 @@
     <SkeletonProgress v-if="isMonthDataLoading" height="350px" />
     <MasterCalendar
       v-show="!isMonthDataLoading"
-      :view-mode="calendarView"
       :month-occupancy="monthOccupancy"
       :visible-month="visibleMonth"
+      :disabled-dated="disabledDates"
       @date-select="selectDates"
       @month-change="handleMonthChange"
     />
 
     <MasterSchedule
-      v-if="calendarView !== 'creating' && slotsDetailsByMonth"
+      v-if="slotsDetailsByMonth"
       v-show="!isMonthDataLoading"
       :selected-dates="selectedDates"
       :slots-details-by-month="slotsDetailsByMonth"
       :is-editing-mode="isEditing"
-      @create-slot="handleCreateSlot"
+      @create-slot="openManualBooking"
       @edit-slot="editSlot"
       @delete-slot="deleteSlot"
       @select-target="selectTarget"
@@ -29,6 +29,14 @@
       :target-slot="targetSlot"
       @back="closeRescheduleDialog"
       @saved="handleSlotSaved"
+    />
+
+    <MasterManualBookingForm
+      v-if="bookingSlot"
+      :visible="Boolean(bookingSlot)"
+      :booking-slot="bookingSlot"
+      @close="bookingSlot = undefined"
+      @saved="handleManualBookingSaved"
     />
 
     <div class="action-buttons">
@@ -63,13 +71,30 @@ import { useMasterMonthData } from '@/pages/master/api/use-master-month-data';
 import type { CalendarView } from './model/types';
 import { useMonthNavigation } from './model/use-master-month-navigation';
 import { useExistingSlotActions } from './model/use-existing-slot-actions';
-import { useManualBookingCreation } from './model/use-manual-booking-creation';
+import MasterManualBookingForm from './MasterManualBookingForm.vue';
+import type { SlotDTO } from '@/pages/master/model/slot';
 
 defineEmits<{ 'create-work-days': [] }>();
 
 const calendarView = ref<CalendarView>('default');
+const bookingSlot = ref<SlotDTO>();
 
 const isEditing = computed(() => calendarView.value === 'editing');
+
+const disabledDates = computed<Date[]>(() => {
+  const { year, month } = visibleMonth.value;
+  const datesWithFreeSlots = new Set(monthOccupancy.value.datesWithFreeSlots);
+  const lastDay = new Date(year, month, 0).getDate();
+
+  return Array.from({ length: lastDay }, (_, index) => index + 1)
+    .filter(
+      (day) =>
+        !datesWithFreeSlots.has(
+          `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+        )
+    )
+    .map((day) => new Date(year, month - 1, day));
+});
 
 const {
   slotsDetailsByMonth,
@@ -96,7 +121,17 @@ const {
   loadMonthData,
 });
 
-const { handleCreateSlot } = useManualBookingCreation();
+const openManualBooking = (slot: SlotDTO) => {
+  bookingSlot.value = slot;
+};
+
+const handleManualBookingSaved = async () => {
+  const slotDate = bookingSlot.value?.date;
+  bookingSlot.value = undefined;
+  if (slotDate) {
+    await loadMonthData(Number(slotDate.slice(0, 4)), slotDate.slice(5, 7));
+  }
+};
 
 onMounted(async () => {
   const today = new Date();

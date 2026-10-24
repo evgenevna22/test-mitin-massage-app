@@ -1,12 +1,19 @@
 import { api } from '@/shared/api';
 import type {
   MonthOccupancy,
+  ManualBookingPayload,
   RescheduleSlotPayload,
   SlotDTO,
   SlotPayload,
 } from '../model';
 
 export class MasterSlotsApi {
+  public static createManualBooking = async (
+    payload: ManualBookingPayload
+  ): Promise<{ success: boolean }> => {
+    return (await api.post('master/slots/manual-booking', payload)).data;
+  };
+
   public static createSlots = async (
     payload: SlotPayload
   ): Promise<undefined> => {
