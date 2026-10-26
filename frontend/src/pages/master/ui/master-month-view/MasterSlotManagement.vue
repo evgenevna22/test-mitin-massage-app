@@ -73,6 +73,7 @@ import { useMonthNavigation } from './model/use-master-month-navigation';
 import { useExistingSlotActions } from './model/use-existing-slot-actions';
 import MasterManualBookingForm from './MasterManualBookingForm.vue';
 import type { SlotDTO } from '@/pages/master/model/slot';
+import { formatDate } from '@shared/lib';
 
 defineEmits<{ 'create-work-days': [] }>();
 
@@ -87,12 +88,7 @@ const disabledDates = computed<Date[]>(() => {
   const lastDay = new Date(year, month, 0).getDate();
 
   return Array.from({ length: lastDay }, (_, index) => index + 1)
-    .filter(
-      (day) =>
-        !datesWithFreeSlots.has(
-          `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-        )
-    )
+    .filter((day) => !datesWithFreeSlots.has(formatDate(year, month, day)))
     .map((day) => new Date(year, month - 1, day));
 });
 

@@ -48,6 +48,7 @@ import { computed, onMounted } from 'vue';
 import Calendar from '@/shared/ui/calendar/Calendar.vue';
 import type { CalendarProps } from '@/shared/ui/calendar/types';
 import type { MonthOccupancy } from '@/pages/master/model';
+import { formatDate } from '@shared/lib';
 
 type CalendarDay = { day: number; month: number; year: number };
 
@@ -76,7 +77,7 @@ const workingDateSet = computed(
 const bookedDateSet = computed(() => new Set(props.monthOccupancy.bookedDates));
 
 const getDayStatus = ({ day, month, year }: CalendarDay) => {
-  const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const key = formatDate(year, month + 1, day);
 
   return {
     work: workingDateSet.value.has(key),

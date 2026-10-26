@@ -7,3 +7,6 @@ export const Breadcrumbs = defineAsyncComponent(
   () => import('./breadcrumbs/Breadcrumbs.vue')
 );
 export const Review = defineAsyncComponent(() => import('./Review.vue'));
+export const CopyText = defineAsyncComponent(
+  () => import('./CopyText.vue')
+);

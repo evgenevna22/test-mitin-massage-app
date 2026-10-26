@@ -5,9 +5,8 @@
     <div v-if="upcomingSlot.status === 'free'">Free</div>
     <template v-else>
       <div class="info">
-        <p class="name">
-          <!-- add copy text func -->
-          @{{ upcomingSlot.userName }} <br />
+        <p v-if="upcomingSlot.userName" class="name">
+          <CopyText :text="`@${upcomingSlot.userName}`" />
         </p>
         <span v-if="upcomingSlot.massageType" class="text">
           {{ upcomingSlot.massageType }}
@@ -42,6 +41,7 @@
 import type { SlotDTO } from '@/shared/model';
 import { computed } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
+import { CopyText } from '@/shared/ui';
 
 const props = withDefaults(
   defineProps<{
