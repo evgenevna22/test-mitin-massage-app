@@ -34,8 +34,8 @@
       <span v-if="!isTimeSlotsValid" class="invalid-message">
         Set correct time intervals: the start time must be earlier than end time
       </span>
-      <span v-else-if="serverError" class="invalid-message">
-        {{ serverError }}
+      <span v-else-if="errorMessage" class="invalid-message">
+        {{ errorMessage }}
       </span>
 
       <div class="action-buttons">
@@ -82,7 +82,7 @@ const emits = defineEmits(['created', 'return']);
 
 const timeSlot = reactive(getInitialTimeSlotState());
 
-const { serverError, isLoading, saveWorkSlots } = useWorkSlotCreation();
+const { errorMessage, isLoading, saveWorkSlots } = useWorkSlotCreation();
 
 const isTimeSlotsValid = computed(() => {
   const isEmpty = Object.values(timeSlot).every(
@@ -104,7 +104,7 @@ const handleSubmit = async () => {
 
   await saveWorkSlots(props.selectedDates, timeSlot);
 
-  if (serverError.value) {
+  if (errorMessage.value) {
     return;
   }
 

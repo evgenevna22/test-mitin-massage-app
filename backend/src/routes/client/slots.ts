@@ -6,6 +6,7 @@ import { verifyTelegram } from '../../middleware/verify-telegram';
 import { isMonthValid, isYearValid, sendError } from '../../helpers';
 import { TelegramService } from '../../telegram';
 import { config } from '../../types/config';
+import { cancelClientBooking } from '../../services/client-booking';
 
 const router = Router();
 
@@ -199,9 +200,10 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       `The slot on ${slot.date} was booked by '@${req.telegramUser.username}'`
     );
 
-    TelegramService.sendClientNotification(
+    TelegramService.sendClientBookingNotification(
       req.telegramUser.id,
-      `You succesefully booked the slot on ${slot.date} at ${slot.time}'`
+      id,
+      `You successfully booked the slot on ${slot.date} at ${slot.time}.`
     );
 
     res.json({ success: true });
@@ -230,48 +232,18 @@ router.patch('/:id/cancel', async (req: Request, res: Response) => {
 
       return;
     }
-    const slotReference = db.collection('slots').doc(id);
-    const slotDocument = await slotReference.get();
+    const result = await cancelClientBooking(id, req.telegramUser.id);
 
-    if (!slotDocument.exists) {
-      sendError(res, 404, 'Slot is not defined');
-
+    if (!result.success) {
+      sendError(res, result.status, result.message);
       return;
     }
-
-    const slot = slotDocument.data();
-
-    if (slot?.status === 'free') {
-      sendError(res, 409, 'Slot is already free');
-
-      return;
-    }
-
-    if (slot?.userId !== req.telegramUser.id) {
-      sendError(
-        res,
-        403,
-        "Cancelling the someone else's appointment is forbidden"
-      );
-
-      return;
-    }
-
-    await slotReference.update({
-      status: 'free',
-      isConfirmed: false,
-      massageType: '',
-      comment: null,
-      userId: null,
-      userName: null,
-      userNickname: null,
-    });
 
     res.json({ success: true });
   } catch (error) {
     console.error('Error while cancelling', error);
 
-    res.status(500).json({ error: 'The booking was not cancelled' });
+    sendError(res, 500, 'The booking was not cancelled');
   }
 });
 

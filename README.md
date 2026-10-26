@@ -96,6 +96,7 @@ Every route except `/` and `/health` expects Telegram authentication. Routes bel
 | `GET` | `/slots/:masterId/date/:date` | Get free slots for a master's date |
 | `PUT` | `/slots/:id/book` | Book a slot |
 | `PATCH` | `/slots/:id/cancel` | Cancel the current user's appointment |
+| `DELETE` | `/master/slots/:id` | Delete a master's free slot or booked appointment |
 | `POST` | `/master/slots` | Create slots for one or more dates for the authenticated master |
 | `GET` | `/master/slots/:year/:month` | Get the authenticated master's slots for a month |
 | `GET` | `/master/working-dates/:year/:month` | Get the authenticated master's working dates for a month |
@@ -103,6 +104,8 @@ Every route except `/` and `/health` expects Telegram authentication. Routes bel
 | `GET` | `/master/upcoming` | Get up to 10 upcoming booked slots for the authenticated master |
 
 A slot-creation request looks like this:
+
+Clients can cancel through `/slots/:id/cancel` in the Mini App.
 
 ```json
 {

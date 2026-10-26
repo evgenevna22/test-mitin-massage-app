@@ -2,7 +2,7 @@
   <div class="master-schedule">
     <h2 class="title">Schedule</h2>
     <span v-if="!slotsBySelectedDate.length">No working slots</span>
-    
+
     <template v-else>
       <div class="card" v-for="slot in slotsBySelectedDate" :key="slot.id">
         <MasterBookingsCard
@@ -11,7 +11,7 @@
           @create-slot="$emit('create-slot', $event)"
           @edit-slot="$emit('edit-slot', $event)"
           @select-target="$emit('select-target', $event)"
-          @delete-slot="$emit('delete-slot')"
+          @delete-slot="$emit('delete-slot', $event)"
         />
       </div>
     </template>

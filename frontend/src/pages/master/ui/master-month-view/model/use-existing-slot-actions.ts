@@ -15,7 +15,7 @@ export const useExistingSlotActions = ({
 }: Options) => {
   const sourceSlot = ref<SlotDTO>();
   const targetSlot = ref<SlotDTO>();
-
+  const slotToDelete = ref<SlotDTO>();
 
   const editSlot = (slot: SlotDTO) => {
     sourceSlot.value = slot;
@@ -23,8 +23,26 @@ export const useExistingSlotActions = ({
     calendarView.value = 'editing';
   };
 
-  const deleteSlot = () => {
-    // Deletion is not implemented yet.
+  const deleteSlot = (slot: SlotDTO) => {
+    slotToDelete.value = slot;
+  };
+
+  const closeDeleteDialog = () => {
+    slotToDelete.value = undefined;
+  };
+
+  const handleDeletedSlot = async () => {
+    const slot = slotToDelete.value;
+
+    if (!slot) {
+      return;
+    }
+
+    slotToDelete.value = undefined;
+
+    await loadMonthData(Number(slot.date.slice(0, 4)), slot.date.slice(5, 7));
+
+    selectedDates.value = [new Date(`${slot.date}T00:00:00`)];
   };
 
   const selectTarget = (slot: SlotDTO) => {
@@ -60,8 +78,11 @@ export const useExistingSlotActions = ({
   return {
     sourceSlot,
     targetSlot,
+    slotToDelete,
     editSlot,
     deleteSlot,
+    closeDeleteDialog,
+    handleDeletedSlot,
     selectTarget,
     closeRescheduleDialog,
     cancelEditing,

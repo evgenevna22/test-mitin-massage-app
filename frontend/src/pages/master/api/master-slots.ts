@@ -26,6 +26,12 @@ export class MasterSlotsApi {
     return (await api.post('master/slots/reschedule', payload)).data;
   };
 
+  public static deleteSlot = async (
+    slotId: string
+  ): Promise<{ success: boolean }> => {
+    return (await api.delete(`master/slots/${slotId}`)).data;
+  };
+
   public static getDetailedSlotsForMonth = async (
     year: number,
     month: string

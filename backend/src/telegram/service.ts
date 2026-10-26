@@ -8,4 +8,23 @@ export class TelegramService {
   static sendClientNotification = async (id: number, text: string) => {
     return bot.sendMessage(id, text);
   };
+
+  static sendClientBookingNotification = async (
+    id: number,
+    slotId: string,
+    text: string
+  ) => {
+    return bot.sendMessage(id, text, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: 'Cancel booking',
+              callback_data: `cancel_booking:${slotId}`,
+            },
+          ],
+        ],
+      },
+    });
+  };
 }

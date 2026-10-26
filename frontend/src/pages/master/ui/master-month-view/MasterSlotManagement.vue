@@ -31,12 +31,20 @@
       @saved="handleSlotSaved"
     />
 
+    <MasterSlotDeletionDialog
+      v-if="slotToDelete"
+      :visible="Boolean(slotToDelete)"
+      :current-slot="slotToDelete"
+      @back="closeDeleteDialog"
+      @slot-deleted="handleDeletedSlot"
+    />
+
     <MasterManualBookingForm
       v-if="bookingSlot"
       :visible="Boolean(bookingSlot)"
       :booking-slot="bookingSlot"
-      @close="bookingSlot = undefined"
-      @saved="handleManualBookingSaved"
+      @close="handleBookingFormClosed"
+      @saved="handleBookingFormSaved"
     />
 
     <div class="action-buttons">
@@ -62,20 +70,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
 import { SkeletonProgress } from '@/shared/ui';
 import MasterCalendar from './master-calendar/MasterCalendar.vue';
-import MasterSchedule from './master-schedule/MasterSchedule.vue';
-import MasterSlotEditingForm from './master-slot-editing-form/MasterSlotEditingForm.vue';
 import { useMasterMonthData } from '@/pages/master/api/use-master-month-data';
 import type { CalendarView } from './model/types';
 import { useMonthNavigation } from './model/use-master-month-navigation';
 import { useExistingSlotActions } from './model/use-existing-slot-actions';
-import MasterManualBookingForm from './MasterManualBookingForm.vue';
 import type { SlotDTO } from '@/pages/master/model/slot';
 import { formatDate } from '@shared/lib';
 
 defineEmits<{ 'create-work-days': [] }>();
+
+const MasterSchedule = defineAsyncComponent(
+  () => import('./master-schedule/MasterSchedule.vue')
+);
+const MasterSlotEditingForm = defineAsyncComponent(
+  () => import('./master-slot-editing-form/MasterSlotEditingForm.vue')
+);
+const MasterSlotDeletionDialog = defineAsyncComponent(
+  () => import('./master-slot-deletion-dialog/MasterSlotDeletionDialog.vue')
+);
+const MasterManualBookingForm = defineAsyncComponent(
+  () => import('./MasterManualBookingForm.vue')
+);
 
 const calendarView = ref<CalendarView>('default');
 const bookingSlot = ref<SlotDTO>();
@@ -105,8 +123,11 @@ const { selectedDates, visibleMonth, selectDates, handleMonthChange } =
 const {
   sourceSlot,
   targetSlot,
+  slotToDelete,
   editSlot,
   deleteSlot,
+  closeDeleteDialog,
+  handleDeletedSlot,
   selectTarget,
   closeRescheduleDialog,
   cancelEditing,
@@ -121,9 +142,14 @@ const openManualBooking = (slot: SlotDTO) => {
   bookingSlot.value = slot;
 };
 
-const handleManualBookingSaved = async () => {
+const handleBookingFormClosed = () => {
+  bookingSlot.value = undefined;
+};
+
+const handleBookingFormSaved = async () => {
   const slotDate = bookingSlot.value?.date;
   bookingSlot.value = undefined;
+
   if (slotDate) {
     await loadMonthData(Number(slotDate.slice(0, 4)), slotDate.slice(5, 7));
   }

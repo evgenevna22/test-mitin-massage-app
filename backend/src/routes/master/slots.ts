@@ -125,6 +125,88 @@ router.post('/slots/reschedule', async (req: Request, res: Response) => {
   }
 });
 
+// Deletes one of the authenticated master's slots, including its booking.
+router.delete('/slots/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (typeof id !== 'string' || !id) {
+    sendError(res, 400, 'Param `id` must be a string type');
+    return;
+  }
+
+  const masterId = String(req.telegramUser.id);
+  const slotReference = db.collection('slots').doc(id);
+
+  try {
+    const result = await db.runTransaction(async (transaction) => {
+      const slotDocument = await transaction.get(slotReference);
+
+      if (!slotDocument.exists) {
+        return {
+          success: false as const,
+          status: 404 as const,
+          message: 'Slot is not defined',
+        };
+      }
+
+      const slot = SlotSchema.parse({
+        id: slotDocument.id,
+        ...slotDocument.data(),
+      });
+
+      if (slot.masterId !== masterId) {
+        return {
+          success: false as const,
+          status: 404 as const,
+          message: 'Slot is not defined',
+        };
+      }
+
+      transaction.delete(slotReference);
+      return {
+        success: true as const,
+        slot,
+      };
+    });
+
+    if (!result.success) {
+      sendError(res, result.status, result.message);
+      return;
+    }
+
+    if (result.slot.status === 'booked' && result.slot.userId) {
+      const username = result.slot.userNickname
+        ? `@${result.slot.userNickname}`
+        : (result.slot.userName ?? 'client');
+        
+      const notifications = await Promise.allSettled([
+        TelegramService.sendMasterNotification(
+          masterId,
+          `Booking for ${username} on ${result.slot.date} at ${result.slot.time} was deleted.`
+        ),
+        TelegramService.sendClientNotification(
+          result.slot.userId,
+          `Your booking on ${result.slot.date} at ${result.slot.time} was cancelled by the master.`
+        ),
+      ]);
+
+      notifications.forEach((notification) => {
+        if (notification.status === 'rejected') {
+          console.error(
+            'Failed to send slot deletion notification:',
+            notification.reason
+          );
+        }
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete slot:', error);
+    sendError(res, 500, 'Failed to delete slot');
+  }
+});
+
 type ManualBookingTransactionResult =
   | { success: false; status: 404 | 409; message: string }
   | { success: true; slot: Slot };

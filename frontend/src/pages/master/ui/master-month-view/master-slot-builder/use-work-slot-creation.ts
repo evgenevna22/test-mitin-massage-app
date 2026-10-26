@@ -5,7 +5,7 @@ import { useMasterMonthData } from '@/pages/master/api/use-master-month-data';
 
 export const useWorkSlotCreation = () => {
   const isLoading = ref(false);
-  const serverError = ref('');
+  const errorMessage = ref('');
 
   const { createSlots } = useMasterSlotsLoader();
   const { loadMonthData } = useMasterMonthData();
@@ -15,7 +15,7 @@ export const useWorkSlotCreation = () => {
       return;
     }
 
-    serverError.value = '';
+    errorMessage.value = '';
     isLoading.value = true;
 
     try {
@@ -28,7 +28,7 @@ export const useWorkSlotCreation = () => {
       const responseError = error as {
         response?: { data?: { error?: string } };
       };
-      serverError.value =
+      errorMessage.value =
         responseError.response?.data?.error || 'Failed to save slots';
     } finally {
       isLoading.value = false;
@@ -36,7 +36,7 @@ export const useWorkSlotCreation = () => {
   };
 
   return {
-    serverError,
+    errorMessage,
     isLoading,
     saveWorkSlots,
   };
