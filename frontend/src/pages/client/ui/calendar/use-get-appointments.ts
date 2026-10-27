@@ -41,7 +41,10 @@ export const useGetAppointments = () => {
   };
 
   const selectDate = async (date: string) => {
-    if (date === currentDate.value) {
+    if (
+      date === currentDate.value &&
+      (slotsStore.currentSlots.length > 0 || slotsStore.areCurrentSlotsLoading)
+    ) {
       return;
     }
 

@@ -11,14 +11,16 @@ export const useSlot = () => {
 
       notifications.add({
         severity: 'success',
-        summary: 'Slot was successufully booked',
+        summary: 'Slot was successfully booked',
       });
+      return true;
     } catch (error) {
       console.error(error);
       notifications.add({
         severity: 'error',
         summary: "Sorry, slot wasn't booked",
       });
+      return false;
     }
   };
 

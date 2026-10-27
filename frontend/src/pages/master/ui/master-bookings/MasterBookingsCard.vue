@@ -84,7 +84,7 @@ const handleButtonClick = () => {
       severity: 'danger',
     },
     acceptProps: {
-      label: isSlotBooked.value ? 'Edit booking' : 'Create booking',
+      label: isSlotBooked.value ? 'Edit date/time' : 'Create booking',
     },
     reject: () => {
       emits('delete-slot', props.upcomingSlot);

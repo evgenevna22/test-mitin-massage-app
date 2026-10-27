@@ -17,19 +17,39 @@ const routes: RouteRecordRaw[] = [
         icon: 'pi pi-home',
       },
     },
-    children: [
-      {
-        path: 'calendar/:masterId',
-        component: () => import('../../pages/client/ui/calendar/Calendar.vue'),
-        name: 'Calendar',
-        meta: {
-          breadcrumb: {
-            label: 'Calendar',
-            icon: 'pi pi-calendar',
-          },
-        },
+  },
+  {
+    path: '/client/calendar/:masterId',
+    component: () => import('../../pages/client/ui/calendar/Calendar.vue'),
+    name: 'ClientCalendar',
+    meta: {
+      breadcrumb: {
+        label: 'Calendar',
+        icon: 'pi pi-calendar',
       },
-    ],
+    },
+  },
+  {
+    path: '/client/booking/:masterId/:slotId/:date',
+    component: () => import('../../pages/client/ui/booking/Booking.vue'),
+    name: 'ClientBooking',
+    meta: {
+      breadcrumb: {
+        label: 'Booking',
+        icon: 'pi pi-check',
+      },
+    },
+  },
+  {
+    path: '/client/reviews',
+    component: () => import('../../pages/client/ui/ClientReviews.vue'),
+    name: 'ClientReviews',
+    meta: {
+      breadcrumb: {
+        label: 'Reviews',
+        icon: 'pi pi-star',
+      },
+    },
   },
 
   {

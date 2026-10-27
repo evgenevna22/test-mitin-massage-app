@@ -1,15 +1,21 @@
 @import 'primeicons/primeicons.css';
 
 :root {
+  --color-client-background: #000000;
+  --color-client-slot: #5292ad;
+  --color-client-title: #ff8e00;
+  --color-client-subtitle: #fbad18;
+  --color-client-primary-button: var(--blue);
+
   --white: #ffffff;
   --black: #020000;
-  --yellow: #fca611;
+  --yellow: #ff8e00;
   --pink: #fb5858;
   --red: #ea332d;
   --green: #6b6f3b;
   --dark-green: #314826;
   --gray: #c6ccd8;
-  --blue: #469cb0;
+  --blue: #0094ff;
   --dark-blue: #2d2c58;
 
   --hero-title: #f3e8d0;
@@ -25,6 +31,11 @@
 
   --font-size-text: 12px;
   --font-size-text-small: 10px;
+  --font-size-symbol: 105px;
+
+  --font-size-button: 24px;
+
+  --font-size-big-title: 60px;
   --font-size-title: 24px;
   --font-size-subtitle: 14px;
 
@@ -34,7 +45,7 @@
   --p-content-background: transparent !important;
   // calendar
   --p-datepicker-date-selected-background: rgba(70, 156, 176, 0.8) !important;
-  --p-disabled-opacity: 0.3 !important;
+  --p-disabled-opacity: 0.35 !important;
   // tabpanels
   --p-tabs-tabpanel-padding: var(--gap-3x) !important;
 
@@ -54,7 +65,7 @@
   @media (prefers-color-scheme: dark) {
     --background: #0b0e10;
     --background-surface: #14191d;
-    --border-surface: #252C32;
+    --border-surface: #252c32;
 
     color: var(--white);
     background: var(--background-dark-theme);
@@ -83,8 +94,8 @@ p {
 }
 
 #app {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 680px;
   margin: 0 auto;
   min-height: 100svh;
 }

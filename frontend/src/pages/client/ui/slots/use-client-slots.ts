@@ -26,11 +26,7 @@ export const useSlots = () => {
         slotsStore.selectedDate
       );
 
-      if (!slots?.length) {
-        throw Error;
-      }
-
-      slotsStore.setCurrentSlots(slots);
+      slotsStore.setCurrentSlots(slots ?? []);
     } catch (error) {
       console.error(error);
       notifications.add({
