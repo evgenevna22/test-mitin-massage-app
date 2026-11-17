@@ -17,6 +17,7 @@ export type RescheduleSlotPayload = {
 export type BookSlotPayload = {
   massageType: string;
   comment?: string;
+  is90MinuteMassage?: boolean;
 };
 
 export type Slot = {
@@ -30,6 +31,7 @@ export type Slot = {
   time: string;
   status: 'free' | 'booked';
   isConfirmed: boolean;
+  is90MinuteMassage: boolean;
   comment?: string | null;
   massageType: string;
   userId: number | null;
@@ -44,6 +46,7 @@ export type SlotDTO = {
   time: string;
   status: 'free' | 'booked';
   isConfirmed: boolean;
+  is90MinuteMassage: boolean;
   comment?: string | null;
   massageType: string;
   userId: number | null;

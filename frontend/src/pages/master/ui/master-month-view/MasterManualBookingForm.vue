@@ -28,7 +28,7 @@
       </FloatLabel>
       <FloatLabel variant="on">
         <InputText
-          id="booking-user"
+          id="booking-user-id"
           v-model="fields.userId.value"
           inputmode="numeric"
           :disabled="fields.userId.disabled"
@@ -38,7 +38,7 @@
       </FloatLabel>
       <FloatLabel variant="on">
         <InputText
-          id="booking-user"
+          id="booking-user-name"
           v-model="fields.userName.value"
           :disabled="fields.userName.disabled"
           required
