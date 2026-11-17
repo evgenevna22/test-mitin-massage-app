@@ -25,6 +25,7 @@ export const SlotSchema = z.object({
   isConfirmed: z.boolean().default(false),
   comment: z.string().max(500).nullable().optional(),
   massageType: z.string().default(''),
+  is90MinuteMassage: z.boolean().default(false),
   userId: z.number().nullable(), // Telegram client ID
   userName: z.string().nullable(), // Telegram client username
   userNickname: z.string().nullable(), // Telegram client nickname
@@ -33,6 +34,7 @@ export const SlotSchema = z.object({
 export const BookSlotSchema = z.object({
   massageType: z.string().trim().min(1).max(100),
   comment: z.string().trim().max(500).optional(),
+  is90MinuteMassage: z.boolean().default(false),
 });
 
 export const CreateDateSlotSchema = z.array(DateScheme).min(1);

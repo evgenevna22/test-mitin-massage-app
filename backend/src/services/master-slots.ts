@@ -123,6 +123,7 @@ export const buildSlotWrites = (
             status: 'free',
             isConfirmed: false,
             massageType: '',
+            is90MinuteMassage: false,
             userId: null,
             userName: null,
             userNickname: null,

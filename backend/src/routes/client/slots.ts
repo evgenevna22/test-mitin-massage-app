@@ -168,32 +168,60 @@ router.put('/:id/book', async (req: Request, res: Response) => {
       return;
     }
     const slotReference = db.collection('slots').doc(id);
-    const slot = await db.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
       const slotDocument = await transaction.get(slotReference);
 
       if (!slotDocument.exists) {
-        throw Object.assign(new Error('Slot is not defined'), { status: 404 });
+        return {
+          success: false as const,
+          status: 404,
+          message: 'Slot is not defined',
+        };
       }
 
       const currentSlot = slotDocument.data() as Slot;
       if (currentSlot.status !== 'free') {
-        throw Object.assign(new Error('Slot is already booked'), {
+        return {
+          success: false as const,
           status: 409,
-        });
+          message: 'Slot is already booked',
+        };
+      }
+
+      if (
+        bookingDetails.data.is90MinuteMassage &&
+        currentSlot.time !== '20:30'
+      ) {
+        return {
+          success: false as const,
+          status: 400,
+          message: '90-minute massages are available only at 20:30',
+        };
       }
 
       transaction.update(slotReference, {
         status: 'booked',
         isConfirmed: false,
         massageType: bookingDetails.data.massageType,
+        is90MinuteMassage: bookingDetails.data.is90MinuteMassage,
         comment: bookingDetails.data.comment || null,
         userId: req.telegramUser.id,
         userName: req.telegramUser.first_name,
         userNickname: req.telegramUser.username ?? null,
       });
 
-      return currentSlot;
+      return {
+        success: true as const,
+        slot: currentSlot,
+      };
     });
+
+    if (!result.success) {
+      sendError(res, result.status, result.message);
+      return;
+    }
+
+    const slot = result.slot;
 
     TelegramService.sendMasterNotification(
       slot.masterId,
@@ -208,14 +236,6 @@ router.put('/:id/book', async (req: Request, res: Response) => {
 
     res.json({ success: true });
   } catch (error) {
-    if (error instanceof Error && 'status' in error) {
-      const status = error.status;
-      if (status === 404 || status === 409) {
-        sendError(res, status, error.message);
-        return;
-      }
-    }
-
     console.error('Error while booking', error);
 
     sendError(res, 500, "The booking's finished with error");

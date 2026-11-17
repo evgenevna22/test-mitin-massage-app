@@ -56,6 +56,7 @@ export const cancelClientBooking = async (
       status: 'free',
       isConfirmed: false,
       massageType: '',
+      is90MinuteMassage: false,
       comment: null,
       userId: null,
       userName: null,

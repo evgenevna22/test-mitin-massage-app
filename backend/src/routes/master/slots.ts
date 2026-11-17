@@ -79,6 +79,7 @@ router.post('/slots/reschedule', async (req: Request, res: Response) => {
         isConfirmed: source.isConfirmed,
         comment: comment.trim() || null,
         massageType: source.massageType,
+        is90MinuteMassage: source.is90MinuteMassage,
         userId: source.userId,
         userName: source.userName,
         userNickname: source.userNickname,
@@ -89,6 +90,7 @@ router.post('/slots/reschedule', async (req: Request, res: Response) => {
         isConfirmed: false,
         comment: null,
         massageType: '',
+        is90MinuteMassage: false,
         userId: null,
         userName: null,
         userNickname: null,
@@ -178,7 +180,7 @@ router.delete('/slots/:id', async (req: Request, res: Response) => {
       const username = result.slot.userNickname
         ? `@${result.slot.userNickname}`
         : (result.slot.userName ?? 'client');
-        
+
       const notifications = await Promise.allSettled([
         TelegramService.sendMasterNotification(
           masterId,
@@ -265,6 +267,7 @@ router.post('/slots/manual-booking', async (req: Request, res: Response) => {
           status: 'booked',
           isConfirmed: false,
           massageType,
+          is90MinuteMassage: false,
           comment: comment?.trim() || null,
           userId,
           userName,
