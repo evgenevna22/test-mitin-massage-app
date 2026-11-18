@@ -146,7 +146,7 @@ const handleReviewsPage = () => {};
   bottom: -30%;
   width: 140%;
   height: 55%;
-  background: url('@/shared/ui/assets/slots_top_bg.png') center / cover;
+  background: url('./assets/slots_top_bg.png') center / cover;
   opacity: 0.22;
   pointer-events: none;
 }
