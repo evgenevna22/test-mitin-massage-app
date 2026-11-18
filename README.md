@@ -44,7 +44,7 @@ cd ../backend && pnpm install
 3. The frontend needs the URL of the API. Create `frontend/.env` with:
 
 ```dotenv
-VITE_API_URL=http://localhost:2222
+BACKEND_URL=http://localhost:2222
 ```
 
 4. The backend reads its configuration from `backend/.env`:
@@ -130,4 +130,4 @@ Clients can cancel through `/slots/:id/cancel` in the Mini App.
 
 ## Deployment notes
 
-The frontend is ready for Vercel: [frontend/vercel.json](frontend/vercel.json) sends SPA routes back to `index.html`. Before publishing, point `VITE_API_URL` at the public API, allow the frontend's URL in [backend/src/index.ts](backend/src/index.ts), and provide the production environment values to the backend. The Telegram bot's `/start` handler in [backend/src/telegram/handlers.ts](backend/src/telegram/handlers.ts) should point to the deployed frontend URL.
+The frontend is ready for Vercel: [frontend/vercel.json](frontend/vercel.json) sends SPA routes back to `index.html`. Before publishing, point `BACKEND_URL` at the public API, allow the frontend's URL in [backend/src/index.ts](backend/src/index.ts), and provide the production environment values to the backend. The Telegram bot's `/start` handler in [backend/src/telegram/handlers.ts](backend/src/telegram/handlers.ts) should point to the deployed frontend URL.

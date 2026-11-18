@@ -2,10 +2,10 @@ import { ROLE_MODE_COOKIE_NAME } from '@/shared/config';
 import { getCookie } from '@/shared/lib';
 import axios from 'axios';
 
-const { VITE_API_URL } = import.meta.env;
+const { BACKEND_URL } = import.meta.env;
 
 export const api = axios.create({
-  baseURL: VITE_API_URL,
+  baseURL: BACKEND_URL,
 });
 
 api.interceptors.request.use((config) => {
