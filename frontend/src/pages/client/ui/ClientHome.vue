@@ -3,43 +3,6 @@
     <Hero />
     
     <main class="home-content">
-      <section class="intro-section">
-        <p class="eyebrow">SLOW DOWN · BREATHE · RESET</p>
-        <h2>Make space<br />for yourself.</h2>
-        <p class="body-copy">
-          Thoughtful bodywork, a calm space and a little time that belongs only
-          to you.
-        </p>
-      </section>
-
-      <section class="booking-section" aria-labelledby="booking-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">YOUR NEXT RESET</p>
-            <h2 id="booking-title">Choose a master</h2>
-          </div>
-          <span class="section-index">01 / 03</span>
-        </div>
-
-        <p v-if="isLoading" class="muted-copy">Finding available masters…</p>
-        <p v-else-if="!masters.length" class="muted-copy">
-          No masters are available right now.
-        </p>
-        <div v-else class="master-list">
-          <button
-            v-for="(master, index) in masters"
-            :key="master.id"
-            class="master-card"
-            type="button"
-            @click="handleChooseMaster(master.id)"
-          >
-            <span class="master-card__number">0{{ index + 1 }}</span>
-            <span class="master-card__name">{{ master.name }}</span>
-            <i class="pi pi-arrow-up-right" aria-hidden="true" />
-          </button>
-        </div>
-      </section>
-
       <section class="location-section">
         <img class="location-section__title" :src="locationTitle" alt="" />
         <div class="location-section__photos">
@@ -97,10 +60,6 @@ const router = useRouter();
 const masters = ref<MasterDTO[]>([]);
 const isLoading = ref(true);
 
-const handleChooseMaster = (masterId: string) => {
-  router.push({ name: 'ClientCalendar', params: { masterId } });
-};
-
 const handleOpenReviews = () => {
   router.push({ name: 'ClientReviews' });
 };
@@ -126,79 +85,6 @@ onMounted(async () => {
   display: grid;
   gap: 44px;
   padding: 40px 20px 20px;
-}
-
-.intro-section {
-  max-width: 460px;
-  padding: 10px 4px;
-}
-
-.eyebrow {
-  color: var(--color-client-orange);
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-}
-
-h2 {
-  margin-top: 12px;
-  color: #fff;
-  font-size: clamp(30px, 9vw, 44px);
-  font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 1.04;
-}
-
-.body-copy,
-.muted-copy {
-  margin-top: 14px;
-  color: rgb(255 255 255 / 62%);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.section-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.section-index {
-  padding-bottom: 6px;
-  color: rgb(255 255 255 / 45%);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-
-.master-list {
-  display: grid;
-  gap: 10px;
-}
-
-.master-card {
-  display: flex;
-  min-height: 70px;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 18px;
-  background: rgb(255 255 255 / 4%);
-  color: #fff;
-  text-align: left;
-}
-
-.master-card__number {
-  color: var(--color-client-orange);
-  font-size: 11px;
-}
-
-.master-card__name {
-  flex: 1;
-  font-size: 16px;
-  font-weight: 550;
 }
 
 .location-section {

@@ -45,18 +45,11 @@
     <div class="hero__grain" aria-hidden="true"></div>
   </header>
 </template>
+
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
 const handleReviewsPage = () => {};
-
-// const handleChooseMaster = (masterId: string) => {
-//   router.push({ name: 'ClientCalendar', params: { masterId } });
-// };
 </script>
+
 <style lang="scss" scoped>
 .hero {
   position: relative;
