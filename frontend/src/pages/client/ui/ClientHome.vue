@@ -108,7 +108,6 @@ const handleOpenReviews = () => {
 onMounted(async () => {
   try {
     masters.value = await ClientSlotsApi.getMasters();
-    // temp to check vercel
   } catch (error) {
     console.error(error);
   } finally {
