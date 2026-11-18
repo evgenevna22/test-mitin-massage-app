@@ -45,18 +45,11 @@
     <div class="hero__grain" aria-hidden="true"></div>
   </header>
 </template>
+
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
 const handleReviewsPage = () => {};
-
-// const handleChooseMaster = (masterId: string) => {
-//   router.push({ name: 'ClientCalendar', params: { masterId } });
-// };
 </script>
+
 <style lang="scss" scoped>
 .hero {
   position: relative;
@@ -153,7 +146,7 @@ const handleReviewsPage = () => {};
   bottom: -30%;
   width: 140%;
   height: 55%;
-  background: url('@/shared/ui/assets/slots_top_bg.png') center / cover;
+  background: url('./assets/slots_top_bg.png') center / cover;
   opacity: 0.22;
   pointer-events: none;
 }

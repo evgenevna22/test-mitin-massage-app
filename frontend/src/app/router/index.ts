@@ -41,6 +41,42 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/client/booking',
+    component: () =>
+      import('../../pages/client/ui/booking-flow/BookingLayout.vue'),
+    name: 'ClientBookingFlow',
+    children: [
+      {
+        path: '',
+        redirect: { name: 'ClientBookingMassageType' },
+      },
+      {
+        path: 'massage-type',
+        component: () =>
+          import('../../pages/client/ui/booking-flow/MassageTypePage.vue'),
+        name: 'ClientBookingMassageType',
+      },
+      {
+        path: 'schedule',
+        component: () =>
+          import('../../pages/client/ui/booking-flow/SchedulePage.vue'),
+        name: 'ClientBookingSchedule',
+      },
+      {
+        path: 'review',
+        component: () =>
+          import('../../pages/client/ui/booking-flow/ReviewPage.vue'),
+        name: 'ClientBookingReview',
+      },
+      {
+        path: 'success',
+        component: () =>
+          import('../../pages/client/ui/booking-flow/SuccessPage.vue'),
+        name: 'ClientBookingSuccess',
+      },
+    ],
+  },
+  {
     path: '/client/reviews',
     component: () => import('../../pages/client/ui/ClientReviews.vue'),
     name: 'ClientReviews',
