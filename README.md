@@ -81,15 +81,18 @@ For development: uses the first ID in `MASTER_TELEGRAM_IDS` as the current user 
 
 For production: requests come from the Telegram Web App; the server checks the `x-telegram-init-data` header and validates that the signed data is still fresh.
 
+The bot webhook is separate from Mini App authentication. In Render, set `TELEGRAM_WEBHOOK_SECRET` to a random value containing only letters, numbers, `_`, or `-`. Register the webhook by sending a `POST` request to `https://api.telegram.org/bot<BOT_TOKEN>/setWebhook` with `url=https://test-mitin-massage-app.onrender.com/webhook` and `secret_token` set to the same value. The backend checks Telegram's `X-Telegram-Bot-Api-Secret-Token` header before processing an update. Do not commit the secret or the bot token.
+
 Deploy the Firestore composite indexes declared in `firestore.indexes.json` with `firebase deploy --only firestore:indexes` after selecting the Firebase project.
 
 ## API
 
-Every route except `/` and `/health` expects Telegram authentication. Routes below `/master` are restricted to the authenticated master's Telegram ID. Clients choose a master before viewing that master's calendar.
+Every route except `/`, `/health`, and `/webhook` expects Telegram authentication. The webhook instead requires the configured `X-Telegram-Bot-Api-Secret-Token` header. Routes below `/master` are restricted to the authenticated master's Telegram ID. Clients choose a master before viewing that master's calendar.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
 | `GET` | `/health` | Check that the server is available |
+| `POST` | `/webhook` | Receive Telegram bot updates using the configured webhook secret |
 | `GET` | `/role` | Read the current role and role-switching permission |
 | `GET` | `/slots/masters` | List masters available for booking |
 | `GET` | `/slots/availability/:masterId/:year/:month` | Get free slots for a master's month |

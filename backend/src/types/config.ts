@@ -3,6 +3,7 @@ import { z } from 'zod';
 const EnvSchema = z
   .object({
     BOT_TOKEN: z.string().min(1),
+    TELEGRAM_WEBHOOK_SECRET: z.string().min(1).optional(),
     PORT: z.string().default('2222'),
     MASTER_TELEGRAM_IDS: z.string().optional(),
     MASTER_TELEGRAM_ID: z.coerce.number().optional(),

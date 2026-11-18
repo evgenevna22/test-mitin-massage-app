@@ -5,7 +5,9 @@ import cors from 'cors';
 import slotsRender from './routes/client/slots';
 import masterRender from './routes/master/master';
 import roleRender from './routes/role';
+import { config } from './types/config';
 import { registerBotHandlers } from './telegram/handlers';
+import { bot } from './telegram/bot';
 
 registerBotHandlers();
 
@@ -35,10 +37,18 @@ app.get('/health', (_, res) => {
   });
 });
 
-// app.post('/webhook', (req, res) => {
-//   bot.processUpdate(req.body)
-//   res.sendStatus(200)
-// })
+app.post('/webhook', (req, res) => {
+  const expectedSecret = config.TELEGRAM_WEBHOOK_SECRET;
+  const providedSecret = req.get('X-Telegram-Bot-Api-Secret-Token');
+
+  if (!expectedSecret || providedSecret !== expectedSecret) {
+    res.sendStatus(401);
+    return;
+  }
+
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
 
 const PORT = process.env.PORT || 2222;
 app.listen(PORT, () => {
