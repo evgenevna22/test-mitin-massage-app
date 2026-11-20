@@ -20,33 +20,19 @@
       </div>
     </div>
 
-    <div class="fire-booking">
-      <button class="fire-booking-button" icon="pi pi-arrow-up-right">
-        Book a session
-      </button>
-
-      <div class="fire-booking-list">
-        <div class="fire-booking-item">
-          <span>Today<br />10/20</span>
-          <div class="fire-booking-slots">
-            <button>15:00</button>
-            <button>17:30</button>
-          </div>
-        </div>
-        <div class="fire-booking-item">
-          <span>Today<br />10/20</span>
-          <div class="fire-booking-slots">
-            <button>15:00</button>
-            <button>17:30</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <HeroBooking :masters="props.masters" />
     <div class="hero__grain" aria-hidden="true"></div>
   </header>
 </template>
 
 <script lang="ts" setup>
+import type { MasterDTO } from '../../model';
+import HeroBooking from './HeroBooking.vue';
+
+const props = defineProps<{
+  masters: MasterDTO[];
+}>();
+
 const handleReviewsPage = () => {};
 </script>
 
@@ -92,47 +78,6 @@ const handleReviewsPage = () => {};
   left: 25%;
   align-items: center;
   width: 100%;
-}
-
-.fire-booking {
-  width: 100%;
-  display: flex;
-  padding: 30px 0;
-  min-height: 400px;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  border-radius: 35px 35px 0 0;
-  background:
-    url('./assets/slots_top_bg.png') top / contain,
-    linear-gradient(
-      to bottom,
-      var(--color-client-background) 50%,
-      var(--color-client-title) 50%
-    );
-}
-
-.fire-booking-list {
-  display: flex;
-  justify-content: center;
-  gap: var(--gap-3x);
-}
-
-.fire-booking-item {
-  min-height: 150px;
-  padding: var(--gap-2x);
-  border-radius: 25px;
-  background: var(--color-client-slot);
-}
-
-.fire-booking-button {
-  margin-top: auto;
-  font-size: var(--font-size-button);
-  padding: 25px 50px;
-  color: var(--white);
-  border: 0;
-  border-radius: 100px;
-  background: var(--color-client-primary-button);
 }
 
 .hero__booking-button {

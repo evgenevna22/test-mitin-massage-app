@@ -6,6 +6,10 @@ export class ClientSlotsApi {
     return (await api.get('slots/masters')).data;
   };
 
+  public static getNextAvailableSlots = async (): Promise<ClientSlotDTO[]> => {
+    return (await api.get('slots/next-available')).data;
+  };
+
   // rename to: getAvailableSlots
   public static getAppointments = async (
     masterId: string,

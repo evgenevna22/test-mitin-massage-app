@@ -1,7 +1,7 @@
 <template>
   <div class="client-home">
-    <Hero />
-    
+    <Hero :masters="masters" />
+
     <main class="home-content">
       <section class="location-section">
         <img class="location-section__title" :src="locationTitle" alt="" />
@@ -58,7 +58,6 @@ import projectTitle from '@/shared/ui/assets/text_project_statement.png';
 
 const router = useRouter();
 const masters = ref<MasterDTO[]>([]);
-const isLoading = ref(true);
 
 const handleOpenReviews = () => {
   router.push({ name: 'ClientReviews' });
@@ -69,8 +68,6 @@ onMounted(async () => {
     masters.value = await ClientSlotsApi.getMasters();
   } catch (error) {
     console.error(error);
-  } finally {
-    isLoading.value = false;
   }
 });
 </script>
@@ -99,10 +96,14 @@ onMounted(async () => {
 
 .location-section__title,
 .project-section__title {
-  width: min(78%, 280px);
-  height: 56px;
-  object-fit: contain;
-  object-position: left center;
+	width: 100%;
+	height: 100px;
+	object-fit: cover;
+	object-position: 50% 24%;
+}
+
+.location-section__title {
+  object-position: 50% 56%;
 }
 
 .location-section__photos,
