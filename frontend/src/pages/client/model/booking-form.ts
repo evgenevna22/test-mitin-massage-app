@@ -9,7 +9,6 @@ export const BOOKING_FORM_FIELDS = {
   time: { type: 'string', required: true },
   userName: { type: 'string', required: true },
   massageType: { type: 'string', required: true },
-  masterId: { type: 'string', required: false },
   comment: { type: 'string', required: false },
   is90MinuteMassage: { type: 'boolean', required: false },
 } as const satisfies Record<string, BookingFormFieldDefinition>;

@@ -1,12 +1,24 @@
 import { Request, Response, Router } from 'express';
+import { Filter } from 'firebase-admin/firestore';
 import { db } from '../../firebase';
 import { BookSlotSchema, DateScheme, SlotSchema } from '../../schemas';
 import type { Slot } from '../../types';
 import { verifyTelegram } from '../../middleware/verify-telegram';
-import { isMonthValid, isYearValid, sendError } from '../../helpers';
+import {
+  getStudioDateTime,
+  isMonthValid,
+  isYearValid,
+  sendError,
+} from '../../helpers';
 import { TelegramService } from '../../telegram';
 import { config } from '../../types/config';
 import { cancelClientBooking } from '../../services/client-booking';
+import {
+  MIN_IN_SEC,
+  NEXT_AVAILABLE_SLOTS_LEAD_TIME_IN_MINUTES,
+  NEXT_AVAILABLE_SLOTS_LIMIT,
+  SEC_IN_MS,
+} from '../../consts';
 
 const router = Router();
 
@@ -27,6 +39,49 @@ router.get('/masters', (_req: Request, res: Response) => {
       name: `Master ${index + 1}`,
     }))
   );
+});
+
+router.get('/next-available', async (_req: Request, res: Response) => {
+  const minuteInMs = MIN_IN_SEC * SEC_IN_MS;
+  const cutoffTimeInMs =
+    Date.now() + NEXT_AVAILABLE_SLOTS_LEAD_TIME_IN_MINUTES * minuteInMs;
+  const roundedCutoffTimeInMs =
+    Math.ceil(cutoffTimeInMs / minuteInMs) * minuteInMs;
+  const nextAvailableTime = new Date(roundedCutoffTimeInMs);
+  const cutoffStudioDateTime = getStudioDateTime(nextAvailableTime);
+
+  try {
+    const slotsSnapshot = await db
+      .collection('slots')
+      .where('status', '==', 'free')
+      .where(
+        Filter.or(
+          Filter.and(
+            Filter.where('date', '==', cutoffStudioDateTime.date),
+            Filter.where('time', '>=', cutoffStudioDateTime.time)
+          ),
+          Filter.where('date', '>', cutoffStudioDateTime.date)
+        )
+      )
+      .orderBy('date')
+      .orderBy('time')
+      .limit(NEXT_AVAILABLE_SLOTS_LIMIT)
+      .get();
+
+    const slots = slotsSnapshot.docs
+      .map((document) =>
+        SlotSchema.parse({
+          id: document.id,
+          ...document.data(),
+        })
+      )
+      .map(toClientSlot);
+
+    res.json(slots);
+  } catch (error) {
+    console.error('Error retrieving next available slots:', error);
+    sendError(res, 500, 'Error retrieving next available slots');
+  }
 });
 
 // api to receive free slots for a specific day and master
